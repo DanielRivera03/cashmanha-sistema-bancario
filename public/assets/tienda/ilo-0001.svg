@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300" role="img">
+  <defs>
+    <linearGradient id="f7f8d66" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset=".62" stop-color="#f7f8fb"/>
+      <stop offset="1" stop-color="#eceef4"/>
+    </linearGradient>
+    <radialGradient id="s7f8d66" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#1d2433" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#1d2433" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="a7f8d66" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7a5af8" stop-opacity=".95"/>
+      <stop offset="1" stop-color="#7a5af8" stop-opacity=".72"/>
+    </linearGradient>
+    <linearGradient id="m7f8d66" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".55"/>
+      <stop offset=".5" stop-color="#ffffff" stop-opacity=".08"/>
+      <stop offset="1" stop-color="#000000" stop-opacity=".10"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="300" fill="url(#f7f8d66)"/>
+  <ellipse cx="200" cy="248" rx="112" ry="17" fill="url(#s7f8d66)"/>
+
+  <g fill="url(#a7f8d66)" stroke="none">
+    
+  <path d="M96 228 L96 150 Q98 136 113 136 Q131 136 137 154 L148 184
+           Q158 204 184 211 L276 234 Q306 242 306 252 L96 252 Z"/>
+  <path d="M104 152 Q124 148 134 166 L146 190" fill="none" stroke="#fff"
+        stroke-opacity=".5" stroke-width="3.2" stroke-linecap="round"/>
+  <path d="M152 174 L176 184 M160 192 L184 202 M170 208 L194 218"
+        stroke="#fff" stroke-opacity=".62" stroke-width="3" stroke-linecap="round"/>
+  <path d="M196 216 Q244 228 292 240" fill="none" stroke="#fff"
+        stroke-opacity=".4" stroke-width="3.4" stroke-linecap="round"/>
+  <rect x="92" y="236" width="218" height="16" rx="8" fill="#4a5160"/>
+  <rect x="92" y="236" width="218" height="5" rx="2.5" fill="#fff" opacity=".32"/>
+  </g>
+
+  <text x="200" y="285" text-anchor="middle" font-family="Poppins, Segoe UI, sans-serif"
+        font-size="11.5" font-weight="600" fill="#98a2b3">Deportes Ilopango</text>
+</svg>

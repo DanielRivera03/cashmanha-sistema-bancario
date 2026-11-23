@@ -1,0 +1,108 @@
+# =====================================================================
+# CashMan H.A. v2 — Front controller y endurecimiento HTTP
+# =====================================================================
+
+# Revierte el "Require all denied" heredado de la raíz del proyecto:
+# este es el ÚNICO directorio que debe servirse por HTTP.
+Require all granted
+
+# Sin listados de directorio ni seguimiento de enlaces simbólicos.
+Options -Indexes -MultiViews +FollowSymLinks
+
+# ---------------------------------------------------------------------
+# REESCRITURA: todo entra por index.php
+# Resultado: /panel en lugar de /controlador/cGestiones.php?gestion=panel
+# ---------------------------------------------------------------------
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Coincide con el Alias de conf/extra/cashmanha-v2.conf
+    RewriteBase /cashmanha-v2/
+
+    # Forzar HTTPS en producción (descomentar al desplegar con TLS)
+    # RewriteCond %{HTTPS} !=on
+    # RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # Bloquear métodos que el sistema no usa.
+    RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK|TTT)
+    RewriteRule .* - [F,L]
+
+    # Los archivos y directorios reales se sirven tal cual
+    # (assets: css, js, imágenes).
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Todo lo demás al front controller.
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>
+
+# ---------------------------------------------------------------------
+# CABECERAS DE SEGURIDAD
+# ---------------------------------------------------------------------
+<IfModule mod_headers.c>
+    # `setifempty` y NO `always set`: PHP ya pone estas cabeceras como
+    # respaldo, y con `always set` llegaban las dos veces
+    # —«X-Frame-Options: DENY,DENY»—, que algunos navegadores tratan
+    # como cabecera malformada y descartan entera. Sin `always`,
+    # Apache mira lo que PHP ya puso y solo rellena lo que falte.
+    #
+    # Lo que se pierde: las respuestas que genera el propio Apache sin
+    # pasar por PHP. Son paginas de error estaticas sin nada sensible.
+    # Impide que el navegador adivine el tipo de contenido.
+    Header setifempty X-Content-Type-Options "nosniff"
+
+    # Nada de iframes: corta el clickjacking.
+    Header setifempty X-Frame-Options "DENY"
+
+    # No filtrar la URL completa a sitios externos.
+    Header setifempty Referrer-Policy "strict-origin-when-cross-origin"
+
+    # Deshabilitar APIs del navegador que el sistema no necesita.
+    Header setifempty Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=()"
+
+    # Content Security Policy.
+    # 'unsafe-inline' en style-src es un compromiso temporal por los
+    # estilos embebidos; eliminarlo cuando todo el CSS esté en archivos.
+    # La CSP la emite PHP (Infraestructura\Seguridad\Csp), porque lleva
+    # un nonce distinto en cada respuesta y Apache no puede generarlo.
+    # OJO: no reponer aqui una CSP. Si llegan dos cabeceras, el
+    # navegador aplica LAS DOS, y la que no lleve el nonce volveria a
+    # bloquear los scripts del sistema.
+
+    # HSTS: solo tiene efecto sobre HTTPS. Activar al desplegar con TLS.
+    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+    # No cachear respuestas con datos financieros.
+    <FilesMatch "\.(php)$">
+        Header always set Cache-Control "no-store, no-cache, must-revalidate, max-age=0, private"
+        Header always set Pragma "no-cache"
+    </FilesMatch>
+
+    # Los assets sí se cachean: no contienen datos del cliente.
+    <FilesMatch "\.(css|js|woff2?|svg|png|jpe?g|gif|ico)$">
+        Header set Cache-Control "public, max-age=2592000, immutable"
+    </FilesMatch>
+
+    # Ocultar la tecnología del servidor.
+    Header always unset X-Powered-By
+    Header unset Server
+</IfModule>
+
+# ---------------------------------------------------------------------
+# PROTECCIÓN DE ARCHIVOS SENSIBLES
+# ---------------------------------------------------------------------
+<FilesMatch "^\.|composer\.(json|lock)$|\.(env|ini|log|sql|md|sh|bak|backup|yml|yaml|dist|config)$">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_php.c>
+    php_flag display_errors Off
+    php_flag expose_php Off
+    php_value max_execution_time 60
+    php_value upload_max_filesize 5M
+    php_value post_max_size 6M
+</IfModule>
+
+ErrorDocument 403 /cashmanha-v2/error/403
+ErrorDocument 404 /cashmanha-v2/error/404
+ErrorDocument 500 /cashmanha-v2/error/500

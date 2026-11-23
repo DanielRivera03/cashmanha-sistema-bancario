@@ -1,0 +1,244 @@
+/* =====================================================================
+   EL PANEL DE PROCESO
+   ---------------------------------------------------------------------
+   Lo que pinta `proceso.js`: los pasos de una operación mientras corre.
+
+   En su propio archivo porque lo usan los tres marcos —el panel, el
+   sitio público y las pantallas de acceso— y así no hay tres copias
+   que se separen con el tiempo. Los colores se declaran aquí y no
+   dependen de los tokens de ningún marco, para que valga en los tres.
+   ===================================================================== */
+
+:root {
+  --pr-tinta:   #101828;
+  --pr-suave:   #667085;
+  --pr-borde:   #e4e7ec;
+  --pr-marca:   #5b21b6;
+  --pr-verde:   #067647;
+  --pr-rojo:    #b42318;
+}
+
+.cm-proceso {
+  position: fixed;
+  inset: 0;
+  z-index: 11000;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(16, 24, 40, .55);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+
+.cm-proceso--visible { opacity: 1; }
+
+.cm-proceso__caja {
+  width: min(26rem, 100%);
+  box-sizing: border-box;
+  padding: 1.4rem 1.5rem 1.25rem;
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: 0 20px 48px rgba(16, 24, 40, .24);
+  transform: translateY(8px) scale(.98);
+  transition: transform .2s ease;
+  font-family: inherit;
+  text-align: left;
+}
+
+.cm-proceso--visible .cm-proceso__caja { transform: none; }
+
+.cm-proceso__titulo {
+  margin: 0 0 .9rem;
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--pr-tinta);
+  line-height: 1.3;
+}
+
+/* ---------------------------------------------------------------------
+   LA BARRA
+   ---------------------------------------------------------------------
+   Solo cuenta pasos CERRADOS. Mientras el servidor trabaja se pone a
+   rayas en movimiento: no se sabe por dónde va, y fingir un porcentaje
+   es mentir a quien está esperando su dinero.
+   --------------------------------------------------------------------- */
+
+.cm-proceso__barra {
+  position: relative;
+  height: 6px;
+  margin-bottom: 1.1rem;
+  border-radius: 999px;
+  background: #f2f4f7;
+  overflow: hidden;
+}
+
+.cm-proceso__barra > i {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: var(--pr-marca);
+  transition: width .35s ease;
+}
+
+/* Indeterminado: el tramo que corre del otro lado. */
+.cm-proceso__barra--sin-saber::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(91, 33, 182, 0) 0%,
+    rgba(91, 33, 182, .85) 50%,
+    rgba(91, 33, 182, 0) 100%
+  );
+  animation: cmProcesoCorre 1.15s linear infinite;
+}
+
+.cm-proceso__barra--fallo > i { background: var(--pr-rojo); }
+
+@keyframes cmProcesoCorre {
+  from { transform: translateX(-60%); }
+  to   { transform: translateX(160%); }
+}
+
+/* ---------------------------------------------------------------------
+   LOS PASOS
+   --------------------------------------------------------------------- */
+
+.cm-proceso__pasos {
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: .55rem;
+  counter-reset: paso;
+}
+
+.cm-proceso__paso {
+  display: flex;
+  align-items: flex-start;
+  gap: .6rem;
+  font-size: .86rem;
+  line-height: 1.35;
+  color: #98a2b3;
+  transition: color .2s ease;
+}
+
+.cm-proceso__marca {
+  flex: 0 0 18px;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  margin-top: .08rem;
+  border-radius: 50%;
+  background: #f2f4f7;
+  box-shadow: inset 0 0 0 1px var(--pr-borde);
+  color: #fff;
+}
+
+/* El que va ahora. */
+.cm-proceso__paso--curso { color: var(--pr-tinta); font-weight: 600; }
+
+.cm-proceso__paso--curso .cm-proceso__marca {
+  background: #fff;
+  box-shadow: inset 0 0 0 2px var(--pr-marca);
+}
+
+/* El anillo que gira, solo en el paso que corre del otro lado: es
+   donde de verdad se está esperando. */
+.cm-proceso__paso--servidor .cm-proceso__marca::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid rgba(91, 33, 182, .25);
+  border-top-color: var(--pr-marca);
+  animation: cmProcesoGira .7s linear infinite;
+}
+
+@keyframes cmProcesoGira {
+  to { transform: rotate(360deg); }
+}
+
+.cm-proceso__paso--hecho { color: var(--pr-suave); }
+
+.cm-proceso__paso--hecho .cm-proceso__marca {
+  background: var(--pr-verde);
+  box-shadow: none;
+}
+
+.cm-proceso__paso--fallo { color: var(--pr-rojo); font-weight: 600; }
+
+.cm-proceso__paso--fallo .cm-proceso__marca {
+  background: var(--pr-rojo);
+  box-shadow: none;
+}
+
+.cm-proceso__texto { min-width: 0; overflow-wrap: anywhere; }
+
+/* ---------------------------------------------------------------------
+   EL PIE
+   --------------------------------------------------------------------- */
+
+.cm-proceso__pie {
+  margin: 0;
+  font-size: .78rem;
+  line-height: 1.45;
+  color: var(--pr-suave);
+}
+
+.cm-proceso__pie--fallo {
+  color: var(--pr-rojo);
+  font-weight: 600;
+}
+
+.cm-proceso__reloj {
+  display: block;
+  margin-top: .35rem;
+  font-size: .72rem;
+  font-variant-numeric: tabular-nums;
+  color: #98a2b3;
+  min-height: 1em;
+}
+
+.cm-proceso__caja--listo .cm-proceso__pie { color: var(--pr-verde); font-weight: 600; }
+
+.cm-proceso__cerrar {
+  margin-top: 1rem;
+  width: 100%;
+  padding: .6rem 1rem;
+  border: 0;
+  border-radius: .55rem;
+  background: var(--pr-tinta);
+  color: #fff;
+  font: inherit;
+  font-size: .88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cm-proceso__cerrar:hover { background: #1d2939; }
+.cm-proceso__cerrar:focus-visible { outline: 3px solid rgba(91, 33, 182, .4); outline-offset: 2px; }
+
+@media (max-width: 420px) {
+  .cm-proceso__caja { padding: 1.15rem 1.1rem 1rem; }
+}
+
+/* Quien pidió menos movimiento no necesita anillos girando para saber
+   que algo está pasando: se lo dice el texto del paso. */
+@media (prefers-reduced-motion: reduce) {
+  .cm-proceso,
+  .cm-proceso__caja,
+  .cm-proceso__barra > i { transition: none; }
+
+  .cm-proceso__barra--sin-saber::after,
+  .cm-proceso__paso--servidor .cm-proceso__marca::before { animation: none; }
+
+  .cm-proceso__paso--servidor .cm-proceso__marca::before {
+    border-color: var(--pr-marca);
+  }
+}

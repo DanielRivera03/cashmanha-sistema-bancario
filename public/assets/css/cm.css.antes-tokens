@@ -1,0 +1,4454 @@
+/* =====================================================================
+   CashMan v2 — complementos sobre la plantilla Chrev
+   Solo lo que Chrev no trae: tiempo real, tarjetas de crédito,
+   indicadores de riesgo y estados contables.
+   ===================================================================== */
+
+:root {
+  --cm-marca:   #6418c3;
+  --cm-marca-oscuro:  #41107f;
+  --cm-marca-tenue:   #f0e6fb;
+  --cm-oro:     #c99a2e;
+  --cm-rojo:    #b42318;
+  --cm-ambar:   #b45309;
+  --cm-azul:    #175cd3;
+}
+
+/* ---------- Avatar de la cabecera ---------- */
+.cm-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--cm-marca); color: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: .85rem; flex-shrink: 0;
+}
+
+/* ---------- Indicador de conexión en vivo ---------- */
+.cm-vivo {
+  display: inline-flex; align-items: center; gap: .35rem;
+  font-size: .74rem; font-weight: 600; color: #9aa5b1;
+  padding: .25rem .6rem; border-radius: 999px; background: #f4f6f8;
+}
+.cm-vivo__punto { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.cm-vivo.conectado { color: var(--cm-marca); background: var(--cm-marca-tenue); }
+.cm-vivo.conectado .cm-vivo__punto { animation: cm-latir 2.2s ease-in-out infinite; }
+.cm-vivo.reconectando { color: var(--cm-ambar); background: #fef3c7; }
+.cm-vivo.reconectando .cm-vivo__punto { animation: cm-latir .9s ease-in-out infinite; }
+
+@keyframes cm-latir { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
+
+/* ---------- Valor que acaba de cambiar ---------- */
+.cm-destello { animation: cm-destellar 1.2s ease; border-radius: 4px; }
+@keyframes cm-destellar {
+  0%   { background: rgba(201,154,46,.45); }
+  100% { background: transparent; }
+}
+
+/* ---------- Tarjeta de cuenta ---------- */
+.cm-cuenta {
+  background: linear-gradient(135deg, var(--cm-marca-oscuro), #2a0a54);
+  color: #fff; border-radius: 16px; padding: 1.4rem;
+  position: relative; overflow: hidden; display: block;
+  text-decoration: none; transition: transform .18s, box-shadow .18s;
+  box-shadow: 0 4px 14px rgba(65,16,127,.18);
+}
+.cm-cuenta:hover { transform: translateY(-3px); box-shadow: 0 10px 26px rgba(65,16,127,.28); color: #fff; }
+.cm-cuenta::after {
+  content: ''; position: absolute; right: -50px; bottom: -80px;
+  width: 230px; height: 230px; border-radius: 50%; background: rgba(255,255,255,.05);
+}
+.cm-cuenta__tipo   { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: #cdb4f0; }
+.cm-cuenta__num    { font-family: Consolas, monospace; font-size: .95rem; color: #f0e6fb; margin-top: .2rem; }
+.cm-cuenta__saldo  { font-size: 1.9rem; font-weight: 700; margin-top: .9rem; letter-spacing: -.02em; }
+.cm-cuenta__pie    { display: flex; justify-content: space-between; align-items: flex-end;
+                     margin-top: 1rem; position: relative; z-index: 1; }
+
+/* ---------- Plástico (tarjeta de crédito) ---------- */
+.cm-plastico {
+  aspect-ratio: 1.586; border-radius: 16px; padding: 1.3rem; color: #fff;
+  display: flex; flex-direction: column; justify-content: space-between;
+  position: relative; overflow: hidden; text-decoration: none;
+  background: linear-gradient(135deg, #1a2332, #0d1520);
+  box-shadow: 0 6px 18px rgba(0,0,0,.2);
+  transition: transform .18s, box-shadow .18s;
+}
+.cm-plastico:hover { transform: translateY(-3px) scale(1.012); color: #fff; box-shadow: 0 14px 30px rgba(0,0,0,.3); }
+.cm-plastico--visa       { background: linear-gradient(135deg, #1434cb, #0a1f7a); }
+.cm-plastico--mastercard { background: linear-gradient(135deg, #2a2a2e, #8d1424); }
+.cm-plastico--amex       { background: linear-gradient(135deg, #006fcf, #00447c); }
+.cm-plastico--inactiva   { filter: grayscale(.8); opacity: .7; }
+.cm-plastico__chip {
+  width: 40px; height: 30px; border-radius: 5px;
+  background: linear-gradient(135deg, #d4af37, #f6e9b0 50%, #b8941f);
+}
+.cm-plastico__num  { font-family: Consolas, monospace; font-size: 1.08rem; letter-spacing: .09em; }
+.cm-plastico__fila { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; }
+.cm-plastico__et   { font-size: .58rem; text-transform: uppercase; letter-spacing: .11em; opacity: .72; }
+.cm-plastico__val  { font-size: .84rem; font-weight: 600; }
+.cm-plastico__marca{ font-size: 1.05rem; font-weight: 800; font-style: italic; }
+
+/* ---------- Clasificación de riesgo ---------- */
+.cm-riesgo {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; border-radius: 6px;
+  font-weight: 800; font-size: .78rem; color: #fff;
+}
+.cm-riesgo--A { background: #12b76a; }
+.cm-riesgo--B { background: #2e90fa; }
+.cm-riesgo--C { background: #f79009; }
+.cm-riesgo--D { background: #f04438; }
+.cm-riesgo--E { background: #7a271a; }
+
+/* ---------- Números tabulares ---------- */
+.cm-num  { font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.cm-mono { font-family: Consolas, Monaco, monospace; font-size: .86em; }
+.cm-pos  { color: #12b76a; font-weight: 600; }
+.cm-neg  { color: var(--cm-rojo); font-weight: 600; }
+
+/* ---------- Indicadores ---------- */
+.cm-kpi {
+  background: #fff; border-radius: 14px; padding: 1.15rem;
+  border: 1px solid #eaecf0; height: 100%;
+}
+.cm-kpi__et    { font-size: .72rem; font-weight: 700; text-transform: uppercase;
+                 letter-spacing: .06em; color: #667085; margin-bottom: .4rem; }
+.cm-kpi__val   { font-size: 1.6rem; font-weight: 700; letter-spacing: -.02em; color: #101828; }
+.cm-kpi__pie   { font-size: .78rem; color: #98a2b3; margin-top: .2rem; }
+.cm-kpi__icono { width: 44px; height: 44px; border-radius: 11px;
+                 display: inline-flex; align-items: center; justify-content: center;
+                 font-size: 20px; }
+
+/* ---------- Línea de tiempo del crédito ---------- */
+.cm-etapas { display: flex; gap: 0; margin: 1rem 0; }
+.cm-etapa  { flex: 1; text-align: center; position: relative; padding-top: 28px; font-size: .74rem; color: #98a2b3; }
+.cm-etapa::before {
+  content: ''; position: absolute; top: 6px; left: 50%; transform: translateX(-50%);
+  width: 15px; height: 15px; border-radius: 50%; background: #eaecf0; border: 3px solid #fff;
+  box-shadow: 0 0 0 1px #eaecf0; z-index: 2;
+}
+.cm-etapa::after {
+  content: ''; position: absolute; top: 12px; left: 50%; width: 100%; height: 3px;
+  background: #eaecf0; z-index: 1;
+}
+.cm-etapa:last-child::after { display: none; }
+.cm-etapa.hecha        { color: var(--cm-marca); font-weight: 600; }
+.cm-etapa.hecha::before{ background: var(--cm-marca); box-shadow: 0 0 0 1px var(--cm-marca); }
+.cm-etapa.hecha::after { background: var(--cm-marca); }
+.cm-etapa.actual::before { background: var(--cm-oro); box-shadow: 0 0 0 1px var(--cm-oro), 0 0 0 5px rgba(201,154,46,.2); }
+.cm-etapa.actual         { color: var(--cm-oro); font-weight: 700; }
+
+/* ---------- Mensajería ---------- */
+.cm-msg {
+  display: flex; gap: .9rem; padding: .95rem 1.1rem;
+  border-bottom: 1px solid #eaecf0; text-decoration: none; color: inherit;
+  transition: background .13s;
+}
+.cm-msg:hover    { background: #f9fafb; color: inherit; }
+.cm-msg.no-leido { background: #f0f9f6; border-left: 3px solid var(--cm-marca); }
+.cm-msg__asunto  { font-weight: 600; color: #101828; }
+.cm-msg__extracto{ font-size: .84rem; color: #667085; }
+
+/* ---------- Vacío ---------- */
+.cm-vacio { text-align: center; padding: 3rem 1rem; color: #98a2b3; }
+.cm-vacio i { font-size: 42px; opacity: .4; display: block; margin-bottom: .7rem; }
+
+/* ---------- Ajustes a Chrev ---------- */
+.dashboard_bar { font-size: 1.3rem; font-weight: 600; color: #101828; }
+.card { border-radius: 14px; border: 1px solid #eaecf0; }
+.table td, .table th { vertical-align: middle; }
+.badge { font-weight: 600; }
+
+@media print {
+  .deznav, .header, .nav-header, .footer, .btn, .cm-vivo { display: none !important; }
+  .content-body { margin-left: 0 !important; }
+}
+
+/* ---------- Clima y reloj en el header ---------- */
+.cm-clima {
+  display: inline-flex; align-items: center; gap: .55rem;
+  padding: .3rem .75rem .3rem .4rem;
+  background: linear-gradient(135deg, #e8f5f1, #f0e6fb);
+  border-radius: 999px;
+}
+.cm-clima__icono { width: 34px; height: 34px; flex-shrink: 0; }
+.cm-clima__datos { display: flex; flex-direction: column; line-height: 1.15; }
+.cm-clima__temp  { font-size: .98rem; font-weight: 700; color: var(--cm-marca-oscuro); }
+.cm-clima__desc  { font-size: .68rem; color: #6b5b85; white-space: nowrap; }
+
+.cm-reloj { display: flex; flex-direction: column; line-height: 1.15; text-align: right; }
+.cm-reloj__hora {
+  font-size: 1.02rem; font-weight: 700; color: var(--cm-marca-oscuro);
+  font-variant-numeric: tabular-nums; letter-spacing: .01em;
+}
+.cm-reloj__fecha { font-size: .68rem; color: #98a2b3; white-space: nowrap; }
+
+/* ---------- Bienvenida del home ---------- */
+.cm-bienvenida {
+  background: linear-gradient(120deg, var(--cm-marca-oscuro) 0%, var(--cm-marca) 100%);
+  border-radius: 16px; padding: 1.7rem 1.9rem; color: #fff;
+  position: relative; overflow: hidden; margin-bottom: 1.5rem;
+}
+.cm-bienvenida::after {
+  content: ''; position: absolute; right: -60px; top: -60px;
+  width: 260px; height: 260px; border-radius: 50%; background: rgba(255,255,255,.06);
+}
+.cm-bienvenida::before {
+  content: ''; position: absolute; right: 60px; bottom: -90px;
+  width: 180px; height: 180px; border-radius: 50%; background: rgba(255,255,255,.04);
+}
+.cm-bienvenida h2 { font-size: 1.55rem; font-weight: 700; margin: 0 0 .35rem; color: #fff; }
+.cm-bienvenida p  { color: #e3d5f7; margin: 0; font-size: .95rem; }
+.cm-bienvenida__cont { position: relative; z-index: 2; }
+.cm-bienvenida__clima {
+  display: inline-flex; align-items: center; gap: .9rem;
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18);
+  border-radius: 14px; padding: .75rem 1.1rem; backdrop-filter: blur(6px);
+}
+.cm-bienvenida__clima img { width: 52px; height: 52px; }
+.cm-bienvenida__temp { font-size: 1.9rem; font-weight: 700; line-height: 1; }
+.cm-bienvenida__det  { font-size: .76rem; color: #e3d5f7; }
+
+@media (max-width: 767px) {
+  .cm-bienvenida { padding: 1.3rem; }
+  .cm-bienvenida h2 { font-size: 1.25rem; }
+}
+
+/* =====================================================================
+   CORRECCIONES DE TAMAÑO
+   Los SVG del clima traen viewBox pero NO width/height, así que por
+   defecto se expanden hasta llenar el contenedor. Dentro de un flex
+   eso los vuelve gigantes. Hay que fijarlos explícitamente.
+   ===================================================================== */
+
+.cm-clima__icono,
+img[src*="icon-weather"] {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px; max-width: 34px;
+  min-height: 34px; max-height: 34px;
+  flex: 0 0 34px;
+  object-fit: contain;
+  display: block;
+}
+
+.cm-bienvenida__clima img,
+.cm-bienvenida__clima img[src*="icon-weather"] {
+  width: 56px !important;
+  height: 56px !important;
+  min-width: 56px; max-width: 56px;
+  min-height: 56px; max-height: 56px;
+  flex: 0 0 56px;
+  object-fit: contain;
+}
+
+/* El header no debe crecer por su contenido */
+.header .header-content { overflow: visible; }
+.navbar-nav.header-right { align-items: center; flex-wrap: nowrap; }
+.navbar-nav.header-right > li { flex-shrink: 0; }
+
+/* Iconos del menú y de los indicadores: tamaño fijo siempre */
+.metismenu svg,
+.cm-kpi__icono svg,
+.cm-ico {
+  width: 20px; height: 20px;
+  flex-shrink: 0; vertical-align: middle;
+}
+.cm-kpi__icono svg { width: 22px; height: 22px; }
+.metismenu > li > a > svg { margin-right: .65rem; }
+
+
+
+/* ---------- Sello de tarjeta congelada ---------- */
+.cm-plastico { position: relative; }
+.cm-plastico__sello {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%) rotate(-14deg);
+  border: 3px solid rgba(255,255,255,.85);
+  color: rgba(255,255,255,.9);
+  padding: .3rem 1.1rem; border-radius: 8px;
+  font-weight: 800; font-size: .95rem; letter-spacing: .14em;
+  background: rgba(0,0,0,.25);
+  pointer-events: none;
+}
+
+/* El PAN revelado no debe desbordar la tarjeta */
+.cm-plastico__num { word-break: break-word; }
+
+/* Pestañas dentro de la tarjeta */
+.nav-tabs .nav-link { font-size: .9rem; font-weight: 600; }
+
+/* =====================================================================
+   AJUSTES DE LAYOUT
+   La plantilla Chrev deja el menú sin desplazamiento cuando hay muchas
+   secciones, y usa tipografías grandes pensadas para pocas opciones.
+   ===================================================================== */
+
+.deznav .deznav-scroll::-webkit-scrollbar { width: 6px; }
+.deznav .deznav-scroll::-webkit-scrollbar-track { background: transparent; }
+.deznav .deznav-scroll::-webkit-scrollbar-thumb {
+  background: rgba(140,150,165,.35); border-radius: 3px;
+}
+.deznav .deznav-scroll::-webkit-scrollbar-thumb:hover { background: rgba(140,150,165,.6); }
+
+/* ---------- Tipografía del menú: más compacta ---------- */
+.deznav .metismenu > li > a {
+  font-size: .88rem !important;
+  padding: .68rem 1.1rem !important;
+  font-weight: 500;
+}
+.deznav .metismenu ul a {
+  font-size: .82rem !important;
+  padding: .45rem 1rem .45rem 3.1rem !important;
+}
+.deznav .metismenu .nav-label {
+  font-size: .68rem !important;
+  letter-spacing: .08em;
+  margin: 1rem 0 .3rem !important;
+  padding: 0 1.1rem !important;
+  text-transform: uppercase;
+  font-weight: 700;
+  opacity: .55;
+}
+.deznav .metismenu > li > a .nav-text { margin-left: .2rem; }
+
+
+/* ---------- Cabeceras de tarjeta ---------- */
+.card-header .card-title { font-size: .98rem; font-weight: 650; margin-bottom: 0; }
+.card-header { padding: .85rem 1.15rem; }
+.card-body   { padding: 1.15rem; }
+
+/* ---------- Tablas más densas ---------- */
+.table { font-size: .875rem; }
+.table thead th {
+  font-size: .72rem; text-transform: uppercase; letter-spacing: .04em;
+  font-weight: 700; color: #667085; padding: .6rem .75rem;
+}
+.table td { padding: .6rem .75rem; }
+
+/* ---------- Copyright del menú ---------- */
+.deznav .copyright { font-size: .72rem; opacity: .6; }
+
+
+/* =====================================================================
+   MENÚ LATERAL COMPACTO
+   Chrev dimensiona el menú para pocas secciones. Con las ~10 de este
+   sistema, cada ítem de 54px deja las últimas opciones fuera de la
+   pantalla. Aquí se compacta a ~40px y se recupera el espacio muerto
+   bajo el logo.
+   ===================================================================== */
+
+#main-wrapper .deznav .metismenu > li > a,
+#main-wrapper .deznav .metismenu > li > a.has-arrow,
+.deznav .metismenu > li > a {
+  padding: .58rem 1.05rem !important;
+  font-size: .855rem !important;
+  font-weight: 500 !important;
+  line-height: 1.3 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: .7rem;
+  border-radius: 8px;
+  margin: .08rem .55rem;
+}
+
+/* Iconos: tamaño fijo y sin margen heredado */
+#main-wrapper .deznav .metismenu > li > a svg,
+.deznav .metismenu li > a svg {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px;
+  margin: 0 !important;
+  flex-shrink: 0;
+  opacity: .85;
+}
+.deznav .metismenu > li.mm-active > a svg { opacity: 1; }
+
+/* El texto no debe desbordar ni partirse */
+.deznav .metismenu .nav-text {
+  margin: 0 !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+/* Submenús */
+#main-wrapper .deznav .metismenu ul a,
+.deznav .metismenu ul a {
+  padding: .4rem 1rem .4rem 2.9rem !important;
+  font-size: .8rem !important;
+  line-height: 1.35 !important;
+}
+.deznav .metismenu ul { padding: .1rem 0 .25rem !important; }
+
+/* Etiquetas de sección */
+#main-wrapper .deznav .metismenu .nav-label,
+.deznav .metismenu .nav-label {
+  margin: .9rem 0 .25rem !important;
+  padding: 0 1.2rem !important;
+  font-size: .64rem !important;
+  letter-spacing: .1em;
+  font-weight: 700;
+  opacity: .45;
+  border-top: none !important;
+}
+.deznav .metismenu .nav-label.first { margin-top: .4rem !important; }
+
+/* ---------------------------------------------------------------------
+   El menú arranca justo debajo del logo.
+   ---------------------------------------------------------------------
+   Aquí había `padding-top: 0` para recuperar el hueco que quedaba bajo
+   el logo, y el remedio salió peor: la cabecera del logo mide 7.5rem
+   (120 px), está fija y se dibuja ENCIMA del menú, así que las primeras
+   opciones —la etiqueta "Principal", "Inicio" y "Cuentas"— quedaban
+   debajo de ella. El menú parecía empezar en "Listado de cuentas".
+
+   El relleno vale exactamente lo que mide esa cabecera, que es el mismo
+   valor que se resta en la altura de `.deznav-scroll`. El hueco que se
+   quería quitar se resuelve con esa altura, no subiendo el contenido por
+   debajo del logo.
+   --------------------------------------------------------------------- */
+#main-wrapper .deznav { padding-top: 7.5rem !important; }
+#main-wrapper .deznav .deznav-scroll { padding-top: .35rem !important; }
+#main-wrapper .deznav .metismenu { padding-top: 0 !important; }
+
+/* Flecha de los desplegables, más discreta */
+.deznav .metismenu li a.has-arrow::after {
+  right: 1.1rem !important;
+  width: .45rem !important;
+  height: .45rem !important;
+  border-width: 0 1.5px 1.5px 0 !important;
+  opacity: .5;
+}
+
+/* Ítem activo */
+.deznav .metismenu > li.mm-active > a {
+  background: rgba(100,24,195,.08) !important;
+  font-weight: 650 !important;
+}
+
+/* Pie del menú */
+.deznav .copyright {
+  padding: .9rem 1.2rem !important;
+  font-size: .7rem !important;
+  opacity: .5;
+}
+
+
+/* =====================================================================
+   LAYOUT BASE DEL PORTAL
+   ---------------------------------------------------------------------
+   La plantilla fija tres medidas que tienen que coincidir o el marco se
+   descuadra:
+
+       .nav-header  7.5rem de alto, 21.563rem de ancho
+       .header      7.5rem de alto, padding-left 21.563rem
+       .deznav      padding-top 120px (= 7.5rem), height 100%
+
+   Los problemas que corrige este bloque:
+
+   1. El header desbordaba a la derecha y cortaba el perfil. Pasaba
+      porque la barra de la derecha no podía encogerse y el título
+      tampoco cedía: entre los dos pedían más ancho del disponible.
+
+   2. Había dos barras de desplazamiento. El menú lateral se calculaba
+      con `100vh - 5rem` cuando la cabecera mide 7.5rem, así que
+      sobresalía 2.5rem por abajo y la página entera tenía que
+      desplazarse además del menú.
+
+   3. El menú aparecía recortado por arriba, por la misma razón.
+   ===================================================================== */
+
+html { overflow-x: hidden; }
+body { overflow-x: hidden; max-width: 100vw; }
+
+/* ---------- Cabecera ---------- */
+
+/* Sin min-width:0 un hijo flex nunca baja de su contenido, y el título
+   en nowrap impide que toda la fila se ajuste. */
+.header .navbar,
+.header .navbar-collapse { min-width: 0; }
+
+.header .header-left {
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+/* El título cede primero: es lo único prescindible de la cabecera. */
+.header-left .dashboard_bar,
+.dashboard_bar {
+  font-size: 1.15rem !important;
+  font-weight: 600;
+  color: #101828;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.navbar-nav.header-right {
+  align-items: center;
+  flex-wrap: nowrap;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+/* Separación uniforme: se sustituyen los mr-3 del marcado. */
+.navbar-nav.header-right > li { margin-right: .85rem !important; }
+.navbar-nav.header-right > li:last-child { margin-right: 0 !important; }
+
+/* ---------- Perfil ---------- */
+.header-profile .header-info {
+  min-width: 0;
+  max-width: 11rem;
+  overflow: hidden;
+}
+.header-profile .header-info span,
+.header-profile .header-info small {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.header-profile .header-info span { font-size: .86rem; line-height: 1.25; }
+.header-profile .header-info small { font-size: .74rem; opacity: .7; }
+
+.cm-avatar { flex: 0 0 40px; }
+
+/* ---------- Clima y reloj ---------- */
+.cm-reloj, .cm-clima { flex-shrink: 0; }
+.cm-clima__desc {
+  max-width: 11rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Se van soltando por orden de prescindibilidad según falta sitio. */
+@media (max-width: 1600px) { .cm-clima__desc { display: none; } }
+@media (max-width: 1400px) { .cm-reloj__fecha { display: none; } }
+@media (max-width: 1250px) { .header-profile .header-info { display: none !important; } }
+
+/* ---------- Menú lateral ---------- */
+
+/* La altura tiene que descontar exactamente la cabecera: con cualquier
+   otro valor aparece el segundo desplazamiento. */
+.deznav {
+  height: 100%;
+  max-height: 100vh;
+  overflow: hidden;
+}
+.deznav .deznav-scroll {
+  height: calc(100vh - 7.5rem);
+  max-height: calc(100vh - 7.5rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(140,150,165,.4) transparent;
+}
+
+/* ---------- Cuerpo ---------- */
+/* OJO con `overflow-x: hidden` aquí.
+   Según la especificación de CSS, si un eje se pone en `hidden` el otro
+   no puede quedarse en `visible`: el navegador lo convierte en `auto`.
+   Es decir, `.content-body { overflow-x: hidden }` convertía el cuerpo
+   en su propio contenedor desplazable y aparecía la segunda barra, la
+   que se veía junto a la de la página.
+
+   El desbordamiento horizontal se ataja en su origen —tablas y tarjetas
+   que no pueden pasar del ancho disponible— en vez de recortarlo aquí. */
+.content-body {
+  min-height: calc(100vh - 7.5rem);
+  min-width: 0;
+}
+.content-body .container-fluid { max-width: 100%; padding: 1.25rem 1.5rem; }
+
+/* Ninguna tabla debe estirar el layout: se desplaza dentro de su caja. */
+.table-responsive { max-width: 100%; }
+.card { max-width: 100%; }
+
+/* ---------- Pantallas medianas y pequeñas ---------- */
+@media (max-width: 1199px) {
+  /* Aquí la plantilla oculta el menú y el contenido ocupa todo. */
+  .deznav .deznav-scroll { height: calc(100vh - 5.5rem); max-height: calc(100vh - 5.5rem); }
+  /* El relleno superior acompaña a la altura: si no, vuelve el recorte. */
+  #main-wrapper .deznav { padding-top: 5.5rem !important; }
+  .content-body { min-height: calc(100vh - 5.5rem); }
+}
+
+@media (max-width: 991px) {
+  .dashboard_bar { font-size: 1rem !important; }
+  .content-body .container-fluid { padding: 1rem; }
+}
+
+@media (max-width: 767px) {
+  .cm-clima, .cm-reloj { display: none !important; }
+  .dashboard_bar { font-size: .95rem !important; }
+}
+
+/* =====================================================================
+   MENÚ: SEÑAL DE DESPLAZAMIENTO
+   ---------------------------------------------------------------------
+   Con muchas secciones el menú no cabe y hay que desplazarlo. El
+   problema no es el desplazamiento en sí: es que no se ve. Al abrir un
+   submenú el navegador lo desplaza para enseñarlo, el encabezado de
+   arriba desaparece y parece que la pantalla cortó el contenido.
+
+   Estas sombras aparecen solo cuando queda algo oculto y desaparecen al
+   llegar al extremo, así que dicen "hay más por aquí" sin ocupar sitio.
+   Las dos primeras capas van con `local` (se mueven con el contenido y
+   tapan la sombra) y las dos siguientes con `scroll` (se quedan fijas).
+   ===================================================================== */
+
+.deznav .deznav-scroll {
+  background:
+    linear-gradient(#fff 30%, rgba(255,255,255,0)) top    / 100% 28px no-repeat local,
+    linear-gradient(rgba(255,255,255,0), #fff 70%) bottom / 100% 28px no-repeat local,
+    radial-gradient(farthest-side at 50% 0,
+      rgba(16,24,40,.13), rgba(16,24,40,0)) top    / 100% 11px no-repeat scroll,
+    radial-gradient(farthest-side at 50% 100%,
+      rgba(16,24,40,.13), rgba(16,24,40,0)) bottom / 100% 11px no-repeat scroll,
+    #fff;
+}
+
+/* Submenús algo más compactos: cada fila que se ahorra es una sección
+   más que cabe sin desplazar. */
+.deznav .metismenu ul a {
+  padding: .4rem 1rem .4rem 3rem !important;
+  font-size: .805rem !important;
+}
+.deznav .metismenu ul { padding-bottom: .2rem; }
+
+/* El bloque de copyright al final del menú no aporta y resta espacio. */
+.deznav .copyright { padding: .7rem 1.1rem !important; font-size: .68rem !important; }
+
+/* =====================================================================
+   AVISOS Y CONFIRMACIONES
+   ---------------------------------------------------------------------
+   Estilos del sistema propio que sustituye a toastr y SweetAlert.
+   ===================================================================== */
+
+.cm-avisos {
+  position: fixed;
+  top: 1.1rem;
+  right: 1.1rem;
+  z-index: 10800;
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+  width: 380px;
+  max-width: calc(100vw - 2rem);
+  pointer-events: none;
+}
+
+.cm-aviso-toast {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: .7rem;
+  padding: .85rem .95rem .85rem .9rem;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid #e4e9f0;
+  border-left: 4px solid var(--cm-azul);
+  box-shadow: 0 10px 30px -10px rgba(16,24,40,.28), 0 2px 5px rgba(16,24,40,.05);
+  overflow: hidden;
+  pointer-events: auto;
+
+  opacity: 0;
+  transform: translateX(24px) scale(.97);
+  transition: opacity .24s ease, transform .24s cubic-bezier(.2,.9,.3,1);
+}
+
+.cm-aviso-toast--visible  { opacity: 1; transform: none; }
+.cm-aviso-toast--saliendo { opacity: 0; transform: translateX(24px) scale(.97); }
+
+.cm-aviso-toast__icono {
+  flex: 0 0 30px;
+  width: 30px; height: 30px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.cm-aviso-toast__cuerpo {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding-right: 1.1rem;
+}
+
+.cm-aviso-toast__titulo {
+  display: block;
+  font-size: .855rem;
+  font-weight: 600;
+  color: #16202c;
+  line-height: 1.3;
+}
+
+.cm-aviso-toast__texto {
+  display: block;
+  font-size: .8rem;
+  line-height: 1.45;
+  color: #5c6779;
+  margin-top: .12rem;
+  /* El texto se ajusta siempre: un mensaje cortado en un banco es peor
+     que un aviso alto. */
+  overflow-wrap: anywhere;
+}
+
+.cm-aviso-toast__cerrar {
+  position: absolute;
+  top: .5rem; right: .5rem;
+  background: none;
+  border: 0;
+  padding: .22rem;
+  line-height: 0;
+  border-radius: 6px;
+  color: #b4bdcb;
+  cursor: pointer;
+  transition: color .14s, background .14s;
+}
+.cm-aviso-toast__cerrar:hover { color: #475467; background: #f2f5f9; }
+
+/* Cuenta atrás */
+.cm-aviso-toast__barra {
+  position: absolute;
+  left: 0; bottom: 0;
+  height: 3px;
+  width: 100%;
+  transform-origin: left;
+  animation: cmBarra linear forwards;
+  opacity: .5;
+}
+.cm-aviso-toast--pausa .cm-aviso-toast__barra { animation-play-state: paused; }
+
+@keyframes cmBarra { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+/* Colores por severidad */
+.cm-aviso-toast--exito   { border-left-color: var(--cm-marca); }
+.cm-aviso-toast--exito   .cm-aviso-toast__icono { background: var(--cm-marca); }
+.cm-aviso-toast--exito   .cm-aviso-toast__barra { background: var(--cm-marca); }
+
+.cm-aviso-toast--critico { border-left-color: var(--cm-rojo); }
+.cm-aviso-toast--critico .cm-aviso-toast__icono { background: var(--cm-rojo); }
+.cm-aviso-toast--critico .cm-aviso-toast__barra { background: var(--cm-rojo); }
+
+.cm-aviso-toast--alerta  { border-left-color: var(--cm-ambar); }
+.cm-aviso-toast--alerta  .cm-aviso-toast__icono { background: var(--cm-ambar); }
+.cm-aviso-toast--alerta  .cm-aviso-toast__barra { background: var(--cm-ambar); }
+
+.cm-aviso-toast--info    { border-left-color: var(--cm-azul); }
+.cm-aviso-toast--info    .cm-aviso-toast__icono { background: var(--cm-azul); }
+.cm-aviso-toast--info    .cm-aviso-toast__barra { background: var(--cm-azul); }
+
+/* El icono de carga gira mientras la operación está en curso. */
+.cm-aviso-toast--info .cm-aviso-toast__icono svg { animation: none; }
+.cm-aviso-toast__icono svg path[d^="M21 12a9"] { animation: cmGirar 1s linear infinite; transform-origin: 12px 12px; }
+
+@keyframes cmGirar { to { transform: rotate(360deg); } }
+
+@media (max-width: 575px) {
+  .cm-avisos { top: auto; bottom: .8rem; left: .8rem; right: .8rem; width: auto; }
+  .cm-aviso-toast { transform: translateY(20px) scale(.97); }
+  .cm-aviso-toast--visible { transform: none; }
+  .cm-aviso-toast--saliendo { transform: translateY(20px) scale(.97); }
+}
+
+/* ---------- Diálogo de confirmación ---------- */
+
+.cm-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(13, 24, 33, .52);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+.cm-modal--visible { opacity: 1; }
+
+.cm-modal__caja {
+  width: 100%;
+  max-width: 25rem;
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.75rem 1.6rem 1.35rem;
+  text-align: center;
+  box-shadow: 0 26px 60px -18px rgba(16,24,40,.45);
+  transform: translateY(14px) scale(.97);
+  transition: transform .22s cubic-bezier(.2,.9,.3,1);
+}
+.cm-modal--visible .cm-modal__caja { transform: none; }
+
+.cm-modal__icono {
+  width: 58px; height: 58px;
+  border-radius: 50%;
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cm-modal__icono--aviso   { background: #fffaeb; color: var(--cm-ambar); }
+.cm-modal__icono--peligro { background: #fef3f2; color: var(--cm-rojo); }
+
+.cm-modal__titulo {
+  font-size: 1.08rem;
+  font-weight: 600;
+  color: #16202c;
+  margin-bottom: .5rem;
+}
+
+.cm-modal__texto {
+  font-size: .875rem;
+  line-height: 1.55;
+  color: #667085;
+  margin-bottom: 1.4rem;
+}
+
+.cm-modal__pie {
+  display: flex;
+  gap: .6rem;
+}
+.cm-modal__pie .btn {
+  flex: 1 1 0;
+  height: 44px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: .88rem;
+}
+
+/* =====================================================================
+   DESBORDAMIENTO HORIZONTAL: ATAJARLO EN EL ORIGEN
+   ---------------------------------------------------------------------
+   Antes esto se resolvía con `overflow-x: hidden` en .content-body, que
+   además de recortar creaba una segunda barra de desplazamiento (ver la
+   nota de arriba). Lo correcto es que nada pida más ancho del que hay.
+
+   El culpable casi siempre es el mismo: una tabla ancha. La solución es
+   que se desplace dentro de su propia caja, no que estire la página.
+   ===================================================================== */
+
+.content-body .container-fluid,
+.content-body .row,
+.content-body [class^="col-"],
+.content-body [class*=" col-"] { min-width: 0; }
+
+.card, .card-body { min-width: 0; max-width: 100%; }
+
+/* La tabla se desplaza dentro de su contenedor. */
+.table-responsive {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Texto largo sin espacios —una referencia, un correo— no debe empujar.
+ *
+ * `break-word` y no `anywhere`: la diferencia es que `anywhere` parte
+ * CUALQUIER palabra en cuanto le conviene al navegador, y asi un
+ * apellido corriente salia roto —«Casta ñeda»— en una columna
+ * estrecha. `break-word` solo parte cuando la palabra por si sola no
+ * cabe, que es el caso que de verdad habia que resolver.
+ *
+ * En `.cm-mono` si se deja `anywhere`: ahi viven las referencias y los
+ * codigos, cadenas sin espacios donde cortar por donde sea es lo
+ * correcto porque no hay palabras que respetar. */
+.table td, .table th { overflow-wrap: break-word; }
+.cm-mono { overflow-wrap: anywhere; }
+
+/* Columnas de nombres: un ancho minimo para que quepa un nombre
+   completo en vez de apilarse de dos en dos letras. */
+.content-body .table td.cm-nombre,
+.content-body .table th.cm-nombre { min-width: 11rem; }
+
+/* Barra de desplazamiento discreta y acorde con la marca, en lugar de
+   la morada que traía la plantilla. */
+.content-body ::-webkit-scrollbar,
+.table-responsive::-webkit-scrollbar { width: 9px; height: 9px; }
+.content-body ::-webkit-scrollbar-track,
+.table-responsive::-webkit-scrollbar-track { background: transparent; }
+.content-body ::-webkit-scrollbar-thumb,
+.table-responsive::-webkit-scrollbar-thumb {
+  background: rgba(140,150,165,.38);
+  border-radius: 5px;
+}
+.content-body ::-webkit-scrollbar-thumb:hover,
+.table-responsive::-webkit-scrollbar-thumb:hover { background: rgba(140,150,165,.6); }
+
+/* =====================================================================
+   BARRAS DE DESPLAZAMIENTO
+   ---------------------------------------------------------------------
+   La plantilla las pinta en morado sobre carril morado oscuro
+   (#7b00ff sobre #29002b), que era esa franja de color en el borde
+   derecho. Se sustituyen por algo neutro que no compite con el
+   contenido.
+   ===================================================================== */
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+
+::-webkit-scrollbar-track {
+  background: transparent !important;
+  border-radius: 0 !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(140,150,165,.42) !important;
+  border-radius: 5px !important;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover { background: rgba(110,122,140,.65) !important; }
+
+::-webkit-scrollbar-corner { background: transparent; }
+
+/* Firefox */
+html { scrollbar-width: thin; scrollbar-color: rgba(140,150,165,.42) transparent; }
+
+/* ---------- Pestañas de filtro ---------- */
+.cm-pestanas .nav-link {
+  font-size: .82rem;
+  font-weight: 500;
+  color: #667085;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  padding: .5rem .85rem;
+  border-radius: 0;
+  transition: color .14s, border-color .14s;
+}
+.cm-pestanas .nav-link:hover { color: #6418c3; border-bottom-color: #e3d3f7; }
+.cm-pestanas .nav-link.active {
+  color: #6418c3;
+  font-weight: 600;
+  background: transparent;
+  border-bottom-color: #6418c3;
+}
+.cm-pestanas .badge { font-size: .68rem; font-weight: 600; }
+
+/* ---------- Lista de notificaciones ---------- */
+.cm-notis { display: flex; flex-direction: column; gap: .55rem; }
+
+.cm-noti {
+  display: flex;
+  gap: .75rem;
+  padding: .85rem .95rem;
+  border: 1px solid #eaecf0;
+  border-radius: 11px;
+  background: #fff;
+  transition: border-color .15s, background .15s;
+}
+.cm-noti:hover { border-color: #d7dce5; }
+
+/* Las no leídas llevan un filo de color y fondo tenue: se distinguen
+   de un vistazo sin necesidad de leer nada. */
+.cm-noti--nueva {
+  border-left: 3px solid #6418c3;
+  background: #faf8fe;
+}
+
+.cm-noti__icono {
+  flex: 0 0 32px;
+  width: 32px; height: 32px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cm-noti__cuerpo { flex: 1 1 auto; min-width: 0; }
+
+.cm-noti__titulo { font-size: .875rem; color: #16202c; line-height: 1.35; }
+
+.cm-noti__texto {
+  font-size: .82rem;
+  color: #5c6779;
+  line-height: 1.5;
+  margin: .2rem 0 .45rem;
+  overflow-wrap: anywhere;
+}
+
+.cm-noti__pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .6rem;
+  font-size: .75rem;
+}
+.cm-noti__pie .badge { font-size: .67rem; font-weight: 500; }
+
+.cm-noti__ir { color: #6418c3; font-weight: 500; }
+.cm-noti__ir:hover { text-decoration: underline; }
+
+.cm-noti__marcar {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: #8a94a6;
+  font-size: .75rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.cm-noti__marcar:hover { color: #6418c3; }
+
+/* ---------- Matriz de permisos ---------- */
+.cm-matriz .cm-celda { vertical-align: middle; width: 1%; }
+
+.cm-matriz .cm-marca {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  font-size: .9rem;
+  line-height: 1;
+}
+
+/* Concedido en verde, ausente en gris: se lee la fila de un vistazo. */
+.cm-matriz .cm-celda[data-tiene="1"] .cm-marca {
+  background: var(--cm-marca-tenue);
+  color: var(--cm-marca);
+  font-weight: 700;
+}
+.cm-matriz .cm-celda[data-tiene="0"] .cm-marca { color: #ccd2dc; }
+
+.cm-matriz .cm-celda--editable { cursor: pointer; transition: background .12s; }
+.cm-matriz .cm-celda--editable:hover { background: #f8f5fc; }
+.cm-matriz .cm-celda--editable:hover .cm-marca { outline: 2px solid #6418c3; }
+
+/* Las columnas que no se pueden tocar quedan atenuadas. */
+.cm-matriz .cm-celda:not(.cm-celda--editable) { background: #fafbfc; opacity: .6; }
+
+/* =====================================================================
+   MENÚ: QUE OCUPE EL ALTO DE LA VENTANA, NI MÁS NI MENOS
+   ---------------------------------------------------------------------
+   La plantilla declara `.deznav { position: absolute; height: 100% }`,
+   donde ese 100% es el alto del contenedor de la página. Cuando el
+   contenido es más largo que la pantalla —casi siempre— la barra
+   lateral se estira con él, pero el menú desplazable dentro solo mide
+   el alto de la ventana. El resultado es un cajón blanco debajo del
+   último elemento, tan alto como lo sea la página.
+
+   Fijándola a la ventana deja de estirarse: el menú llena todo lo
+   disponible y lo que sobra desaparece. Además la barra lateral queda
+   quieta al desplazar el contenido, que es como se comporta cualquier
+   panel de administración.
+   ===================================================================== */
+
+@media (min-width: 1200px) {
+  .deznav {
+    position: fixed !important;
+    top: 0;
+    bottom: 0;
+    height: 100vh !important;
+    max-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* El área desplazable toma el espacio que queda bajo la cabecera,
+     sin número mágico: lo reparte flex. */
+  .deznav .deznav-scroll {
+    flex: 1 1 auto;
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0;
+  }
+
+  /* El pie del menú se queda abajo del todo en vez de flotar justo
+     detrás del último elemento. */
+  .deznav .copyright {
+    flex: 0 0 auto;
+    margin-top: 0;
+    border-top: 1px solid rgba(16,24,40,.06);
+  }
+}
+
+/* Por debajo de 1200px la plantilla convierte el menú en un panel
+   deslizante, y ahí sí conviene que se desplace con la página. */
+@media (max-width: 1199px) {
+  .deznav { position: absolute !important; }
+  .deznav .deznav-scroll {
+    height: calc(100vh - 5.5rem) !important;
+    max-height: calc(100vh - 5.5rem) !important;
+  }
+}
+
+/* =====================================================================
+   MENÚ: INDICADOR DE SECCIÓN ACTIVA
+   ---------------------------------------------------------------------
+   La plantilla marca la sección activa con una barra de 20 px de ancho
+   en morado pegada al borde izquierdo. Es un bloque de color tan grande
+   que pesa más que el propio texto del menú, y además en un morado que
+   no es el de la marca.
+
+   Se sustituye por un filo de 3 px en verde, que es lo justo para
+   señalar dónde estás sin competir con el contenido.
+   ===================================================================== */
+
+.deznav .metismenu > li > a::before,
+[data-sidebar-style="full"][data-layout="vertical"] .deznav .metismenu > li.mm-active > a::before {
+  width: 3px !important;
+  background: #6418c3 !important;
+  border-radius: 0 3px 3px 0 !important;
+  left: 0 !important;
+  top: 50% !important;
+  bottom: auto !important;
+  height: 60% !important;
+  transform: translateY(-50%);
+  transition: height .16s ease, opacity .16s ease;
+}
+
+/* Solo la activa lo enseña; las demás lo tienen a cero. */
+.deznav .metismenu > li > a::before { opacity: 0; height: 0 !important; }
+.deznav .metismenu > li.mm-active > a::before { opacity: 1; height: 60% !important; }
+
+/* Fondo de la activa y del hover, en verde tenue en vez del morado. */
+.deznav .metismenu > li.mm-active > a,
+[data-sidebar-style="full"][data-layout="vertical"] .deznav .metismenu > li.mm-active > a {
+  background: rgba(100, 24, 195, .07) !important;
+  color: #6418c3 !important;
+  font-weight: 600 !important;
+}
+
+.deznav .metismenu > li.mm-active > a svg,
+.deznav .metismenu > li.mm-active > a i {
+  color: #6418c3 !important;
+}
+
+.deznav .metismenu > li > a:hover {
+  background: rgba(100, 24, 195, .045) !important;
+  color: #6418c3 !important;
+}
+.deznav .metismenu > li > a:hover svg { color: #6418c3 !important; }
+
+/* Submenús: el elemento activo también en verde. */
+.deznav .metismenu ul a.mm-active,
+.deznav .metismenu ul a:hover {
+  color: #6418c3 !important;
+  font-weight: 600;
+}
+
+/* =====================================================================
+   PAGINACIÓN
+   ---------------------------------------------------------------------
+   `.pagination-sm .page-link` lleva `width: 30px` fijo en la plantilla.
+   Sirve para los números, pero "Anterior" y "Siguiente" no caben en
+   30 px: el texto se parte en tres líneas y se desborda por debajo del
+   botón, que es lo que se veía.
+
+   Se deja el ancho fijo solo como mínimo y se permite crecer.
+   ===================================================================== */
+
+.pagination { gap: .25rem; }
+
+.pagination .page-item { margin: 0; }
+
+.pagination .page-link,
+.pagination-sm .page-link {
+  width: auto !important;
+  min-width: 2.1rem;
+  height: auto !important;
+  line-height: 1.4 !important;
+  padding: .4rem .7rem !important;
+  white-space: nowrap;
+  border-radius: 8px !important;
+  border: 1px solid #e4e9f0;
+  color: #6418c3;
+  font-size: .82rem;
+  font-weight: 500;
+  margin-left: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .14s, border-color .14s, color .14s;
+}
+
+.pagination .page-link:hover {
+  background: #f4eefc;
+  border-color: #d7c3f0;
+  color: #41107f;
+  z-index: 1;
+}
+
+.pagination .page-item.active .page-link {
+  background: #6418c3 !important;
+  border-color: #6418c3 !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px -5px rgba(100,24,195,.5);
+}
+
+.pagination .page-item.disabled .page-link {
+  color: #b4bdcb;
+  background: #fafbfc;
+  border-color: #eef1f5;
+  pointer-events: none;
+}
+
+/* El pie de la paginación no debe quedar tapado por los botones. */
+.pagination + p { clear: both; margin-top: .75rem !important; }
+
+@media (max-width: 575px) {
+  /* En pantalla estrecha, las flechas en vez de las palabras. */
+  .pagination .page-link { padding: .35rem .55rem !important; font-size: .78rem; }
+}
+
+/* ---------------------------------------------------------------------
+   Barra de paginación (resumen + tamaño + botones)
+   ---------------------------------------------------------------------
+   Los listados largos llevaban una nota al pie —"se muestran las
+   primeras 400"— en vez de controles. Esta barra la sustituye: a la
+   izquierda cuántos registros se están viendo de cuántos, a la derecha
+   los botones. En pantalla estrecha se apilan y se centran, porque en
+   fila no caben y era lo que descuadraba el pie de la tabla.
+   --------------------------------------------------------------------- */
+
+.cm-paginacion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .75rem;
+  margin-top: 1rem;
+  padding-top: .9rem;
+  border-top: 1px solid #eef1f5;
+}
+
+/* Sin `display:flex` a propósito: al serlo, cada palabra suelta del
+   resumen pasaba a ser un elemento flexible y el `gap` las separaba
+   una a una — "Mostrando  51  –  75  de  294  registros". El selector
+   de tamaño se coloca con su propio margen. */
+.cm-paginacion__resumen {
+  font-size: .79rem;
+  color: #7b8494;
+  line-height: 1.9;
+}
+
+.cm-paginacion__resumen strong { color: #3b4559; font-weight: 600; }
+
+.cm-paginacion__tamano {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  margin-left: 1rem;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.cm-paginacion__tamano label {
+  font-size: .76rem;
+  color: #9aa5b8;
+}
+
+/* El selector se ajusta a su contenido: con el ancho de bloque que trae
+   la plantilla ocupaba media fila para mostrar dos cifras. */
+.cm-paginacion__tamano select {
+  width: auto;
+  min-width: 4.2rem;
+  display: inline-block;
+  font-size: .78rem;
+  padding: .2rem 1.4rem .2rem .5rem;
+  height: auto;
+}
+
+/* Los puntos suspensivos no son un botón: sin borde ni fondo. */
+.cm-paginas__hueco {
+  border-color: transparent !important;
+  background: transparent !important;
+  min-width: 1.2rem !important;
+  padding-left: .25rem !important;
+  padding-right: .25rem !important;
+}
+
+@media (max-width: 767px) {
+  .cm-paginacion { justify-content: center; }
+  .cm-paginacion__resumen { justify-content: center; width: 100%; }
+  .cm-paginacion .pagination { justify-content: center; width: 100%; }
+}
+
+/* =====================================================================
+   VALIDACIÓN DE FORMULARIOS
+   ---------------------------------------------------------------------
+   Sustituye los globos nativos del navegador. El mensaje va debajo del
+   campo, no flotando encima del contenido, y se queda hasta que se
+   corrige.
+   ===================================================================== */
+
+.cm-invalido,
+.cm-invalido:focus {
+  border-color: var(--cm-rojo) !important;
+  background-color: #fffbfa;
+}
+.cm-invalido:focus { box-shadow: 0 0 0 3px rgba(180,35,24,.11) !important; }
+
+/* El icono delantero del input-group acompaña al estado. */
+.input-group:has(.cm-invalido) .input-group-text {
+  border-color: var(--cm-rojo) !important;
+  color: var(--cm-rojo) !important;
+  background: #fef3f2 !important;
+}
+
+.cm-error {
+  display: flex;
+  align-items: flex-start;
+  gap: .35rem;
+  width: 100%;
+  margin-top: .3rem;
+  font-size: .765rem;
+  line-height: 1.4;
+  color: var(--cm-rojo);
+  font-weight: 500;
+  animation: cmErrorEntra .18s ease both;
+}
+
+.cm-error::before {
+  content: "";
+  flex: 0 0 13px;
+  width: 13px;
+  height: 13px;
+  margin-top: .1rem;
+  background: var(--cm-rojo);
+  border-radius: 50%;
+  -webkit-mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M12 7v6M12 17h.01'/%3E%3C/svg%3E") center/11px no-repeat;
+          mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M12 7v6M12 17h.01'/%3E%3C/svg%3E") center/11px no-repeat;
+}
+
+@keyframes cmErrorEntra {
+  from { opacity: 0; transform: translateY(-3px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* =====================================================================
+   AVISO DE CADUCIDAD DE SESIÓN
+   ---------------------------------------------------------------------
+   Barra inferior, no un modal: el usuario puede seguir leyendo lo que
+   tenía en pantalla mientras decide. Solo se vuelve bloqueante cuando
+   la sesión ya se cerró.
+   ===================================================================== */
+
+.cm-sesion {
+  position: fixed;
+  left: 50%;
+  bottom: 1.1rem;
+  z-index: 10700;
+  transform: translate(-50%, 130%);
+  display: flex;
+  align-items: center;
+  gap: .85rem;
+  width: min(34rem, calc(100vw - 2rem));
+  padding: .85rem 1rem;
+  border-radius: 13px;
+  background: #fff;
+  border: 1px solid #e4e9f0;
+  border-left: 4px solid var(--cm-ambar);
+  box-shadow: 0 16px 40px -12px rgba(16,24,40,.32);
+  transition: transform .28s cubic-bezier(.2,.9,.3,1);
+}
+
+.cm-sesion--visible { transform: translate(-50%, 0); }
+
+.cm-sesion--urgente {
+  border-left-color: var(--cm-rojo);
+  animation: cmLatido 1s ease-in-out infinite;
+}
+@keyframes cmLatido {
+  0%, 100% { box-shadow: 0 16px 40px -12px rgba(16,24,40,.32); }
+  50%      { box-shadow: 0 16px 40px -12px rgba(180,35,24,.5); }
+}
+
+.cm-sesion__icono {
+  flex: 0 0 34px;
+  width: 34px; height: 34px;
+  border-radius: 10px;
+  background: #fffaeb;
+  color: var(--cm-ambar);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cm-sesion--urgente .cm-sesion__icono { background: #fef3f2; color: var(--cm-rojo); }
+
+.cm-sesion__cuerpo { flex: 1 1 auto; min-width: 0; }
+.cm-sesion__titulo { display: block; font-size: .85rem; color: #16202c; line-height: 1.3; }
+.cm-sesion__texto  { display: block; font-size: .79rem; color: #5c6779; margin-top: .1rem; }
+.cm-sesion__reloj  { color: var(--cm-ambar); font-variant-numeric: tabular-nums; }
+.cm-sesion--urgente .cm-sesion__reloj { color: var(--cm-rojo); }
+
+.cm-sesion__acciones { flex: 0 0 auto; display: flex; gap: .4rem; }
+.cm-sesion__acciones .btn { font-size: .79rem; padding: .35rem .75rem; border-radius: 8px; }
+
+@media (max-width: 575px) {
+  .cm-sesion { flex-wrap: wrap; }
+  .cm-sesion__acciones { width: 100%; }
+  .cm-sesion__acciones .btn { flex: 1; }
+}
+
+/* =====================================================================
+   TABLAS: UN SOLO DISEÑO PARA TODO EL SISTEMA
+   ---------------------------------------------------------------------
+   Cada vista venía ajustando su tabla por su cuenta —tamaños, paddings,
+   alineaciones— y no había dos iguales. Esto fija el criterio en un
+   único sitio.
+   ===================================================================== */
+
+.content-body .table {
+  font-size: .855rem;
+  margin-bottom: 0;
+  color: #344054;
+}
+
+.content-body .table thead th {
+  font-size: .715rem;
+  text-transform: uppercase;
+  letter-spacing: .045em;
+  font-weight: 700;
+  color: #667085;
+  background: #fafbfc;
+  border-bottom: 1px solid #e4e9f0;
+  border-top: 0;
+  padding: .65rem .8rem;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.content-body .table td {
+  padding: .65rem .8rem;
+  vertical-align: middle;
+  border-top: 1px solid #f0f2f5;
+}
+
+.content-body .table tbody tr { transition: background .12s; }
+.content-body .table-hover tbody tr:hover { background: #f7fbfa; }
+
+/* Primera y última columna con aire contra el borde de la tarjeta. */
+.content-body .table thead th:first-child,
+.content-body .table td:first-child { padding-left: 1.15rem; }
+.content-body .table thead th:last-child,
+.content-body .table td:last-child  { padding-right: 1.15rem; }
+
+/* Importes: alineados a la derecha y con cifras de ancho fijo, para
+   que las columnas de dinero se puedan comparar de un vistazo. */
+.content-body .table .cm-mono,
+.content-body .table .cm-num,
+.content-body .table .text-right.cm-mono {
+  font-variant-numeric: tabular-nums;
+  font-family: Consolas, "JetBrains Mono", monospace;
+  font-size: .82rem;
+}
+
+/* Fila de acciones: siempre a la derecha y sin partirse. */
+.content-body .table td.cm-acciones,
+.content-body .table th.cm-acciones {
+  text-align: right;
+  white-space: nowrap;
+  width: 1%;
+}
+
+.cm-acciones .btn,
+.content-body .table .btn-sm {
+  font-size: .745rem;
+  padding: .2rem .6rem;
+  border-radius: 7px;
+  line-height: 1.5;
+}
+
+.cm-acciones > * + * { margin-left: .25rem; }
+
+/* Estados vacíos, también uniformes. */
+.cm-vacio {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  color: #98a2b3;
+}
+.cm-vacio svg { opacity: .45; }
+.cm-vacio p   { font-size: .88rem; margin-top: .5rem; }
+
+/* Badges dentro de tablas: algo más contenidos. */
+.content-body .table .badge {
+  font-size: .7rem;
+  font-weight: 600;
+  padding: .3em .55em;
+  border-radius: 6px;
+}
+
+/* Tabla densa, cuando hay muchas filas. */
+.content-body .table-sm td,
+.content-body .table-sm thead th { padding: .45rem .7rem; }
+
+/* =====================================================================
+   DESCUADRES DE MAQUETACIÓN
+   ---------------------------------------------------------------------
+   Tres problemas que se repetían por todo el sistema:
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   1. Tarjetas estiradas con aire muerto dentro
+   ---------------------------------------------------------------------
+   Bootstrap estira por defecto las columnas de una fila a la misma
+   altura (`align-items: stretch`). Cuando una columna lleva una tarjeta
+   corta y la de al lado una larga, la corta se estira y su `.card-body`
+   crece, dejando un hueco en blanco en medio del contenido.
+
+   Las tarjetas pasan a medir lo que mide su contenido. Quien quiera
+   igualarlas a propósito lo pide con `h-100`, que es para lo que está.
+   --------------------------------------------------------------------- */
+
+.content-body .row > [class*="col-"] { align-self: flex-start; }
+
+/* Salvo que la columna lleve una tarjeta marcada para estirarse. */
+.content-body .row > [class*="col-"]:has(> .card.h-100),
+.content-body .row.align-items-stretch > [class*="col-"] { align-self: stretch; }
+
+/* Una tarjeta sin h-100 no crece aunque su columna sí. */
+.content-body .card:not(.h-100) { height: auto; }
+
+/* ---------------------------------------------------------------------
+   2. Pestañas con hueco antes del contenido
+   ---------------------------------------------------------------------
+   Una pestaña inactiva con `.fade` sin `.show` queda en opacidad cero.
+   Si además conserva `display: block` —pasa al cambiar de pestaña antes
+   de que termine la transición— sigue ocupando su altura, y el
+   contenido de la pestaña visible aparece empujado hacia abajo.
+   --------------------------------------------------------------------- */
+
+.tab-content > .tab-pane:not(.active) {
+  display: none !important;
+}
+
+.tab-content > .tab-pane.active {
+  display: block;
+  opacity: 1;
+}
+
+/* El cuerpo de una pestaña no necesita su propio padding cuando ya va
+   dentro de una tarjeta: duplicaba el margen. */
+.card > .tab-content > .tab-pane > .card-body:first-child { padding-top: 1rem; }
+
+/* ---------------------------------------------------------------------
+   3. El pie montado sobre el contenido
+   ---------------------------------------------------------------------
+   `.footer` va después de `.content-body`, pero sin separación: la
+   última tarjeta quedaba pegada o por debajo del texto del pie.
+   --------------------------------------------------------------------- */
+
+.content-body { padding-bottom: 1.5rem; }
+
+.footer {
+  padding: 1.25rem 0;
+  border-top: 1px solid #eef1f5;
+  background: transparent;
+  clear: both;
+}
+.footer .copyright p { margin-bottom: 0; font-size: .78rem; color: #8a94a6; }
+
+@media (min-width: 1200px) {
+  /* El pie respeta el ancho del menú lateral, igual que el contenido. */
+  .footer { margin-left: 21.563rem; }
+}
+
+/* ---------------------------------------------------------------------
+   4. Espaciado uniforme entre tarjetas
+   ---------------------------------------------------------------------
+   Cada vista ponía su propio margen: unas mb-3, otras mb-4, otras nada.
+   --------------------------------------------------------------------- */
+
+.content-body .card { margin-bottom: 1.25rem; }
+.content-body .card:last-child { margin-bottom: 0; }
+.content-body .row > [class*="col-"] > .card:last-child { margin-bottom: 1.25rem; }
+
+/* Las filas de indicadores van algo más juntas al bloque que explican. */
+.content-body .row + .card { margin-top: 0; }
+
+/* =====================================================================
+   PANEL DE LA CAMPANA
+   ---------------------------------------------------------------------
+   El de la plantilla usaba `height380`, un alto fijo de 380 px que se
+   veía como un recuadro blanco enorme cuando había poco que mostrar, y
+   un marcado con iconos de LineIcons que este sistema no carga.
+   ===================================================================== */
+
+.cm-panel-notif {
+  width: 22rem;
+  max-width: calc(100vw - 2rem);
+  padding: 0;
+  border: 1px solid #e4e9f0;
+  border-radius: 12px;
+  box-shadow: 0 16px 42px -14px rgba(16,24,40,.3);
+  overflow: hidden;
+}
+
+.cm-panel-notif__cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: .7rem .9rem;
+  border-bottom: 1px solid #eef1f5;
+  font-size: .85rem;
+  background: #fafbfc;
+}
+.cm-panel-notif__cabecera a { font-size: .78rem; }
+
+/* Alto según el contenido, con tope: ni recuadro vacío ni lista
+   interminable. */
+.cm-panel-notif__lista {
+  max-height: 24rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.cm-panel-notif__cargando,
+.cm-panel-notif__vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: 2rem 1rem;
+  color: #98a2b3;
+  font-size: .84rem;
+}
+.cm-panel-notif__cargando { flex-direction: row; }
+.cm-panel-notif__vacio svg { opacity: .4; }
+.cm-panel-notif__vacio p { margin: 0; }
+.cm-panel-notif__vacio--error { color: var(--cm-rojo); }
+
+.cm-noti-mini {
+  display: flex;
+  gap: .6rem;
+  padding: .7rem .9rem;
+  border-bottom: 1px solid #f4f6f9;
+  text-decoration: none;
+  transition: background .12s;
+}
+.cm-noti-mini:hover { background: #f8f9fb; text-decoration: none; }
+.cm-noti-mini:last-child { border-bottom: 0; }
+.cm-noti-mini--nueva { background: #faf8fe; }
+
+.cm-noti-mini__punto {
+  flex: 0 0 8px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-top: .38rem;
+}
+.cm-noti-mini__punto--exito   { background: #12b76a; }
+.cm-noti-mini__punto--alerta  { background: #f79009; }
+.cm-noti-mini__punto--critico { background: #f04438; }
+.cm-noti-mini__punto--info    { background: #6418c3; }
+
+.cm-noti-mini__cuerpo { flex: 1 1 auto; min-width: 0; }
+.cm-noti-mini__cuerpo strong {
+  display: block;
+  font-size: .82rem;
+  color: #16202c;
+  line-height: 1.35;
+}
+.cm-noti-mini__cuerpo span {
+  display: block;
+  font-size: .765rem;
+  color: #667085;
+  line-height: 1.45;
+  margin-top: .1rem;
+  /* Dos líneas y corta: el detalle está en la pantalla completa. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.cm-noti-mini__cuerpo time {
+  display: block;
+  font-size: .7rem;
+  color: #98a2b3;
+  margin-top: .2rem;
+}
+
+.cm-panel-notif__pie {
+  display: block;
+  width: 100%;
+  padding: .65rem;
+  border: 0;
+  border-top: 1px solid #eef1f5;
+  background: #fafbfc;
+  color: #6418c3;
+  font-size: .8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .12s;
+}
+.cm-panel-notif__pie:hover { background: #f4eefc; }
+
+/* ---------------------------------------------------------------------
+   Celdas que no se parten
+   ---------------------------------------------------------------------
+   `.table td { overflow-wrap: anywhere }` resuelve los textos largos sin
+   espacios —correos, folios— pero se aplica también a los importes, y
+   ahí parte la cifra por dentro: "$16,388." en una línea y "89" en la
+   siguiente, que es lo que se veía en las columnas de dinero.
+
+   Las celdas marcadas quedan exentas.
+   --------------------------------------------------------------------- */
+
+.content-body .table td.cm-nowrap,
+.content-body .table th.cm-nowrap {
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: keep-all;
+}
+
+/* ---------------------------------------------------------------------
+   Desglose de una cuota (capital / interés / mora)
+   ---------------------------------------------------------------------
+   Tres columnas de 60 px no caben junto a las demás. Apiladas en una
+   sola celda ocupan lo mismo que una, se leen con su etiqueta al lado y
+   los importes siguen alineados a la derecha para poder compararlos.
+   --------------------------------------------------------------------- */
+
+.cm-desglose {
+  display: inline-flex;
+  flex-direction: column;
+  gap: .1rem;
+  min-width: 8.5rem;
+  text-align: right;
+}
+
+.cm-desglose span {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .8rem;
+  white-space: nowrap;
+  line-height: 1.35;
+}
+
+.cm-desglose i {
+  font-style: normal;
+  font-size: .68rem;
+  color: #9aa5b8;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+}
+
+.cm-desglose b {
+  font-weight: 500;
+  font-size: .78rem !important;
+  color: #5b6478;
+}
+
+/* La mora es lo que hay que ver primero cuando existe. */
+.cm-desglose--mora i { color: #c0392b; }
+.cm-desglose--mora b { color: #b42318; font-weight: 700; }
+
+@media (max-width: 991px) {
+  .cm-desglose { min-width: 7.6rem; }
+}
+
+/* ---------------------------------------------------------------------
+   Deslizador de tasa (solicitud de crédito)
+   ---------------------------------------------------------------------
+   Reproduce el control que tenía el sistema anterior para mover la tasa
+   al armar el crédito. El `input[type=range]` de la plantilla venía con
+   `class="form-control"`, que le da 58 px de alto y un borde de caja de
+   texto: parecía un campo roto. Aquí se le da forma de deslizador.
+   --------------------------------------------------------------------- */
+
+.cm-tasa { margin-bottom: 1rem; }
+
+.cm-tasa__valor {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #6418c3;
+  font-variant-numeric: tabular-nums;
+}
+
+.cm-tasa__rango {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  margin: .7rem 0 .3rem;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #e9d9fb, #6418c3);
+  cursor: pointer;
+}
+.cm-tasa__rango:disabled { background: #eef1f5; cursor: not-allowed; }
+
+.cm-tasa__rango::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #6418c3;
+  box-shadow: 0 2px 6px rgba(100,24,195,.35);
+  cursor: grab;
+}
+.cm-tasa__rango::-webkit-slider-thumb:active { cursor: grabbing; }
+
+.cm-tasa__rango::-moz-range-thumb {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #6418c3;
+  box-shadow: 0 2px 6px rgba(100,24,195,.35);
+  cursor: grab;
+}
+.cm-tasa__rango::-moz-range-track { height: 6px; border-radius: 4px; background: transparent; }
+
+.cm-tasa__limites {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  font-size: .72rem;
+  color: #9aa5b8;
+  font-variant-numeric: tabular-nums;
+}
+
+.cm-tasa__reset {
+  font-size: .72rem !important;
+  color: #6418c3 !important;
+  text-decoration: underline;
+}
+
+/* Cargos fijos dentro del panel de simulación. */
+.cm-sim__cargos {
+  margin-top: .75rem;
+  padding-top: .6rem;
+  border-top: 1px dashed #e4e9f0;
+}
+
+.cm-sim__desembolso {
+  border-top: 1px solid #e4e9f0;
+  font-size: .88rem;
+}
+.cm-sim__desembolso span { color: #5b6478; font-weight: 500; }
+.cm-sim__desembolso b { color: #6418c3; font-variant-numeric: tabular-nums; }
+
+/* ---------------------------------------------------------------------
+   Capacidad de pago en el simulador
+   ---------------------------------------------------------------------
+   Dice cuánto puede pagar el cliente de verdad. Va en un bloque aparte
+   porque es información de otra naturaleza que la cuota: no describe el
+   crédito pedido, sino el que cabe.
+   --------------------------------------------------------------------- */
+
+.cm-capacidad {
+  margin-top: .85rem;
+  padding: .8rem .9rem;
+  border-radius: 10px;
+  border: 1px solid;
+  font-size: .82rem;
+}
+
+.cm-capacidad--ok {
+  background: #f2fbf6;
+  border-color: #b7e4c9;
+}
+.cm-capacidad--no {
+  background: #fff8f0;
+  border-color: #f3d4ad;
+}
+
+.cm-capacidad__fila {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .18rem 0;
+}
+.cm-capacidad__fila span { color: #6b7488; }
+.cm-capacidad__fila b {
+  color: #3b4559;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* El monto máximo es el dato que se viene a buscar: se destaca. */
+.cm-capacidad__tope {
+  margin-top: .35rem;
+  padding-top: .45rem;
+  border-top: 1px dashed rgba(0,0,0,.12);
+}
+.cm-capacidad__tope span { color: #3b4559; font-weight: 600; }
+.cm-capacidad__tope b { color: #6418c3; font-size: 1.02rem; font-weight: 700; }
+
+.cm-capacidad__nota {
+  margin: .5rem 0 .35rem;
+  font-size: .76rem;
+  color: #6b7488;
+  line-height: 1.45;
+}
+
+/* ---------------------------------------------------------------------
+   Opciones de monto (pago de tarjeta)
+   ---------------------------------------------------------------------
+   Mínimo, total u otro. Son botones y no un desplegable porque las tres
+   cifras tienen que verse a la vez: el cliente decide comparándolas, no
+   abriendo una lista.
+   --------------------------------------------------------------------- */
+
+.cm-opciones {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+  gap: .5rem;
+}
+
+.cm-opcion {
+  display: flex;
+  flex-direction: column;
+  gap: .1rem;
+  padding: .7rem .75rem;
+  background: #fff;
+  border: 1.5px solid #e4e9f0;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color .15s, background .15s, box-shadow .15s;
+}
+.cm-opcion:hover { border-color: #d7c3f0; }
+
+.cm-opcion span { font-size: .72rem; color: #9aa5b8; text-transform: uppercase; letter-spacing: .03em; }
+.cm-opcion b {
+  font-size: .98rem;
+  color: #3b4559;
+  font-variant-numeric: tabular-nums;
+}
+.cm-opcion small { font-size: .68rem; color: #15803d; }
+
+.cm-opcion--activa {
+  border-color: #6418c3;
+  background: #f9f5ff;
+  box-shadow: 0 0 0 3px rgba(100,24,195,.1);
+}
+.cm-opcion--activa b { color: #6418c3; }
+
+/* Separador "o" entre los dos medios de pago. */
+.cm-separador {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  margin: 1rem 0;
+  color: #9aa5b8;
+  font-size: .76rem;
+}
+.cm-separador::before,
+.cm-separador::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e4e9f0;
+}
+
+/* Caja donde Stripe monta su formulario de tarjeta. */
+.cm-stripe-caja {
+  padding: .75rem .85rem;
+  border: 1px solid #e4e9f0;
+  border-radius: 9px;
+  background: #fff;
+}
+
+/* ---------------------------------------------------------------------
+   Validación de la cuenta destino
+   ---------------------------------------------------------------------
+   Antes el resultado cabía en un renglón gris bajo el campo y nadie lo
+   veía: se tecleaba una cuenta inexistente, no se notaba el aviso, y al
+   pulsar "solicitar código" parecía que el botón no hacía nada.
+   --------------------------------------------------------------------- */
+
+.cm-destino {
+  display: flex;
+  align-items: flex-start;
+  gap: .65rem;
+  margin-top: .6rem;
+  padding: .7rem .85rem;
+  border-radius: 10px;
+  border: 1px solid;
+  font-size: .85rem;
+}
+
+.cm-destino__icono {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+}
+
+.cm-destino__texto { display: flex; flex-direction: column; gap: .1rem; min-width: 0; }
+.cm-destino__texto b { font-weight: 600; line-height: 1.3; }
+.cm-destino__texto span { font-size: .76rem; opacity: .85; }
+
+/* Encontrada: se enseña el titular. */
+.cm-destino--ok      { background: #f0fdf4; border-color: #a7e3bd; color: #11633b; }
+.cm-destino--ok .cm-destino__icono { background: #15803d; color: #fff; }
+
+/* No existe: es el caso que antes pasaba inadvertido. */
+.cm-destino--no      { background: #fef3f2; border-color: #fdbdb6; color: #a3271c; }
+.cm-destino--no .cm-destino__icono { background: #b42318; color: #fff; }
+
+/* Comprobando o número incompleto. */
+.cm-destino--espera  { background: #f7f8fa; border-color: #e4e9f0; color: #5b6478; }
+.cm-destino--espera .cm-destino__icono { background: #9aa5b8; color: #fff; }
+
+/* ---------------------------------------------------------------------
+   Catálogo de tarjetas
+   --------------------------------------------------------------------- */
+
+.cm-tdc { height: calc(100% - 1.875rem); }
+
+/* Las que piden más ingreso del declarado se atenúan, pero no se
+   esconden: el cliente tiene derecho a ver toda la oferta y a saber qué
+   le faltaría para optar a ella. */
+.cm-tdc--lejos { opacity: .72; }
+.cm-tdc--lejos:hover { opacity: 1; }
+
+.cm-tdc__cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: .75rem;
+  margin-bottom: .6rem;
+}
+
+.cm-tdc__datos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .5rem;
+  padding: .7rem .8rem;
+  background: #f9f5ff;
+  border-radius: 9px;
+  margin-bottom: .9rem;
+}
+.cm-tdc__datos small {
+  display: block;
+  font-size: .68rem;
+  color: #9aa5b8;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  line-height: 1.3;
+}
+.cm-tdc__datos b {
+  font-size: .84rem;
+  color: #41107f;
+  font-variant-numeric: tabular-nums;
+}
+
+.cm-tdc__beneficios {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  display: grid;
+  gap: .3rem;
+}
+.cm-tdc__beneficios li {
+  display: flex;
+  align-items: flex-start;
+  gap: .45rem;
+  font-size: .8rem;
+  color: #5b6478;
+  line-height: 1.4;
+}
+.cm-tdc__beneficios svg { color: #6418c3; flex: 0 0 14px; margin-top: .18rem; }
+
+@media (max-width: 420px) {
+  .cm-tdc__datos { grid-template-columns: 1fr; }
+}
+
+/* Rechazo con motivo, dentro de la fila de la tabla. */
+.cm-rechazo { display: inline-block; }
+.cm-rechazo > summary {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+}
+.cm-rechazo > summary::-webkit-details-marker { display: none; }
+
+.cm-rechazo__caja {
+  position: absolute;
+  z-index: 20;
+  width: 17rem;
+  margin-top: .35rem;
+  padding: .7rem;
+  background: #fff;
+  border: 1px solid #e4e9f0;
+  border-radius: 10px;
+  box-shadow: 0 14px 30px -14px rgba(16,24,40,.35);
+  text-align: left;
+  white-space: normal;
+}
+
+/* La celda de acciones no recorta el desplegable. */
+.content-body .table td.cm-acciones { position: relative; overflow: visible; }
+
+
+/* =====================================================================
+   MENÚ ENCOGIDO
+   =====================================================================
+   Con la barra encogida, la plantilla dejaba una tira de iconos
+   descolocados —cada uno alineado a la izquierda, con la barra de
+   desplazamiento a la vista— y un panel de submenú que se recortaba y
+   no se podía pulsar.
+
+   Aquí la tira se convierte en algo presentable: iconos centrados en su
+   propio botón redondeado, separadores finos en lugar de rótulos
+   cortados, y el desplegable como una tarjeta flotante que se coloca
+   junto al icono (lo mueve `menu-compacto.js`, colgado del <body> para
+   que ningún contenedor lo recorte).
+   ===================================================================== */
+
+/* ---------- La tira de iconos ---------- */
+/* La medida del estado encogido, en un solo sitio.
+   La plantilla mueve cabecera, cuerpo y pie a 5rem; si la barra usa
+   otro valor, el marco queda descuadrado. */
+:root { --cm-menu-encogido: 5rem; }
+
+#main-wrapper.menu-toggle .deznav { width: var(--cm-menu-encogido) !important; }
+
+/* Las cuatro piezas que acompañan a la barra.
+   Sin esto, la tira de iconos se estrechaba pero el contenido seguía
+   calculado para el menú desplegado: el cuerpo se metia debajo de los
+   iconos y se salia por la derecha. */
+#main-wrapper.menu-toggle .nav-header { width: var(--cm-menu-encogido) !important; }
+#main-wrapper.menu-toggle .header     { padding-left: var(--cm-menu-encogido) !important; }
+#main-wrapper.menu-toggle .content-body { margin-left: var(--cm-menu-encogido) !important; }
+
+/* El pie tenia su propio margen fijo de 21.563rem a partir de 1200px y
+   nadie lo tocaba al encoger: se quedaba desplazado mientras el resto
+   de la pagina ya se habia movido. */
+@media (min-width: 1200px) {
+  #main-wrapper.menu-toggle + .footer,
+  #main-wrapper.menu-toggle .footer { margin-left: var(--cm-menu-encogido) !important; }
+}
+
+/* Por debajo de 1200px la plantilla esconde el menu y el contenido
+   ocupa todo el ancho. Si ademas estaba encogido, la tira de iconos
+   quedaba flotando ENCIMA del contenido, que es lo que se veia como
+   «descuadrado»: el menu por delante y las tarjetas saliendose por la
+   derecha. En esas anchuras el estado encogido no pinta nada. */
+@media (max-width: 1199px) {
+  #main-wrapper.menu-toggle .nav-header,
+  #main-wrapper.menu-toggle .header { padding-left: 0 !important; width: auto !important; }
+  #main-wrapper.menu-toggle .content-body { margin-left: 0 !important; }
+  #main-wrapper.menu-toggle + .footer,
+  #main-wrapper.menu-toggle .footer { margin-left: 0 !important; }
+}
+
+/* La transicion hace que las piezas se muevan juntas en lugar de dar un
+   salto, que es lo que delataba el desajuste aunque durara un instante. */
+.deznav, .nav-header, .header, .content-body, .footer {
+  transition: width .18s ease, margin-left .18s ease, padding-left .18s ease;
+}
+
+#main-wrapper.menu-toggle .deznav .metismenu > li > a {
+  justify-content: center !important;
+  padding: .62rem 0 !important;
+  margin: .14rem .62rem !important;
+  width: 3.5rem;
+  height: 2.65rem;
+  gap: 0 !important;
+}
+
+#main-wrapper.menu-toggle .deznav .metismenu > li > a svg {
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px;
+  opacity: .9;
+}
+
+/* La flecha del desplegable estorba cuando no hay texto al lado. */
+#main-wrapper.menu-toggle .deznav .metismenu > li > a.has-arrow::after {
+  display: none !important;
+}
+
+/* El icono activo o con el puntero encima se marca con su propio
+   botón, no con una franja a lo ancho de una barra que ya no existe. */
+#main-wrapper.menu-toggle .deznav .metismenu > li > a:hover,
+#main-wrapper.menu-toggle .deznav .metismenu > li.cm-flotante-activo > a {
+  background: rgba(100, 24, 195, .09) !important;
+  border-radius: 10px;
+}
+
+#main-wrapper.menu-toggle .deznav .metismenu > li.mm-active > a {
+  background: rgba(100, 24, 195, .13) !important;
+  border-radius: 10px;
+}
+
+#main-wrapper.menu-toggle .deznav .metismenu > li.mm-active > a svg,
+#main-wrapper.menu-toggle .deznav .metismenu > li.cm-flotante-activo > a svg {
+  opacity: 1;
+  color: #6418c3;
+}
+
+/* Los rótulos de sección («Principal», «Gestión») no caben en 4.75rem:
+   se quedaban cortados a dos letras. Se sustituyen por un separador. */
+#main-wrapper.menu-toggle .deznav .metismenu .nav-label {
+  font-size: 0 !important;
+  padding: 0 !important;
+  margin: .55rem .95rem !important;
+  border-top: 1px solid rgba(140, 150, 165, .22) !important;
+  height: 1px;
+  overflow: hidden;
+}
+#main-wrapper.menu-toggle .deznav .metismenu .nav-label.first {
+  border-top: none !important;
+  margin-top: .2rem !important;
+}
+
+/* Los submenús en línea se ocultan: su sitio es la tarjeta flotante. */
+#main-wrapper.menu-toggle .deznav .metismenu > li > ul { display: none !important; }
+
+/* Sin barra de desplazamiento a la vista en la tira. */
+#main-wrapper.menu-toggle .deznav .deznav-scroll {
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+#main-wrapper.menu-toggle .deznav .deznav-scroll::-webkit-scrollbar { width: 0; }
+
+/* Con la barra encogida el logo también se encoge: si no, la cabecera
+   fija de 7.5rem deja un hueco enorme sobre los iconos. */
+#main-wrapper.menu-toggle .deznav { padding-top: 4.9rem !important; }
+
+
+/* ---------- La tarjeta flotante del submenú ---------- */
+.cm-flotante {
+  position: fixed;
+  z-index: 1100;
+  min-width: 13.5rem;
+  max-width: 17rem;
+  background: #fff;
+  border: 1px solid rgba(140, 150, 165, .16);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(44, 20, 80, .16), 0 2px 6px rgba(44, 20, 80, .06);
+  padding: .35rem 0 .45rem;
+  animation: cm-flotante-entra .12s ease-out;
+}
+
+@keyframes cm-flotante-entra {
+  from { opacity: 0; transform: translateX(-4px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.cm-flotante[hidden] { display: none; }
+
+.cm-flotante__titulo {
+  font-size: .68rem;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #6418c3;
+  padding: .5rem 1rem .35rem;
+  border-bottom: 1px solid rgba(140, 150, 165, .14);
+  margin-bottom: .3rem;
+}
+
+.cm-flotante__lista { list-style: none; margin: 0; padding: 0; }
+
+.cm-flotante__lista a {
+  display: block;
+  padding: .48rem 1rem;
+  font-size: .845rem;
+  color: #475467;
+  text-decoration: none;
+  line-height: 1.35;
+  transition: background .12s, color .12s;
+}
+
+.cm-flotante__lista a:hover,
+.cm-flotante__lista a:focus {
+  background: rgba(100, 24, 195, .07);
+  color: #6418c3;
+}
+
+.cm-flotante__actual {
+  color: #6418c3 !important;
+  font-weight: 600;
+  background: rgba(100, 24, 195, .06);
+}
+
+/* La punta que une la tarjeta con el icono. */
+.cm-flotante::before {
+  content: '';
+  position: absolute;
+  left: -5px;
+  top: 14px;
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border-left: 1px solid rgba(140, 150, 165, .16);
+  border-bottom: 1px solid rgba(140, 150, 165, .16);
+  transform: rotate(45deg);
+}
+
+/* El hueco entre el icono y la tarjeta se cubre con una zona invisible:
+   sin ella, el puntero «sale» del menú al cruzarlo y el panel se cierra
+   justo antes de llegar. */
+.cm-flotante::after {
+  content: '';
+  position: absolute;
+  left: -14px;
+  top: 0;
+  width: 14px;
+  height: 100%;
+}
+
+/* =====================================================================
+   ARQUEO DE CAJA
+   =====================================================================
+   El cajero cuenta billetes con una mano y teclea con la otra. La
+   cuadrícula está pensada para eso: denominación, cantidad y subtotal en
+   una línea corta, grande y en el mismo orden en que se cuenta.
+   ===================================================================== */
+
+.cm-arqueo {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13.5rem, 1fr));
+  gap: .35rem .9rem;
+}
+
+.cm-arqueo__fila {
+  display: grid;
+  grid-template-columns: 4.1rem 4.6rem 1fr;
+  align-items: center;
+  gap: .5rem;
+  padding: .18rem 0;
+}
+
+.cm-arqueo__den {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .84rem;
+  font-weight: 600;
+  color: #475467;
+  text-align: right;
+}
+
+.cm-arqueo__cant {
+  text-align: center;
+  font-weight: 600;
+}
+
+.cm-arqueo__sub {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .8rem;
+  color: #667085;
+}
+
+.cm-arqueo__total {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  background: #f4eefc;
+  border-radius: 10px;
+  padding: .75rem 1rem;
+}
+
+/* ---------- La diferencia del cierre ---------- */
+.cm-dif {
+  border-radius: 10px;
+  padding: .7rem .9rem;
+  margin-top: 1rem;
+  text-align: center;
+}
+.cm-dif--ok    { background: rgba(18, 158, 94, .09);  color: #0f7a49; }
+.cm-dif--sobra { background: rgba(214, 150, 0, .10);  color: #9a6c00; }
+.cm-dif--falta { background: rgba(214, 48, 48, .09);  color: #b42318; }
+.cm-dif small  { opacity: .8; font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; }
+
+.cm-nota {
+  background: #f9fafb;
+  border: 1px solid #eaecf0;
+  border-radius: 8px;
+  padding: .6rem .75rem;
+  color: #475467;
+}
+/* El ciclo bajo cada plástico: corte y fecha límite de pago. */
+.cm-ciclo {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  background: #f9fafb;
+  border: 1px solid #eaecf0;
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  padding: .45rem .75rem;
+  margin: -.55rem .25rem 0;
+}
+.cm-ciclo small { display: block; font-size: .64rem; color: #98a2b3;
+  text-transform: uppercase; letter-spacing: .05em; }
+.cm-ciclo b { font-size: .84rem; color: #344054; }
+
+/* =====================================================================
+   BITÁCORA DE COBRANZA
+   =====================================================================
+   Es el registro que se enseña cuando un cliente dice «a mí nadie me
+   avisó». Se lee de arriba abajo, de lo más reciente a lo más viejo,
+   con la línea de tiempo a la izquierda para que se vea la secuencia.
+   ===================================================================== */
+.cm-bitacora { list-style: none; margin: 0; padding: 0 0 0 1.1rem; position: relative; }
+.cm-bitacora::before {
+  content: ''; position: absolute; left: .22rem; top: .4rem; bottom: .4rem;
+  width: 2px; background: #eaecf0;
+}
+.cm-bitacora__item { position: relative; padding: 0 0 1rem .9rem; }
+.cm-bitacora__item::before {
+  content: ''; position: absolute; left: -1.02rem; top: .42rem;
+  width: .52rem; height: .52rem; border-radius: 50%;
+  background: #6418c3; box-shadow: 0 0 0 3px #fff;
+}
+.cm-bitacora__cab {
+  display: flex; align-items: center; gap: .4rem; flex-wrap: wrap;
+  font-size: .82rem; margin-bottom: .15rem;
+}
+.cm-bitacora__cab .ml-auto { margin-left: auto; }
+.cm-bitacora__asunto { font-size: .88rem; color: #344054; }
+.cm-bitacora__detalle {
+  font-size: .82rem; color: #667085; white-space: pre-wrap;
+  background: #f9fafb; border-radius: 6px; padding: .4rem .6rem; margin: .3rem 0;
+}
+
+/* =====================================================================
+   CALENDARIO PROPIO
+   =====================================================================
+   El selector del navegador se ve distinto en cada uno y no se parece
+   al resto del sistema. El campo sigue siendo un `input[type=date]`
+   —el valor viaja en ISO y la validación nativa sigue trabajando—;
+   solo se le quita el icono propio del navegador y se dibuja el
+   calendario con los colores de la casa.
+   ===================================================================== */
+
+/* Fuera el icono nativo: lo sustituye el nuestro. */
+.cm-cal-campo::-webkit-calendar-picker-indicator { display: none; }
+.cm-cal-campo::-webkit-inner-spin-button { display: none; }
+.cm-cal-campo { padding-right: 2.2rem; }
+
+.cm-cal-contenedor { position: relative; }
+
+.cm-cal-boton {
+  position: absolute;
+  right: .55rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: 0;
+  padding: .15rem;
+  line-height: 0;
+  color: #98a2b3;
+  cursor: pointer;
+  transition: color .15s;
+}
+.cm-cal-boton:hover { color: #6418c3; }
+
+/* ---------- El panel ---------- */
+.cm-cal {
+  position: fixed;
+  z-index: 1200;
+  width: 17.5rem;
+  background: #fff;
+  border: 1px solid rgba(140, 150, 165, .16);
+  border-radius: 12px;
+  box-shadow: 0 14px 36px rgba(44, 20, 80, .18), 0 2px 6px rgba(44, 20, 80, .06);
+  padding: .7rem;
+  animation: cm-cal-entra .12s ease-out;
+}
+.cm-cal[hidden] { display: none; }
+
+@keyframes cm-cal-entra {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.cm-cal__cab {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  margin-bottom: .5rem;
+}
+
+.cm-cal__nav {
+  background: none;
+  border: 1px solid #eaecf0;
+  border-radius: 8px;
+  width: 1.9rem;
+  height: 1.9rem;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: #475467;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.cm-cal__nav:hover { background: #f4eefc; color: #6418c3; border-color: #e3d5f7; }
+
+.cm-cal__mes { display: flex; gap: .3rem; flex: 1; min-width: 0; }
+
+.cm-cal__sel {
+  flex: 1;
+  min-width: 0;
+  font-size: .82rem;
+  font-weight: 600;
+  color: #344054;
+  border: 1px solid #eaecf0;
+  border-radius: 8px;
+  padding: .25rem .3rem;
+  background: #fff;
+  cursor: pointer;
+}
+.cm-cal__sel:focus { outline: none; border-color: #6418c3; }
+
+.cm-cal__semana,
+.cm-cal__dias {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.cm-cal__semana span {
+  text-align: center;
+  font-size: .66rem;
+  font-weight: 700;
+  color: #98a2b3;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  padding: .2rem 0 .3rem;
+}
+
+.cm-cal__dia {
+  background: none;
+  border: 0;
+  border-radius: 8px;
+  padding: .36rem 0;
+  font-size: .82rem;
+  color: #344054;
+  cursor: pointer;
+  transition: background .12s, color .12s;
+}
+.cm-cal__dia:hover:not(:disabled) { background: #f4eefc; color: #6418c3; }
+.cm-cal__dia:disabled { color: #d0d5dd; cursor: default; }
+
+/* Hoy se marca con un punto, no con color: el color se reserva para la
+   fecha elegida, que es la que importa de verdad. */
+.cm-cal__dia--hoy { font-weight: 700; position: relative; }
+.cm-cal__dia--hoy::after {
+  content: ''; position: absolute; left: 50%; bottom: .18rem;
+  transform: translateX(-50%);
+  width: 3px; height: 3px; border-radius: 50%; background: #6418c3;
+}
+
+.cm-cal__dia--elegido,
+.cm-cal__dia--elegido:hover {
+  background: #6418c3;
+  color: #fff;
+  font-weight: 600;
+}
+.cm-cal__dia--elegido.cm-cal__dia--hoy::after { background: #fff; }
+
+.cm-cal__vacio { }
+
+.cm-cal__pie {
+  display: flex;
+  justify-content: space-between;
+  gap: .4rem;
+  margin-top: .55rem;
+  padding-top: .5rem;
+  border-top: 1px solid #f2f4f7;
+}
+
+.cm-cal__accion {
+  background: none;
+  border: 0;
+  font-size: .78rem;
+  font-weight: 600;
+  color: #6418c3;
+  cursor: pointer;
+  padding: .2rem .35rem;
+  border-radius: 6px;
+}
+.cm-cal__accion:hover { background: #f4eefc; }
+.cm-cal__accion--tenue { color: #98a2b3; }
+.cm-cal__accion--tenue:hover { background: #f9fafb; color: #475467; }
+
+/* El desplegable de corrección necesita más ancho que el de rechazo:
+   lleva cuatro campos, no un motivo. */
+.cm-rechazo__caja--ancha { width: 17rem; }
+.cm-mini {
+  display: block; font-size: .68rem; font-weight: 700; color: #667085;
+  text-transform: uppercase; letter-spacing: .05em; margin-bottom: .15rem;
+}
+
+/* =====================================================================
+   TIENDA DE COMERCIOS AFILIADOS
+   =====================================================================
+   Los logos son monogramas dibujados con CSS, no imágenes: el catálogo
+   no depende de archivos que alguien tenga que subir ni de enlaces que
+   se rompan, y no usa marcas que no son nuestras.
+   ===================================================================== */
+
+.cm-comercios {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+  gap: .7rem;
+}
+
+.cm-comercio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: .3rem;
+  padding: .8rem .6rem;
+  border: 1px solid #eaecf0;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: border-color .15s, box-shadow .15s, transform .15s;
+}
+.cm-comercio:hover {
+  border-color: #d6bbfb;
+  box-shadow: 0 4px 14px rgba(44, 20, 80, .08);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+.cm-comercio--activo { border-color: #6418c3; background: #faf7fe; }
+
+.cm-comercio__logo,
+.cm-articulo__logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 10px;
+  color: #fff;
+  font-weight: 800;
+  font-size: .86rem;
+  letter-spacing: .02em;
+  flex-shrink: 0;
+}
+
+.cm-comercio__nombre { font-size: .82rem; font-weight: 650; color: #344054; line-height: 1.25; }
+.cm-comercio__rubro  { font-size: .7rem; color: #98a2b3; }
+.cm-comercio__msi    { font-size: .66rem; color: #6418c3; font-weight: 600; }
+
+/* ---------- Los artículos ---------- */
+.cm-articulos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: .9rem;
+  margin-bottom: 1rem;
+}
+
+.cm-articulo {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #eaecf0;
+  border-radius: 12px;
+  padding: .9rem;
+}
+
+.cm-articulo__cab { display: flex; align-items: center; gap: .55rem; margin-bottom: .6rem; }
+.cm-articulo__tienda { flex: 1; min-width: 0; line-height: 1.2; }
+.cm-articulo__tienda span { display: block; font-size: .78rem; font-weight: 600; color: #475467; }
+.cm-articulo__tienda small { font-size: .68rem; color: #98a2b3; }
+
+.cm-articulo__oferta {
+  background: #b42318; color: #fff; font-size: .68rem; font-weight: 700;
+  padding: .12rem .35rem; border-radius: 6px;
+}
+
+.cm-articulo__nombre { font-size: .92rem; font-weight: 650; color: #101828; margin: 0 0 .25rem; line-height: 1.3; }
+.cm-articulo__desc { font-size: .78rem; color: #667085; margin: 0 0 .6rem; line-height: 1.4; flex: 1; }
+
+.cm-articulo__precio { display: flex; align-items: baseline; gap: .45rem; }
+.cm-articulo__precio b { font-size: 1.15rem; color: #101828; }
+.cm-articulo__precio s { font-size: .8rem; color: #98a2b3; }
+.cm-articulo__msi { display: block; font-size: .72rem; color: #6418c3; margin-top: .1rem; }
+
+.cm-articulo__pie {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: .7rem; padding-top: .6rem; border-top: 1px solid #f2f4f7;
+}
+
+/* ---------- Selector de cantidad ---------- */
+.cm-cant { display: inline-flex; align-items: center; gap: .15rem; }
+.cm-cant__btn {
+  width: 1.7rem; height: 1.7rem; border: 1px solid #eaecf0; background: #fff;
+  border-radius: 7px; color: #475467; font-size: 1rem; line-height: 1; cursor: pointer;
+}
+.cm-cant__btn:hover { background: #f4eefc; color: #6418c3; border-color: #e3d5f7; }
+.cm-cant__campo {
+  width: 2.7rem; text-align: center; font-weight: 600; font-size: .84rem;
+  border: 1px solid #eaecf0; border-radius: 7px; padding: .18rem .1rem;
+}
+.cm-cant__campo::-webkit-inner-spin-button { display: none; }
+
+/* ---------- El carrito, pegado abajo ---------- */
+.cm-carrito {
+  position: sticky;
+  bottom: .8rem;
+  z-index: 20;
+  background: #fff;
+  border: 1px solid #d6bbfb;
+  border-radius: 14px;
+  box-shadow: 0 10px 28px rgba(44, 20, 80, .14);
+  margin-top: 1rem;
+}
+.cm-carrito[hidden] { display: none; }
+.cm-carrito__cuerpo { padding: .9rem 1rem; }
+
+.cm-carrito__lista { max-height: 9rem; overflow-y: auto; margin-bottom: .5rem; }
+.cm-carrito__fila {
+  display: flex; justify-content: space-between; gap: .6rem;
+  font-size: .82rem; padding: .18rem 0; color: #475467;
+}
+
+.cm-carrito__totales { border-top: 1px solid #f2f4f7; padding-top: .5rem; margin-bottom: .7rem; }
+.cm-carrito__totales > div {
+  display: flex; justify-content: space-between; font-size: .84rem;
+  color: #667085; padding: .1rem 0;
+}
+.cm-carrito__total { border-top: 1px solid #f2f4f7; margin-top: .3rem; padding-top: .4rem !important; }
+.cm-carrito__total span, .cm-carrito__total b { font-size: 1rem; color: #101828; font-weight: 700; }
+
+.cm-carrito__aviso {
+  background: rgba(214, 150, 0, .09); color: #9a6c00;
+  border-radius: 8px; padding: .5rem .65rem; font-size: .8rem; margin-bottom: .6rem;
+}
+
+/* ---------- Los pedidos ---------- */
+.cm-pedido__cab { display: flex; align-items: center; gap: .7rem; margin-bottom: .7rem; }
+.cm-pedido__lineas { background: #f9fafb; border-radius: 8px; padding: .5rem .7rem; }
+.cm-pedido__pie {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: .6rem; margin-top: .6rem; flex-wrap: wrap;
+}
+
+/* Miniaturas y vista previa en el panel de la tienda. */
+.cm-miniatura {
+  border-radius: 7px; object-fit: cover; background: #f7f8fb;
+  border: 1px solid #eaecf0; display: block;
+}
+.cm-miniatura--vacia {
+  display: flex; align-items: center; justify-content: center;
+  width: 56px; height: 42px; font-size: .6rem; color: #98a2b3; text-align: center;
+}
+.cm-foto-previa {
+  display: block; max-width: 100%; max-height: 14rem; margin-top: .9rem;
+  border-radius: 10px; border: 1px solid #eaecf0; object-fit: contain;
+}
+
+
+/* ---------------------------------------------------------------------
+   Tabla de amortizacion
+   ---------------------------------------------------------------------
+   Vivia dentro de una caja de 480px con scroll propio. Dos barras
+   anidadas en la misma pagina, y la de dentro se pierde en cuanto el
+   puntero sale de la caja. Ahora crece hacia abajo y se pagina.
+   --------------------------------------------------------------------- */
+.cm-amort { font-size: .86rem; }
+.cm-amort thead th {
+  background: var(--cm-marca-tenue, #f0e6fb);
+  color: var(--cm-marca-oscuro, #41107f);
+  font-size: .71rem; letter-spacing: .04em; text-transform: uppercase;
+  border-top: 0; white-space: nowrap;
+}
+.cm-amort tbody td { vertical-align: middle; }
+.cm-amort-totales th {
+  background: #f7f8fb; border-top: 2px solid #e4e7ee;
+  font-size: .78rem; white-space: nowrap;
+}
+.cm-amort-pie { background: #fff; border-top: 1px solid #eceef4; }
+.cm-amort-filtros .badge { margin-left: .3rem; }
+
+/* La columna de acciones de cualquier tabla. */
+.cm-acciones { display: inline-flex; gap: .3rem; align-items: center; flex-wrap: nowrap; }
+.cm-accion { display: inline-flex; align-items: center; gap: .3rem; white-space: nowrap; }
+.cm-accion svg { flex: 0 0 auto; }
+
+@media (max-width: 991px) {
+  /* En pantalla estrecha el texto del boton sobra: el icono basta y la
+     tabla deja de desbordarse. */
+  .cm-accion span { display: none; }
+}
+/* Pastillas de filtro.
+   El grupo de botones de Bootstrap con sus colores daba un bloque
+   magenta que no se parecia a nada mas del panel. */
+.cm-amort-filtros { display: flex; flex-wrap: wrap; gap: .4rem; }
+.cm-pildora {
+  display: inline-flex; align-items: center; gap: .4rem;
+  background: #fff; border: 1px solid #e0e3ec; border-radius: 999px;
+  padding: .3rem .8rem; font-size: .78rem; font-weight: 600;
+  color: #667085; cursor: pointer; line-height: 1.4;
+  transition: background-color .15s, border-color .15s, color .15s;
+}
+.cm-pildora span {
+  background: #f1f3f8; border-radius: 999px; padding: .05rem .42rem;
+  font-size: .7rem; color: #5a6170;
+}
+.cm-pildora:hover { border-color: #c9cfdd; color: #344054; }
+.cm-pildora.is-activa {
+  background: var(--cm-marca, #6418c3); border-color: var(--cm-marca, #6418c3);
+  color: #fff;
+}
+.cm-pildora.is-activa span { background: rgba(255,255,255,.22); color: #fff; }
+.cm-pildora--mal.is-activa { background: #b42318; border-color: #b42318; }
+.cm-pildora--bien.is-activa { background: #15603a; border-color: #15603a; }
+
+/* Barra de cobro multiple. */
+.cm-amort-lote {
+  display: flex; flex-wrap: wrap; gap: .75rem;
+  align-items: center; justify-content: space-between;
+  padding: .6rem 1rem; background: var(--cm-marca-tenue, #f0e6fb);
+  border-top: 1px solid #e4e7ee; border-bottom: 1px solid #e4e7ee;
+}
+.cm-amort-lote__texto { font-size: .85rem; color: var(--cm-marca-oscuro, #41107f); }
+.cm-amort-lote__botones { display: flex; gap: .4rem; }
+
+/* ---------------------------------------------------------------------
+   Expediente de cobranza
+   ---------------------------------------------------------------------
+   La ficha del cliente es corta y la columna de al lado —credito,
+   cuotas en mora, arreglos, expediente judicial— es varias veces mas
+   alta. Quedaba una tira blanca de dos tercios de pagina bajo la ficha
+   y las tarjetas de abajo arrancando a distinta altura.
+
+   Fijandola, el dato del cliente sigue a la vista mientras se trabaja
+   el caso, que ademas es cuando hace falta: para llamarlo hay que tener
+   el telefono delante.
+   --------------------------------------------------------------------- */
+@media (min-width: 992px) {
+  .cm-exp__lateral { position: sticky; top: 1rem; align-self: flex-start; }
+
+  /* Si la ficha llegara a ser mas alta que la pantalla, se desplaza
+     dentro de si misma en vez de cortarse. */
+  .cm-exp__lateral { max-height: calc(100vh - 9rem); overflow-y: auto; }
+  .cm-exp__lateral::-webkit-scrollbar { width: 6px; }
+  .cm-exp__lateral::-webkit-scrollbar-thumb {
+    background: rgba(140,150,165,.35); border-radius: 3px;
+  }
+}
+
+/* Las tarjetas de una misma fila arrancan a la misma altura. */
+.cm-exp > [class*="col-"] > .card:first-child { margin-top: 0; }
+
+/* ---------------------------------------------------------------------
+   Columna de acciones: un desplegable por fila
+   ---------------------------------------------------------------------
+   Con los botones en linea la columna crecia segun cuantas acciones
+   tuviera cada fila y segun el rol de quien mirase: la cartera acababa
+   con tres botones por fila empujando el folio fuera de la pantalla.
+   Un solo boton de ancho fijo deja el espacio para los datos.
+   --------------------------------------------------------------------- */
+.cm-acciones { display: inline-block; }
+
+.cm-acciones__btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2rem; height: 2rem; padding: 0; border-radius: 8px;
+  line-height: 1;
+}
+.cm-acciones__btn::after { display: none; }   /* sin el caret de Bootstrap */
+.cm-acciones__btn:focus { box-shadow: 0 0 0 3px rgba(100,24,195,.15); }
+
+.cm-acciones__menu {
+  min-width: 12.5rem; padding: .35rem;
+  border: 1px solid #e4e7ee; border-radius: 11px;
+  box-shadow: 0 10px 30px rgba(29,36,51,.12);
+}
+
+/* Las entradas: enlaces y botones de formulario se ven igual. */
+.cm-accion-item {
+  display: flex; align-items: center; width: 100%;
+  padding: .48rem .7rem; border: 0; background: none;
+  border-radius: 8px; font-size: .84rem; color: #344054;
+  text-align: left; cursor: pointer;
+}
+.cm-accion-item:hover,
+.cm-accion-item:focus { background: var(--cm-marca-tenue, #f0e6fb); color: var(--cm-marca-oscuro, #41107f); }
+.cm-accion-item svg { flex: 0 0 auto; opacity: .75; }
+
+/* Las que destruyen o escalan se marcan: en una lista de texto todas se
+   parecen, y «Anular» no puede leerse igual que «Ver». */
+.cm-accion-item--ojo { color: #b42318; }
+.cm-accion-item--ojo:hover,
+.cm-accion-item--ojo:focus { background: #fef3f2; color: #912018; }
+
+.cm-acciones__menu form { margin: 0; }
+
+/* La celda no necesita mas ancho que el boton. */
+.table td .cm-acciones { white-space: nowrap; }
+
+/* ---------------------------------------------------------------------
+   Tablas que caben
+   ---------------------------------------------------------------------
+   `.table-responsive` pone barra horizontal cuando el contenido no
+   cabe, y en las tablas anchas —cartera, cuotas, tarjetas— cabia por
+   poco. No se arregla ocultando la barra: eso deja datos a los que no
+   se puede llegar. Se arregla haciendo que quepa.
+
+   Tres medidas, por orden de impacto:
+
+     1. Letra y relleno algo menores en las tablas de datos. Son tablas
+        para leer cifras, no parrafos.
+     2. Las columnas de cifras, fechas y codigos no se parten nunca: un
+        importe cortado en dos lineas no se lee.
+     3. Las de texto —cliente, producto, concepto— si pueden partir, y
+        tienen un ancho minimo para no quedar en una letra por linea.
+   --------------------------------------------------------------------- */
+.content-body .table {
+  font-size: .845rem;
+  margin-bottom: 0;
+}
+
+.content-body .table > thead > tr > th {
+  padding: .6rem .5rem;
+  font-size: .71rem;
+  letter-spacing: .03em;
+  white-space: nowrap;
+}
+
+.content-body .table > tbody > tr > td,
+.content-body .table > tfoot > tr > th {
+  padding: .58rem .5rem;
+}
+
+/* Cifras, fechas y codigos: nunca se parten. */
+.content-body .table .cm-num,
+.content-body .table .cm-mono,
+.content-body .table .cm-nowrap,
+.content-body .table .text-right { white-space: nowrap; }
+
+/* Texto largo: parte, pero con un minimo legible. */
+.content-body .table td { word-break: normal; overflow-wrap: break-word; }
+
+/* La barra, solo si de verdad hace falta y discreta cuando aparece. */
+.table-responsive { scrollbar-width: thin; }
+.table-responsive::-webkit-scrollbar { height: 7px; width: 7px; }
+.table-responsive::-webkit-scrollbar-track { background: transparent; }
+.table-responsive::-webkit-scrollbar-thumb {
+  background: rgba(140, 150, 165, .32); border-radius: 4px;
+}
+.table-responsive::-webkit-scrollbar-thumb:hover { background: rgba(140, 150, 165, .5); }
+
+/* La columna de acciones no necesita mas que su boton. */
+.content-body .table th:last-child,
+.content-body .table td:last-child { width: 1%; }
+
+@media (max-width: 1400px) {
+  .content-body .table { font-size: .8rem; }
+  .content-body .table > tbody > tr > td { padding: .5rem .42rem; }
+}
+
+/* ---------------------------------------------------------------------
+   Controles de las tablas
+   ---------------------------------------------------------------------
+   Buscador arriba, paginación abajo, ambos a lo ancho de la tarjeta y
+   fuera de la caja que desplaza. Antes iban dentro y flotados, que es
+   lo que provocaba la barra vertical y el paginador encima de las
+   filas.
+   --------------------------------------------------------------------- */
+.cm-tabla-dt { position: relative; }
+
+.cm-tabla-dt .dataTables_length,
+.cm-tabla-dt .dataTables_filter,
+.cm-tabla-dt .dataTables_info,
+.cm-tabla-dt .dataTables_paginate { float: none; text-align: left; }
+
+/* Cabecera: cuántas filas y el buscador, en una línea. */
+.cm-tabla-dt .dataTables_length,
+.cm-tabla-dt .dataTables_filter {
+  display: inline-block;
+  vertical-align: middle;
+  padding: .7rem 1rem .55rem;
+  font-size: .8rem;
+  color: #667085;
+}
+.cm-tabla-dt .dataTables_filter { float: right; }
+
+.cm-tabla-dt .dataTables_length select,
+.cm-tabla-dt .dataTables_filter input {
+  border: 1px solid #e4e7ec;
+  border-radius: 7px;
+  padding: .28rem .6rem;
+  font-size: .8rem;
+  color: #344054;
+  background: #fff;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.cm-tabla-dt .dataTables_filter input { min-width: 14rem; margin-left: .45rem; }
+.cm-tabla-dt .dataTables_length select:focus,
+.cm-tabla-dt .dataTables_filter input:focus {
+  border-color: #b388ff;
+  box-shadow: 0 0 0 3px rgba(123, 0, 255, .1);
+}
+
+/* Pie: el recuento a la izquierda, las páginas a la derecha. */
+.cm-tabla-dt .dataTables_info,
+.cm-tabla-dt .dataTables_paginate {
+  display: inline-block;
+  vertical-align: middle;
+  padding: .7rem 1rem;
+  font-size: .78rem;
+  color: #667085;
+}
+.cm-tabla-dt .dataTables_paginate { float: right; padding: .5rem 1rem; }
+
+/* Una fila de controles vacía no debe dejar hueco. */
+.cm-tabla-dt .dataTables_length:empty,
+.cm-tabla-dt .dataTables_filter:empty,
+.cm-tabla-dt .dataTables_info:empty,
+.cm-tabla-dt .dataTables_paginate:empty { display: none; }
+
+/* Los flotados, cerrados: si no, el pie se sale de la tarjeta. */
+.cm-tabla-dt::after,
+.cm-tabla-dt > .row::after { content: ""; display: table; clear: both; }
+
+/* Línea de separación solo cuando hay pie de verdad. */
+.cm-tabla-dt .dataTables_info { border-top: 1px solid #f2f4f7; width: 100%; }
+.cm-tabla-dt .dataTables_paginate { margin-top: -2.55rem; }
+
+.cm-tabla-dt .paginate_button {
+  display: inline-block;
+  min-width: 1.9rem;
+  padding: .26rem .5rem;
+  margin-left: .22rem;
+  border: 1px solid #e4e7ec;
+  border-radius: 7px;
+  text-align: center;
+  font-size: .78rem;
+  line-height: 1.25;
+  color: #475467 !important;
+  background: #fff;
+  cursor: pointer;
+  user-select: none;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.cm-tabla-dt .paginate_button:hover {
+  background: #f9f5ff; border-color: #d6bbfb; color: #6941c6 !important;
+}
+.cm-tabla-dt .paginate_button.current {
+  background: #7b00ff; border-color: #7b00ff; color: #fff !important;
+  font-weight: 600;
+}
+.cm-tabla-dt .paginate_button.disabled {
+  color: #d0d5dd !important; background: #fff; border-color: #f2f4f7;
+  cursor: default;
+}
+.cm-tabla-dt .paginate_button.disabled:hover {
+  background: #fff; border-color: #f2f4f7; color: #d0d5dd !important;
+}
+
+/* La caja que desplaza, ahora con la tabla sola dentro: en horizontal
+   si de verdad no cabe, y nunca en vertical. */
+.cm-tabla-dt .table-responsive { overflow-y: hidden; }
+
+@media (max-width: 767px) {
+  .cm-tabla-dt .dataTables_filter,
+  .cm-tabla-dt .dataTables_paginate { float: none; display: block; }
+  .cm-tabla-dt .dataTables_paginate { margin-top: 0; padding-top: 0; }
+  .cm-tabla-dt .dataTables_filter input { min-width: 0; width: 100%; }
+}
+
+/* ---------------------------------------------------------------------
+   El menú de acciones, suelto
+   ---------------------------------------------------------------------
+   Lo coloca el script con las coordenadas del botón. `fixed` es lo que
+   le permite salir de la caja de la tabla sin que la recorte: dentro
+   de ella, o se cortaba o sacaba barra de desplazamiento.
+   --------------------------------------------------------------------- */
+.cm-acciones__menu.cm-menu-flotante {
+  position: fixed !important;
+  z-index: 1080;
+  margin: 0 !important;
+  transform: none !important;
+  right: auto !important;
+  bottom: auto !important;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+}
+
+/* ---------------------------------------------------------------------
+   Los filtros, a una sola altura
+   ---------------------------------------------------------------------
+   Todas las barras de filtro usan el mismo marcado, pero la plantilla
+   da alturas distintas a un input, a un select y a un campo de fecha:
+   en el libro de movimientos el desplegable quedaba mas bajo que las
+   fechas y el boton no alineaba con ninguno.
+
+   Una sola altura para todo lo que viva en una fila de filtro. Son
+   trece pantallas con el mismo patron: la regla va aqui, no repetida
+   en cada vista.
+   --------------------------------------------------------------------- */
+.form-row.align-items-end .form-group { margin-bottom: .55rem; }
+
+.form-row.align-items-end label {
+  font-size: .76rem;
+  color: #667085;
+  margin-bottom: .3rem;
+  display: block;
+}
+
+.form-row.align-items-end .form-control,
+.form-row.align-items-end .custom-select,
+.form-row.align-items-end .btn {
+  height: 2.5rem;
+  min-height: 2.5rem;
+  padding: .35rem .7rem;
+  font-size: .84rem;
+  line-height: 1.5;
+  border-radius: 8px;
+}
+
+/* Un area de texto crece: forzarla a 2.5rem la dejaria inservible. */
+.form-row.align-items-end textarea.form-control { height: auto; min-height: 2.5rem; }
+
+/* El triangulo del desplegable necesita su hueco. */
+.form-row.align-items-end select.form-control,
+.form-row.align-items-end .custom-select { padding-right: 1.8rem; }
+
+/* El icono del calendario, sin empujar el texto fuera. */
+.form-row.align-items-end input[type="date"] { padding-right: .45rem; }
+
+/* El texto del boton, centrado en su alto. */
+.form-row.align-items-end .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.form-row.align-items-end .btn-block { display: flex; width: 100%; }
+
+/* ---------------------------------------------------------------------
+   La tarjeta de una oferta preaprobada
+   ---------------------------------------------------------------------
+   Una oferta no es una fila mas de una tabla: es una propuesta en firme
+   que el cliente tiene que poder leer entera de un vistazo y decidir.
+   --------------------------------------------------------------------- */
+.cm-oferta { position: relative; overflow: hidden; }
+.cm-oferta__cinta {
+  height: 4px;
+  background: linear-gradient(90deg, #7b00ff 0%, #b388ff 55%, #00c48c 100%);
+}
+.cm-oferta__motivo {
+  background: #f9f5ff;
+  border: 1px solid #ecdcff;
+  border-radius: 10px;
+  padding: .9rem 1rem;
+}
+.cm-oferta .cm-kpi__val { font-size: 1.55rem; }
+
+/* =====================================================================
+   EL PLASTICO
+   ---------------------------------------------------------------------
+   Una tarjeta se reconoce antes de leer nada por cuatro cosas: la
+   proporcion, el chip, el acabado y el sello de la marca. Si falta
+   alguna, lo que se ve es un rectangulo de color con texto encima.
+
+   El acabado va por LINEA —el producto contratado— y no por marca: una
+   Signature es negra la procese quien la procese.
+
+   El logo va con SUS colores: azul marino y gris. Sobre un plastico
+   oscuro no se leeria, asi que va sobre una placa clara, como en las
+   tarjetas co-brandeadas reales. Tenirlo de blanco era mas facil, pero
+   entonces ya no seria el logo de la casa.
+
+   Proporcion 1.586: la del estandar ISO/IEC 7810 ID-1. No es capricho,
+   es lo que hace que el ojo lo lea como tarjeta.
+   ===================================================================== */
+.cm-pl {
+  position: relative;
+  aspect-ratio: 1.586;
+  width: 100%;
+  max-width: 25rem;
+  border-radius: 15px;
+  color: #fff;
+  overflow: hidden;
+  box-shadow:
+    0 12px 30px rgba(16, 24, 40, .26),
+    0 2px 5px rgba(16, 24, 40, .12),
+    inset 0 1px 0 rgba(255, 255, 255, .14);
+  transition: transform .25s ease, box-shadow .25s ease;
+  container-type: inline-size;
+}
+
+.cm-pl:hover {
+  transform: translateY(-5px);
+  box-shadow:
+    0 22px 44px rgba(16, 24, 40, .34),
+    0 4px 8px rgba(16, 24, 40, .14),
+    inset 0 1px 0 rgba(255, 255, 255, .18);
+}
+
+/* El contenido va sobre las capas del fondo. */
+/* El cuerpo CABE en la proporcion. Antes desbordaba por unos pixeles y,
+ como la tarjeta recorta lo que se sale, el pie —titular, vencimiento y
+ sello de la marca— se quedaba cortado por abajo. */
+.cm-pl__cuerpo {
+  /* Posicion absoluta, no `height: 100%`.
+     Con el porcentaje, el alto se resolvia contra el alto por
+     CONTENIDO del padre (286 px) y no contra el que fija la
+     proporcion (252 px): el cuerpo salia mas alto que la tarjeta y
+     el pie —titular, vencimiento y sello de la marca— se quedaba
+     recortado por abajo. Contra `inset: 0` no hay ambiguedad. */
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1cqw;
+  padding: 4.2cqw 5.2cqw;
+}
+
+/* --- Las capas del fondo -------------------------------------------- */
+.cm-pl__trama,
+.cm-pl__brillo { position: absolute; inset: 0; pointer-events: none; }
+.cm-pl__trama  { z-index: 1; }
+.cm-pl__brillo { z-index: 2; }
+
+/* El brillo diagonal: separa «plastico» de «rectangulo». */
+.cm-pl__brillo {
+  background:
+    radial-gradient(130% 95% at 118% -14%, rgba(255,255,255,.28) 0%, transparent 52%),
+    radial-gradient(95% 75% at -18% 118%, rgba(255,255,255,.14) 0%, transparent 58%),
+    linear-gradient(118deg, transparent 38%, rgba(255,255,255,.1) 47%,
+                    rgba(255,255,255,.02) 52%, transparent 60%);
+}
+
+/* El emblema, al fondo y muy tenue: hace que se vea impreso. */
+.cm-pl__agua {
+  position: absolute;
+  right: -8%;
+  bottom: 6%;
+  width: 46%;
+  z-index: 1;
+  opacity: .055;
+  filter: brightness(0) invert(1);
+  pointer-events: none;
+  user-select: none;
+}
+.cm-pl--oro .cm-pl__agua,
+.cm-pl--platinum .cm-pl__agua { filter: none; opacity: .1; }
+
+/* --- Las lineas ----------------------------------------------------- */
+
+/* Clasica: azul noche con pinstripe fino. */
+.cm-pl--clasica { background: linear-gradient(135deg, #2c3657 0%, #18203a 52%, #0c1020 100%); }
+.cm-pl--clasica .cm-pl__trama {
+  background-image: repeating-linear-gradient(
+    115deg, rgba(255,255,255,.055) 0 1px, transparent 1px 9px);
+}
+
+/* Cashback: esmeralda con ondas concentricas, como el reverso de un
+   billete. */
+.cm-pl--cashback { background: linear-gradient(135deg, #10835f 0%, #0a6147 52%, #053a2b 100%); }
+.cm-pl--cashback .cm-pl__trama {
+  background-image: repeating-radial-gradient(
+    circle at 112% 118%, rgba(255,255,255,.07) 0 1px, transparent 1px 13px);
+}
+
+/* Oro: bronce calido con guilloche. El amarillo se lee como aviso; el
+   bronce, como metal. */
+.cm-pl--oro {
+  background: linear-gradient(135deg, #e6c173 0%, #c69a42 42%, #8d6c25 100%);
+  color: #2a2008;
+}
+.cm-pl--oro .cm-pl__trama {
+  background-image:
+    repeating-radial-gradient(circle at 18% 86%, rgba(255,255,255,.22) 0 1px, transparent 1px 10px),
+    repeating-linear-gradient(62deg, rgba(90,66,16,.16) 0 1px, transparent 1px 7px);
+}
+.cm-pl--oro .cm-pl__brillo {
+  background:
+    linear-gradient(118deg, transparent 32%, rgba(255,255,255,.46) 46%,
+                    rgba(255,255,255,.1) 54%, transparent 64%),
+    radial-gradient(120% 90% at 115% -10%, rgba(255,255,255,.3) 0%, transparent 55%);
+}
+/* En las claras la etiqueta pide mas tinta: gris sobre oro o sobre
+ acero se pierde antes que blanco sobre azul noche. */
+.cm-pl--oro .cm-pl__et { color: rgba(42,32,8,.78); font-weight: 600; }
+
+/* Platinum: acero cepillado. */
+.cm-pl--platinum {
+  background: linear-gradient(135deg, #eef1f4 0%, #b9c0ca 44%, #7d8795 100%);
+  color: #1d2432;
+}
+.cm-pl--platinum .cm-pl__trama {
+  background-image: repeating-linear-gradient(
+    90deg, rgba(255,255,255,.5) 0 1px, rgba(90,100,115,.07) 1px 3px);
+}
+.cm-pl--platinum .cm-pl__brillo {
+  background:
+    linear-gradient(112deg, transparent 30%, rgba(255,255,255,.72) 45%,
+                    rgba(255,255,255,.15) 55%, transparent 66%),
+    radial-gradient(110% 85% at 112% -8%, rgba(255,255,255,.5) 0%, transparent 52%);
+}
+.cm-pl--platinum .cm-pl__et { color: rgba(29,36,50,.75); font-weight: 600; }
+
+/* Signature: negra, con fibra de carbono y un filo dorado. */
+.cm-pl--signature {
+  background: linear-gradient(135deg, #26282f 0%, #121316 55%, #000 100%);
+  box-shadow:
+    0 12px 30px rgba(0,0,0,.4),
+    0 2px 5px rgba(0,0,0,.2),
+    inset 0 0 0 1px rgba(205,168,92,.38);
+}
+.cm-pl--signature .cm-pl__trama {
+  background-image:
+    repeating-linear-gradient(45deg,  rgba(255,255,255,.045) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(-45deg, rgba(255,255,255,.045) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(0deg,   rgba(205,168,92,.09) 0 1px, transparent 1px 26px);
+}
+.cm-pl--signature .cm-pl__linea { color: #cda85c; }
+
+/* Debito: agua, con curvas de nivel. Que no se confunda con ninguna de
+   credito ni de un vistazo. */
+.cm-pl--debito { background: linear-gradient(135deg, #0f8ba8 0%, #0a6480 50%, #053c52 100%); }
+.cm-pl--debito .cm-pl__trama {
+  background-image:
+    repeating-radial-gradient(ellipse 140% 90% at 8% 12%,
+      rgba(255,255,255,.075) 0 1px, transparent 1px 15px);
+}
+
+.cm-pl--apagada { filter: grayscale(.78); opacity: .72; }
+
+/* --- La placa del logo ----------------------------------------------- */
+.cm-pl__alto {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: .7rem;
+}
+
+/* El logo va con sus colores sobre una placa clara: azul marino sobre
+   azul noche no se lee, y tenirlo de blanco seria otro logo. */
+.cm-pl__placa {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.6cqw;
+  background: rgba(255, 255, 255, .94);
+  border-radius: 8px;
+  padding: 1.5cqw 2.2cqw;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, .18), inset 0 0 0 1px rgba(255, 255, 255, .6);
+  backdrop-filter: blur(2px);
+}
+.cm-pl--platinum .cm-pl__placa,
+.cm-pl--oro .cm-pl__placa { background: #fff; }
+
+.cm-pl__emblema { height: 5.4cqw; width: auto; display: block; }
+.cm-pl__palabra { height: 3cqw; width: auto; display: block; }
+
+.cm-pl__casa { font-size: .95rem; font-weight: 800; letter-spacing: -.01em; }
+
+.cm-pl__linea {
+  font-size: 2.5cqw;
+  text-transform: uppercase;
+  letter-spacing: .19em;
+  font-weight: 700;
+  opacity: .9;
+  white-space: nowrap;
+  padding-top: .35rem;
+}
+
+/* --- Chip y sin contacto --------------------------------------------- */
+.cm-pl__medio { display: flex; align-items: center; gap: .7rem; }
+
+.cm-pl__chip {
+  position: relative;
+  width: 11cqw;
+  height: 8.4cqw;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #f3e0b0 0%, #d2b16a 38%, #a8863a 100%);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.2), 0 1px 2px rgba(0,0,0,.2);
+  flex: none;
+}
+.cm-pl__chip::before,
+.cm-pl__chip::after { content: ""; position: absolute; background: rgba(0,0,0,.24); }
+.cm-pl__chip::before {
+  left: 0; right: 0; top: 33%; height: 1px;
+  box-shadow: 0 .7rem 0 rgba(0,0,0,.24);
+}
+.cm-pl__chip::after { top: 0; bottom: 0; left: 50%; width: 1px; }
+
+.cm-pl__nfc {
+  width: 4.5cqw; height: 5.3cqw; flex: none; opacity: .85;
+  background-repeat: no-repeat; background-position: center; background-size: contain;
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M5 4a12 12 0 0 1 0 16M10 7a8 8 0 0 1 0 10M15 10a4 4 0 0 1 0 4'/%3E%3C/svg%3E");
+}
+.cm-pl--oro .cm-pl__nfc,
+.cm-pl--platinum .cm-pl__nfc {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231d2432' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M5 4a12 12 0 0 1 0 16M10 7a8 8 0 0 1 0 10M15 10a4 4 0 0 1 0 4'/%3E%3C/svg%3E");
+}
+
+/* --- El numero, como va grabado --------------------------------------- */
+.cm-pl__num {
+  font-family: "Segoe UI", Consolas, ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(.95rem, 5.4cqw, 1.38rem);
+  font-weight: 600;
+  letter-spacing: .085em;
+  white-space: nowrap;
+  text-shadow: 0 1px 0 rgba(255,255,255,.26), 0 -1px 1px rgba(0,0,0,.34);
+}
+.cm-pl--oro .cm-pl__num,
+.cm-pl--platinum .cm-pl__num {
+  text-shadow: 0 1px 0 rgba(255,255,255,.55), 0 -1px 1px rgba(0,0,0,.2);
+}
+
+/* --- Pie ---------------------------------------------------------------- */
+/* En el pie, el titular es el unico que puede encoger.
+   Antes todos compartian el mismo recorte y, al quedarse sin sitio, se
+   recortaba una fecha de cinco caracteres: «11/…». Un nombre largo
+   puede ceder espacio; un vencimiento y el sello de la marca, no. */
+.cm-pl__pie { display: flex; align-items: flex-end; gap: 3cqw; }
+
+.cm-pl__campo {
+  display: flex; flex-direction: column;
+  flex: 1 1 auto; min-width: 0;
+}
+.cm-pl__campo--der { flex: none; margin-left: auto; text-align: right; }
+
+.cm-pl__et {
+  font-size: 2.2cqw; text-transform: uppercase; letter-spacing: .13em;
+  opacity: .75; margin-bottom: .1rem;
+}
+
+.cm-pl__val {
+  font-size: 3.3cqw; font-weight: 600; letter-spacing: .02em;
+  white-space: nowrap;
+}
+
+/* Solo el titular recorta, y ya viene acortado por palabras desde
+   el servidor: esto es la ultima red, no el metodo. */
+.cm-pl__campo:not(.cm-pl__campo--der) .cm-pl__val {
+  overflow: hidden; text-overflow: ellipsis;
+}
+
+/* --- El sello de la marca ----------------------------------------------- */
+.cm-pl__sello { margin-left: .6rem; flex: none; display: flex; align-items: center; line-height: 1; }
+
+.cm-pl__sello--visa b {
+  font-size: 4.7cqw; font-weight: 800; font-style: italic; letter-spacing: .02em;
+  text-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+
+.cm-pl__sello--mc { position: relative; padding-left: 2.35rem; }
+.cm-pl__sello--mc i {
+  position: absolute; top: 50%; width: 1.38rem; height: 1.38rem;
+  border-radius: 50%; transform: translateY(-50%);
+}
+.cm-pl__mc1 { left: 0;      background: #eb001b; }
+.cm-pl__mc2 { left: .8rem;  background: #f79e1b; mix-blend-mode: multiply; }
+.cm-pl__sello--mc b { font-size: .56rem; font-weight: 700; text-transform: lowercase; }
+
+.cm-pl__sello--amex { position: relative; padding-left: 1.7rem; }
+.cm-pl__amex {
+  position: absolute; left: 0; top: 50%;
+  width: 1.38rem; height: 1.38rem; transform: translateY(-50%);
+  border-radius: 3px; background: #016fd0;
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.88);
+}
+.cm-pl__sello--amex b { font-size: .44rem; font-weight: 800; letter-spacing: .06em; line-height: 1.15; }
+
+/* --- Sello de estado ---------------------------------------------------- */
+.cm-pl__sello-estado {
+  position: absolute; top: 50%; left: 50%; z-index: 4;
+  transform: translate(-50%, -50%) rotate(-14deg);
+  border: 3px solid rgba(255,255,255,.78);
+  color: rgba(255,255,255,.92);
+  padding: .3rem 1.1rem; border-radius: 7px;
+  font-size: .85rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
+  background: rgba(0,0,0,.3); pointer-events: none;
+}
+
+/* --- Version pequena ---------------------------------------------------- */
+.cm-pl--mini { max-width: 15rem; border-radius: 11px; }
+.cm-pl--mini .cm-pl__cuerpo { padding: .75rem .85rem; }
+.cm-pl--mini .cm-pl__chip { width: 1.8rem; height: 1.38rem; border-radius: 4px; }
+.cm-pl--mini .cm-pl__chip::before { box-shadow: 0 .46rem 0 rgba(0,0,0,.24); }
+.cm-pl--mini .cm-pl__emblema { height: .95rem; }
+.cm-pl--mini .cm-pl__palabra { height: .52rem; }
+.cm-pl--mini .cm-pl__placa { padding: .24rem .4rem; gap: .3rem; border-radius: 6px; }
+.cm-pl--mini .cm-pl__linea { font-size: .5rem; letter-spacing: .13em; }
+.cm-pl--mini .cm-pl__val { font-size: .66rem; }
+.cm-pl--mini .cm-pl__et  { font-size: .46rem; }
+.cm-pl--mini .cm-pl__nfc { width: .82rem; height: .96rem; }
+.cm-pl--mini .cm-pl__sello--visa b { font-size: .82rem; }
+.cm-pl--mini .cm-pl__sello--mc { padding-left: 1.62rem; }
+.cm-pl--mini .cm-pl__sello--mc i { width: .96rem; height: .96rem; }
+.cm-pl--mini .cm-pl__mc2 { left: .56rem; }
+.cm-pl--mini .cm-pl__sello--mc b { font-size: .42rem; }
+.cm-pl--mini .cm-pl__sello--amex { padding-left: 1.22rem; }
+.cm-pl--mini .cm-pl__amex { width: .96rem; height: .96rem; }
+.cm-pl--mini .cm-pl__sello--amex b { font-size: .33rem; }
+
+@media (max-width: 380px) {
+  .cm-pl__cuerpo { padding: .95rem 1rem; }
+  .cm-pl__num { letter-spacing: .05em; }
+}
+
+/* ---------------------------------------------------------------------
+   LAS DOS CARAS
+   ---------------------------------------------------------------------
+   Una tarjeta tiene reverso, y ahi es donde estan la banda, el panel de
+   firma y el CVV. Ensenar el CVV pegado al frente era lo comodo, no lo
+   cierto.
+
+   El giro es `rotateY` sobre un eje con perspectiva. La cara de atras
+   nace girada 180 grados, asi que al girar el eje queda de frente.
+   --------------------------------------------------------------------- */
+.cm-pl-giro { perspective: 1400px; width: 100%; max-width: 25rem; }
+
+.cm-pl-giro__eje {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform .72s cubic-bezier(.22, .68, .3, 1);
+}
+
+.cm-pl-giro--volteada .cm-pl-giro__eje { transform: rotateY(180deg); }
+
+/* Las dos caras ocupan el mismo sitio; la de atras va encima, girada. */
+.cm-pl-giro .cm-pl { backface-visibility: hidden; }
+
+.cm-pl-giro .cm-pl--reverso {
+  position: absolute;
+  inset: 0;
+  transform: rotateY(180deg);
+}
+
+/* Sin el giro activo —listados, panel— el reverso estorba. */
+.cm-pl-giro:not(.cm-pl-giro--activo) .cm-pl--reverso { display: none; }
+
+/* El reverso no lleva brillo diagonal: no es la cara que se mira. */
+.cm-pl--reverso .cm-pl__cuerpo--rev {
+  justify-content: flex-start;
+  gap: 0;
+  padding: 0;
+}
+
+/* La banda magnetica, de lado a lado. */
+.cm-pl__banda {
+  display: block;
+  width: 100%;
+  height: 17cqw;
+  margin-top: 8cqw;
+  background: linear-gradient(180deg, #15171c 0%, #080a0d 48%, #15171c 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), inset 0 -1px 0 rgba(255,255,255,.06);
+}
+.cm-pl--platinum .cm-pl__banda,
+.cm-pl--oro .cm-pl__banda {
+  background: linear-gradient(180deg, #2b2f36 0%, #15171c 48%, #2b2f36 100%);
+}
+
+/* Panel de firma y CVV, en la misma linea. */
+.cm-pl__firma {
+  display: flex;
+  align-items: stretch;
+  gap: 2cqw;
+  margin: 5cqw 5.2cqw 0;
+}
+
+.cm-pl__firma-panel {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 9cqw;
+  border-radius: 2px;
+  background:
+    repeating-linear-gradient(135deg,
+      #fff 0 3cqw, #efe6d8 3cqw 6cqw);
+  display: flex;
+  align-items: center;
+  padding: 0 2.6cqw;
+  overflow: hidden;
+}
+
+/* El nombre, en cursiva: es el panel donde se firma. */
+.cm-pl__firma-panel i {
+  font-family: "Segoe Script", "Brush Script MT", cursive;
+  font-style: italic;
+  font-size: 3cqw;
+  color: #2b3350;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cm-pl__cvv {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 13cqw;
+  height: 9cqw;
+  background: #fff;
+  border-radius: 2px;
+  color: #1d2432;
+  padding: 0 1.6cqw;
+}
+.cm-pl__cvv small {
+  font-size: 1.9cqw;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #667085;
+  line-height: 1;
+}
+.cm-pl__cvv b {
+  font-family: Consolas, ui-monospace, monospace;
+  font-size: 3.6cqw;
+  letter-spacing: .08em;
+  line-height: 1.1;
+}
+
+/* La letra pequena del reverso. */
+.cm-pl__legal {
+  margin: auto 5.2cqw 4.2cqw;
+  display: flex;
+  flex-direction: column;
+  gap: .6cqw;
+  font-size: 2cqw;
+  line-height: 1.35;
+  opacity: .62;
+}
+
+/* Sobre oro y acero, la letra legal con .62 de opacidad desaparece:
+   el reverso de una tarjeta clara necesita mas tinta, no menos. */
+.cm-pl--oro .cm-pl__legal,
+.cm-pl--platinum .cm-pl__legal { opacity: .82; font-weight: 500; }
+.cm-pl__legal span:first-child {
+  font-family: Consolas, ui-monospace, monospace;
+  letter-spacing: .06em;
+  opacity: .9;
+}
+
+/* El boton de girar. */
+.cm-pl-voltear {
+  position: absolute;
+  right: .55rem;
+  bottom: .55rem;
+  z-index: 6;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,.9);
+  color: #344054;
+  box-shadow: 0 2px 7px rgba(0,0,0,.22);
+  cursor: pointer;
+  transition: background .15s, transform .15s;
+}
+.cm-pl-voltear:hover { background: #fff; transform: scale(1.06); }
+
+/* En pantallas que no admiten animacion, el giro es instantaneo. */
+@media (prefers-reduced-motion: reduce) {
+  .cm-pl-giro__eje { transition: none; }
+}
+
+/* ---------------------------------------------------------------------
+   El aviso de cuanto se paga
+   ---------------------------------------------------------------------
+   Tres tonos para tres situaciones distintas: por debajo del minimo es
+   un problema, no cubrir el total es un costo, y cubrirlo es la buena
+   noticia. Un solo color gris para los tres no distinguiria nada.
+   --------------------------------------------------------------------- */
+.cm-aviso-pago {
+  margin-top: .7rem;
+  padding: .7rem .85rem;
+  border-radius: 9px;
+  border-left: 4px solid;
+  font-size: .83rem;
+  line-height: 1.5;
+}
+.cm-aviso-pago--grave { background: #fef3f2; border-color: #d92d20; color: #7a271a; }
+.cm-aviso-pago--ojo   { background: #fffaeb; border-color: #f79009; color: #7a4a07; }
+.cm-aviso-pago--bien  { background: #ecfdf3; border-color: #12b76a; color: #05603a; }
+
+/* ---------------------------------------------------------------------
+   Como va el pago del mes
+   ---------------------------------------------------------------------
+   Tres estados que no significan lo mismo: cubierto es una buena
+   noticia, falta es un aviso con fecha, y vencido ya es un problema.
+   La barra enseña de un vistazo cuanto se lleva del minimo.
+   --------------------------------------------------------------------- */
+.cm-pagomes {
+  margin: 0 0 1rem;
+  padding: .85rem 1rem;
+  border-radius: 11px;
+  border-left: 4px solid;
+  font-size: .85rem;
+}
+.cm-pagomes--bien  { background: #ecfdf3; border-color: #12b76a; color: #05603a; }
+.cm-pagomes--ojo   { background: #fffaeb; border-color: #f79009; color: #7a4a07; }
+.cm-pagomes--grave { background: #fef3f2; border-color: #d92d20; color: #7a271a; }
+
+.cm-pagomes__alto {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: .8rem;
+  flex-wrap: wrap;
+}
+.cm-pagomes__cifra { font-variant-numeric: tabular-nums; font-weight: 600; }
+
+.cm-pagomes__barra {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, .09);
+  margin: .55rem 0 .6rem;
+  overflow: hidden;
+}
+.cm-pagomes__barra span { display: block; height: 100%; border-radius: 3px; background: currentColor; }
+
+.cm-pagomes__texto { margin: 0; line-height: 1.55; }
+/* =====================================================================
+   Indicador de espera a pantalla completa
+
+   Para lo que tarda y no se ve: generar un PDF, hablar con la
+   procesadora, aplicar un cobro. Sin esto la pantalla se queda igual
+   que estaba, el usuario cree que no pulsó y vuelve a pulsar —y dos
+   cobros preparados son dos cobros—.
+
+   Tapa la pantalla a propósito: mientras el banco está a mitad de una
+   operación con dinero, no hay nada más que se deba poder tocar.
+   ===================================================================== */
+
+.cm-carga {
+  position: fixed;
+  inset: 0;
+  z-index: 11000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(13, 24, 33, .55);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity .22s ease;
+}
+.cm-carga--visible { opacity: 1; }
+
+.cm-carga__caja {
+  width: 100%;
+  max-width: 23rem;
+  background: #fff;
+  border-radius: 18px;
+  padding: 2rem 1.75rem 1.5rem;
+  text-align: center;
+  box-shadow: 0 30px 70px -20px rgba(16, 24, 40, .5);
+  transform: translateY(14px) scale(.97);
+  transition: transform .24s cubic-bezier(.2, .9, .3, 1);
+}
+.cm-carga--visible .cm-carga__caja { transform: none; }
+
+/* El anillo. Dos arcos girando a distinta velocidad y en sentidos
+   contrarios: un círculo girando solo se lee como «colgado», dos se
+   leen como «trabajando». */
+.cm-carga__anillo {
+  position: relative;
+  width: 76px; height: 76px;
+  margin: 0 auto 1.15rem;
+}
+.cm-carga__anillo::before,
+.cm-carga__anillo::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  border: 3px solid transparent;
+}
+.cm-carga__anillo::before {
+  inset: 0;
+  border-top-color: var(--cm-marca);
+  border-right-color: var(--cm-marca);
+  animation: cm-girar 1.1s linear infinite;
+}
+.cm-carga__anillo::after {
+  inset: 10px;
+  border-bottom-color: var(--cm-oro);
+  border-left-color: var(--cm-oro);
+  animation: cm-girar 1.6s linear infinite reverse;
+}
+
+.cm-carga__icono {
+  position: absolute;
+  inset: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cm-marca);
+  animation: cm-latir 1.8s ease-in-out infinite;
+}
+.cm-carga__icono svg { width: 26px; height: 26px; }
+
+.cm-carga__titulo {
+  font-weight: 700;
+  font-size: 1.02rem;
+  color: #101828;
+  margin-bottom: .3rem;
+}
+.cm-carga__texto {
+  font-size: .86rem;
+  color: #667085;
+  line-height: 1.45;
+  margin-bottom: 1.1rem;
+}
+
+/* Barra indeterminada: no promete un porcentaje que nadie puede
+   calcular, solo dice que la cosa sigue viva. */
+.cm-carga__barra {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--cm-marca-tenue);
+  overflow: hidden;
+}
+.cm-carga__barra::after {
+  content: '';
+  display: block;
+  width: 38%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--cm-marca), var(--cm-oro));
+  animation: cm-recorrer 1.25s cubic-bezier(.45, 0, .55, 1) infinite;
+}
+
+.cm-carga__pie {
+  margin-top: .9rem;
+  font-size: .72rem;
+  color: #98a2b3;
+}
+
+@keyframes cm-girar { to { transform: rotate(360deg); } }
+
+@keyframes cm-recorrer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(363%); }
+}
+
+/* Quien pidió menos movimiento no recibe más: el anillo se queda
+   quieto y la barra solo late. */
+@media (prefers-reduced-motion: reduce) {
+  .cm-carga__anillo::before,
+  .cm-carga__anillo::after,
+  .cm-carga__icono { animation: none; }
+  .cm-carga__barra::after { animation: cm-latir 1.4s ease-in-out infinite; width: 100%; }
+  .cm-carga, .cm-carga__caja { transition: none; }
+}
+
+/* Un botón que ya está trabajando no admite otro clic. */
+.cm-ocupado { position: relative; pointer-events: none; opacity: .72; }
+.cm-ocupado::after {
+  content: '';
+  position: absolute;
+  top: 50%; right: .7rem;
+  width: 13px; height: 13px;
+  margin-top: -6.5px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: cm-girar .8s linear infinite;
+}
+
+/* ---------- Pedidos: por qué quedó así ----------
+   El estado dice dónde quedó el pedido; esta línea dice por qué. Es la
+   que evita la llamada preguntando «y mi pedido?». */
+.cm-pedido__porque {
+  display: flex;
+  align-items: flex-start;
+  gap: .1rem;
+  font-size: .82rem;
+  line-height: 1.45;
+  padding: .6rem .8rem;
+  border-radius: 9px;
+  margin-bottom: .7rem;
+}
+.cm-pedido__porque svg { flex-shrink: 0; margin-top: .1rem; }
+.cm-pedido__porque--malo   { background: #fef3f2; color: #912018; }
+.cm-pedido__porque--espera { background: #fffaeb; color: #93370d; }
+
+/* Un pedido anulado no compite con los vivos. */
+.cm-pedido--anulado .cm-pedido__lineas,
+.cm-pedido--anulado .cm-articulo__logo { opacity: .6; }
+
+/* =====================================================================
+   Ficha de tarjeta en el listado
+
+   El plástico tiene ancho máximo propio —una tarjeta no crece sin
+   límite—, pero los datos de debajo ocupaban la columna entera. En
+   pantalla ancha eso dejaba el nombre y las fechas sobresaliendo por
+   los dos lados del plástico, como si no fueran de esa tarjeta.
+
+   Aquí comparten contenedor: mismo ancho, mismos bordes, una pieza.
+   ===================================================================== */
+
+.cm-ficha {
+  width: 100%;
+  max-width: 25rem;   /* el mismo de .cm-pl */
+}
+
+.cm-ficha__datos {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: .75rem;
+  margin: .55rem .25rem 0;
+  padding: .5rem .75rem;
+  font-size: .78rem;
+  background: #fff;
+  border: 1px solid #eaecf0;
+  border-radius: 10px;
+}
+
+/* Cuando debajo viene el ciclo, las dos cajas se pegan y se leen como
+   una sola ficha en lugar de dos recuadros sueltos. */
+.cm-ficha__datos--sigue {
+  border-bottom: none;
+  border-radius: 10px 10px 0 0;
+  padding-bottom: .35rem;
+}
+
+.cm-ficha__titular {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .3rem;
+  min-width: 0;
+}
+
+/* El nombre se recorta ANTES de empujar la cifra fuera de la caja: la
+   cifra es el dato que no puede perderse. */
+.cm-ficha__nombre {
+  color: #667085;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 11rem;
+}
+
+/* Crédito o débito, dicho con todas las letras: son dos productos que
+   se usan distinto y en el listado se distinguían solo por el color. */
+.cm-ficha__tipo {
+  flex-shrink: 0;
+  font-size: .62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  padding: .12rem .42rem;
+  border-radius: 5px;
+  line-height: 1.5;
+}
+.cm-ficha__tipo--credito { background: var(--cm-marca-tenue); color: var(--cm-marca-oscuro); }
+.cm-ficha__tipo--debito  { background: #e0f2fe; color: #026aa2; }
+.cm-ficha__tipo--prepago { background: #fef0c7; color: #93370d; }
+
+.cm-ficha__cifra { text-align: right; flex-shrink: 0; }
+.cm-ficha__cifra small {
+  display: block;
+  font-size: .62rem;
+  color: #98a2b3;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  line-height: 1.4;
+}
+.cm-ficha__cifra strong { font-size: .88rem; color: #101828; white-space: nowrap; }
+
+/* El ciclo, ya dentro de la ficha: hereda su ancho y cierra la caja. */
+.cm-ficha .cm-ciclo { margin: 0 .25rem; }
+
+.cm-ciclo--debito b { font-size: .76rem; font-weight: 600; }
+
+/* En pantalla estrecha el nombre dispone de menos sitio todavía. */
+@media (max-width: 420px) {
+  .cm-ficha__nombre { max-width: 7.5rem; }
+}
+
+/* ---------- Lo disponible en una tarjeta de débito ----------
+   No tiene cupo ni saldo propio: lo que puede gastar es lo que haya en
+   su cuenta. Es la única pregunta que se le hace a una débito, así que
+   va arriba y en grande. */
+.cm-debito-saldo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  flex-wrap: wrap;
+  background: #f0f9ff;
+  border: 1px solid #b9e6fe;
+  border-radius: 12px;
+  padding: .7rem .95rem;
+  margin-bottom: .85rem;
+}
+.cm-debito-saldo small {
+  display: block;
+  font-size: .66rem;
+  color: #026aa2;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.cm-debito-saldo strong { font-size: 1.35rem; color: #0b4a6f; letter-spacing: -.01em; }
+
+/* =====================================================================
+   Clasificación de riesgo del cliente
+
+   Una banda sola no sirve para atender a nadie. Quien tiene al cliente
+   delante necesita poder decirle qué pesó en contra y cuánto, y eso
+   solo se lee si cada factor enseña su barra y su código.
+   ===================================================================== */
+
+.cm-riesgo-cab {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  background: #f8fafc;
+  border: 1px solid var(--cm-marca-tenue);
+  border-radius: 14px;
+  padding: 1rem 1.2rem;
+}
+
+.cm-riesgo-cab__banda {
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.6rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.cm-riesgo-cab__puntaje {
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #101828;
+  letter-spacing: -.02em;
+}
+.cm-riesgo-cab__puntaje small { font-size: .9rem; font-weight: 500; color: #98a2b3; }
+
+.cm-riesgo-factor { margin-bottom: 1rem; }
+
+.cm-riesgo-factor__cab {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: .6rem;
+  margin-bottom: .3rem;
+  font-size: .82rem;
+}
+.cm-riesgo-factor__codigo {
+  font-size: .68rem;
+  color: #98a2b3;
+  letter-spacing: .04em;
+}
+.cm-riesgo-factor small { display: block; margin-top: .3rem; font-size: .78rem; line-height: 1.45; }
+
+/* Un factor que no se pudo medir no se pinta como si hubiera salido
+   mal: se apaga. No contar no es lo mismo que contar cero. */
+.cm-riesgo-factor--fuera { opacity: .55; }
+.cm-riesgo-factor--fuera .progress { background: repeating-linear-gradient(
+  45deg, #eaecf0, #eaecf0 4px, #f2f4f7 4px, #f2f4f7 8px); }
+
+/* =====================================================================
+   Líneas de tarjeta nuevas
+
+   Cada una tiene que reconocerse A UN METRO, sin leer la etiqueta: es
+   lo que hace que un cliente sepa cuál sacó de la cartera. Por eso
+   cambian las tres cosas que se ven de lejos —color dominante, trama y
+   brillo— y no solo el tono.
+   ===================================================================== */
+
+/* Inicia: índigo vivo con una retícula ligera. Es la de entrada, así
+   que se ve joven y limpia; nada de metal ni de oro, que prometen un
+   producto que no es. */
+.cm-pl--inicia {
+  background:
+    radial-gradient(130% 110% at 8% -15%, #6d4df6 0%, transparent 58%),
+    linear-gradient(135deg, #4c35c9 0%, #3523a0 52%, #1f1368 100%);
+}
+.cm-pl--inicia .cm-pl__trama {
+  background-image:
+    repeating-linear-gradient(0deg,  rgba(255,255,255,.05) 0 1px, transparent 1px 16px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 1px, transparent 1px 16px);
+}
+.cm-pl--inicia .cm-pl__brillo {
+  background: radial-gradient(90% 70% at 105% 110%, rgba(255,255,255,.2) 0%, transparent 58%);
+}
+
+/* Empresarial: grafito con una retícula tipo plano técnico y un filo
+   azul. Se lee como herramienta de trabajo, no como premio. */
+.cm-pl--empresarial {
+  background: linear-gradient(135deg, #3b4252 0%, #272c38 50%, #14181f 100%);
+  box-shadow:
+    0 12px 30px rgba(16,24,40,.3),
+    0 2px 5px rgba(16,24,40,.14),
+    inset 0 0 0 1px rgba(100,150,210,.26);
+}
+.cm-pl--empresarial .cm-pl__trama {
+  background-image:
+    repeating-linear-gradient(0deg,  rgba(140,180,230,.07) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(90deg, rgba(140,180,230,.07) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(0deg,  rgba(140,180,230,.035) 0 1px, transparent 1px 5.5px),
+    repeating-linear-gradient(90deg, rgba(140,180,230,.035) 0 1px, transparent 1px 5.5px);
+}
+.cm-pl--empresarial .cm-pl__linea { color: #8ab4e8; }
+
+/* Infinite: azul profundo con aurora y guilloché fino. El escalón de
+   banca privada: tiene que verse caro sin recurrir al oro, que ya usa
+   la Oro, ni al negro, que usa la Signature. */
+.cm-pl--infinite {
+  background:
+    radial-gradient(120% 100% at 85% -20%, rgba(96,165,250,.5) 0%, transparent 55%),
+    radial-gradient(100% 120% at -10% 115%, rgba(167,139,250,.42) 0%, transparent 58%),
+    linear-gradient(135deg, #15306b 0%, #0b1c45 52%, #050d26 100%);
+  box-shadow:
+    0 14px 34px rgba(8,16,40,.42),
+    0 2px 6px rgba(8,16,40,.22),
+    inset 0 0 0 1px rgba(160,190,245,.3);
+}
+.cm-pl--infinite .cm-pl__trama {
+  background-image:
+    repeating-radial-gradient(circle at 24% 80%, rgba(190,215,255,.13) 0 1px, transparent 1px 9px),
+    repeating-linear-gradient(58deg, rgba(190,215,255,.055) 0 1px, transparent 1px 6px);
+}
+.cm-pl--infinite .cm-pl__brillo {
+  background:
+    linear-gradient(118deg, transparent 34%, rgba(205,228,255,.24) 47%,
+                    rgba(205,228,255,.06) 55%, transparent 66%);
+}
+.cm-pl--infinite .cm-pl__linea { color: #bcd6ff; }
+
+/* Obsidiana: la de invitación. Negro mineral con veta y canto de cobre
+   quemado; sin brillos de más, porque la discreción es el punto. */
+.cm-pl--obsidiana {
+  background:
+    radial-gradient(130% 120% at 110% -20%, rgba(90,92,102,.5) 0%, transparent 52%),
+    linear-gradient(135deg, #1b1c20 0%, #0d0e11 48%, #000 100%);
+  box-shadow:
+    0 16px 38px rgba(0,0,0,.52),
+    0 2px 6px rgba(0,0,0,.3),
+    inset 0 0 0 1px rgba(183,110,58,.42);
+}
+.cm-pl--obsidiana .cm-pl__trama {
+  background-image:
+    repeating-linear-gradient(104deg, rgba(255,255,255,.035) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(14deg,  rgba(183,110,58,.07) 0 1px, transparent 1px 34px);
+}
+.cm-pl--obsidiana .cm-pl__brillo {
+  background: linear-gradient(122deg, transparent 38%, rgba(255,255,255,.07) 50%, transparent 62%);
+}
+.cm-pl--obsidiana .cm-pl__linea { color: #c98f5e; letter-spacing: .22em; }
+.cm-pl--obsidiana .cm-pl__et { color: rgba(255,255,255,.42); }
+
+/* =====================================================================
+   Banca preferente
+
+   El color de la cabecera dice en qué escalón está antes de leer nada:
+   sobrio para el estándar, morado para el preferente, bronce para el
+   patrimonial. Es lo primero que se ve y lo que más informa.
+   ===================================================================== */
+
+.cm-pref {
+  border-radius: 18px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+.cm-pref::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    118deg, rgba(255,255,255,.05) 0 1px, transparent 1px 11px);
+  pointer-events: none;
+}
+
+.cm-pref--estandar {
+  background: linear-gradient(135deg, #39414f 0%, #242a35 55%, #161a21 100%);
+  color: #fff;
+}
+.cm-pref--preferente {
+  background: linear-gradient(135deg, #7a35e0 0%, #5316b4 50%, #33096f 100%);
+  color: #fff;
+}
+/* Patrimonial: obsidiana con el oro de ACENTO, no de fondo.
+   Un bloque dorado plano con letra oscura se lee barato y el
+   contraste cansa. La banca privada se presenta en oscuro y usa el
+   oro en el filo y en las cifras, que es donde luce. */
+.cm-pref--patrimonial {
+  background:
+    radial-gradient(120% 130% at 88% -30%, rgba(216,178,107,.26) 0%, transparent 55%),
+    linear-gradient(135deg, #2b2a26 0%, #1a1916 52%, #0e0d0b 100%);
+  color: #f2ece0;
+  box-shadow: inset 0 0 0 1px rgba(216,178,107,.4);
+}
+.cm-pref--patrimonial .cm-pref__et,
+.cm-pref--patrimonial .cm-pref__cifras small { color: #d8b26b; opacity: 1; }
+.cm-pref--patrimonial .cm-pref__titulo { color: #e8c887; }
+.cm-pref--patrimonial .cm-pref__motivo { color: #cfc8ba; }
+.cm-pref--patrimonial .cm-pref__desde  { color: #9a9284; }
+
+.cm-pref__cuerpo {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 1.3rem;
+  flex-wrap: wrap;
+  padding: 1.6rem 1.8rem;
+}
+
+.cm-pref__sello {
+  width: 62px; height: 62px;
+  border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.9rem; font-weight: 700;
+  background: rgba(255,255,255,.17);
+  border: 1px solid rgba(255,255,255,.3);
+  flex-shrink: 0;
+}
+.cm-pref--patrimonial .cm-pref__sello {
+  background: rgba(216,178,107,.14);
+  border-color: rgba(216,178,107,.45);
+  color: #e8c887;
+}
+
+.cm-pref__et {
+  font-size: .68rem;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  opacity: .78;
+}
+.cm-pref__titulo { margin: .1rem 0 .4rem; font-size: 1.75rem; font-weight: 700; letter-spacing: -.02em; }
+.cm-pref__motivo { margin: 0; font-size: .88rem; line-height: 1.5; opacity: .9; max-width: 44rem; }
+.cm-pref__desde { display: block; margin-top: .5rem; font-size: .74rem; opacity: .72; }
+
+.cm-pref__cifras { display: flex; gap: 1.6rem; flex-wrap: wrap; }
+.cm-pref__cifras small {
+  display: block; font-size: .64rem; text-transform: uppercase;
+  letter-spacing: .07em; opacity: .72;
+}
+.cm-pref__cifras strong { font-size: 1.3rem; font-weight: 700; line-height: 1.25; }
+.cm-pref__cifras strong span { font-size: .72rem; font-weight: 500; opacity: .72; }
+
+/* La lista de beneficios: el titular en negro y el porqué debajo, que
+   es lo que distingue un beneficio de un eslogan. */
+.cm-pref__lista { list-style: none; margin: 0; padding: 0; }
+.cm-pref__lista li {
+  position: relative;
+  padding: .7rem 0 .7rem 1.7rem;
+  border-bottom: 1px solid #f2f4f7;
+}
+.cm-pref__lista li:last-child { border-bottom: none; }
+.cm-pref__lista li svg { position: absolute; left: 0; top: .85rem; color: var(--cm-marca); }
+.cm-pref__lista strong { display: block; font-size: .9rem; color: #101828; }
+.cm-pref__lista span { display: block; font-size: .82rem; color: #667085; line-height: 1.5; margin-top: .15rem; }
+
+/* El escalón que todavía no tiene: se enseña entero, sin tapar nada. */
+.cm-pref-escalon--patrimonial .card-header { background: #fdf6e7; }
+.cm-pref-escalon--preferente  .card-header { background: var(--cm-marca-tenue); }
+
+.cm-pref__falta {
+  background: #f8fafc;
+  border: 1px solid #eaecf0;
+  border-radius: 12px;
+  padding: .9rem 1.1rem;
+  font-size: .86rem;
+}
+.cm-pref__falta strong { display: block; margin-bottom: .4rem; color: #101828; }
+.cm-pref__falta ul { margin: 0; padding-left: 1.1rem; color: #667085; line-height: 1.6; }
+
+.cm-pref__banquero {
+  margin-top: 1rem;
+  padding: 1rem 1.1rem;
+  background: var(--cm-marca-tenue);
+  border-radius: 12px;
+}
+.cm-pref__banquero strong { display: block; color: var(--cm-marca-oscuro); margin-bottom: .35rem; }
+.cm-pref__banquero p { font-size: .83rem; color: #667085; line-height: 1.5; margin-bottom: .7rem; }
+
+.cm-pref__beneficios {
+  list-style: none; margin: 0 0 1rem; padding: 0;
+  font-size: .82rem; color: #667085; line-height: 1.65;
+}
+.cm-pref__beneficios li { position: relative; padding-left: 1rem; }
+.cm-pref__beneficios li::before {
+  content: '';
+  position: absolute; left: 0; top: .6rem;
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--cm-oro);
+}
+
+/* ---------- Adelantar cuotas ----------
+   Un crédito se paga de la cuota más antigua hacia adelante. Adelantar
+   está bien; saltarse cuotas no. Por eso aquí no se eligen cuáles sino
+   CUÁNTAS: el sistema marca las que tocan, en orden y sin huecos. */
+.cm-adelantar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  margin: 0 1.25rem 1rem;
+  padding: .9rem 1.1rem;
+  background: var(--cm-marca-tenue);
+  border: 1px solid #e4d5fa;
+  border-radius: 12px;
+}
+.cm-adelantar__texto { min-width: 0; flex: 1 1 20rem; }
+.cm-adelantar__texto strong { display: block; color: var(--cm-marca-oscuro); font-size: .92rem; }
+.cm-adelantar__texto span {
+  display: block; font-size: .8rem; color: #667085;
+  line-height: 1.5; margin-top: .2rem; max-width: 42rem;
+}
+.cm-adelantar__control { display: flex; align-items: center; gap: .7rem; flex-wrap: wrap; }
+.cm-adelantar__control select { width: auto; min-width: 7.5rem; }
+.cm-adelantar__total { text-align: right; }
+.cm-adelantar__total small {
+  display: block; font-size: .64rem; color: #98a2b3;
+  text-transform: uppercase; letter-spacing: .05em;
+}
+.cm-adelantar__total strong { font-size: 1rem; color: #101828; white-space: nowrap; }
+
+/* Las casillas ya no se marcan a mano: las llena el control de arriba,
+   y enseñarlas activas invitaría a armar un salto. */
+.cm-amort .cm-lote-cuota:disabled { opacity: .45; cursor: default; }
+
+/* ---------- El plazo de una oferta, a elección del cliente ----------
+   A doce meses la cuota aprieta y se pagan menos intereses; a sesenta,
+   al revés. Es una decisión suya, y con la cuota de cada opción
+   delante deja de ser una apuesta. */
+.cm-plazos { margin-bottom: 1rem; }
+.cm-plazos__et {
+  font-size: .68rem; text-transform: uppercase; letter-spacing: .07em;
+  color: #98a2b3; margin-bottom: .5rem;
+}
+.cm-plazos__opciones { display: flex; flex-wrap: wrap; gap: .45rem; margin-bottom: .8rem; }
+
+.cm-plazo {
+  flex: 1 1 4.6rem;
+  min-width: 4.6rem;
+  padding: .55rem .35rem;
+  border: 1px solid #e3e8ee;
+  border-radius: 10px;
+  background: #fff;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .15s ease, background .15s ease;
+}
+.cm-plazo strong { display: block; font-size: 1.1rem; line-height: 1.1; color: #101828; }
+.cm-plazo small  { display: block; font-size: .62rem; color: #98a2b3; }
+.cm-plazo span   { display: block; font-size: .76rem; color: #667085; margin-top: .25rem; }
+.cm-plazo:hover:not(:disabled) { border-color: var(--cm-marca); }
+
+.cm-plazo--activo {
+  border-color: var(--cm-marca);
+  background: var(--cm-marca-tenue);
+  box-shadow: inset 0 0 0 1px var(--cm-marca);
+}
+.cm-plazo--activo strong,
+.cm-plazo--activo span { color: var(--cm-marca-oscuro); }
+
+/* El que no le cabe se enseña igual, apagado: esconderlo le haría
+   preguntarse por qué no está, y así ve dónde queda su techo. */
+.cm-plazo:disabled { opacity: .42; cursor: not-allowed; }
+
+.cm-plazos__detalle { margin-bottom: 0; }
+.cm-plazos__aviso {
+  margin: .6rem 0 0;
+  padding: .55rem .75rem;
+  background: #fff8e6;
+  border: 1px solid #f5d98b;
+  border-radius: 9px;
+  font-size: .8rem;
+  color: #8a6116;
+}
+
+[data-tema="noche"] .cm-plazo { background: var(--n-panel-alto); border-color: var(--n-borde); }
+[data-tema="noche"] .cm-plazo strong { color: var(--n-texto); }
+[data-tema="noche"] .cm-plazo span   { color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-plazo--activo { background: var(--n-marca-tenue); }
+[data-tema="noche"] .cm-plazo--activo strong,
+[data-tema="noche"] .cm-plazo--activo span { color: var(--n-marca-alto); }
+[data-tema="noche"] .cm-plazos__aviso {
+  background: rgba(251,191,78,.12); border-color: rgba(251,191,78,.3); color: #ffe0a8;
+}
+
+/* ---------- El monto, con deslizador ----------
+   Buscar «cuánto puedo pedir» tecleando cifras y esperando a que
+   recalcule es trabajo del cliente que debería hacer la pantalla.
+   Arrastrando se recorre el rango entero en dos segundos. */
+.cm-monto__valor {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--cm-marca-oscuro);
+  letter-spacing: -.01em;
+}
+
+.cm-monto__rango {
+  width: 100%;
+  height: 6px;
+  margin: .2rem 0 .3rem;
+  border-radius: 999px;
+  background: #eaecf0;
+  appearance: none;
+  outline: none;
+}
+.cm-monto__rango::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--cm-marca);
+  border: 3px solid #fff;
+  box-shadow: 0 2px 7px rgba(100,24,195,.42);
+  cursor: grab;
+}
+.cm-monto__rango::-webkit-slider-thumb:active { cursor: grabbing; }
+.cm-monto__rango::-moz-range-thumb {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--cm-marca);
+  border: 3px solid #fff;
+  box-shadow: 0 2px 7px rgba(100,24,195,.42);
+  cursor: grab;
+}
+
+.cm-monto__limites {
+  display: flex;
+  justify-content: space-between;
+  font-size: .72rem;
+  color: #98a2b3;
+}
+
+[data-tema="noche"] .cm-monto__valor { color: var(--n-marca-alto); }
+[data-tema="noche"] .cm-monto__rango { background: var(--n-borde); }
+[data-tema="noche"] .cm-monto__rango::-webkit-slider-thumb { border-color: var(--n-panel); }
+[data-tema="noche"] .cm-monto__rango::-moz-range-thumb { border-color: var(--n-panel); }
+[data-tema="noche"] .cm-monto__limites { color: var(--n-texto-debil); }
+
+/* Los botones de plazo del formulario no llevan cuota debajo, así que
+   son más compactos que los de una oferta. */
+.form-group .cm-plazos__opciones .cm-plazo { flex: 0 1 4.1rem; min-width: 4.1rem; padding: .4rem .3rem; }
+.form-group .cm-plazos__opciones .cm-plazo strong { font-size: .95rem; }
+
+/* El techo del cliente bajo el deslizador. El del producto dice hasta
+   dónde llega la casa; este dice hasta dónde llega él, y es el que
+   manda. */
+.cm-monto__capacidad {
+  display: block;
+  margin-top: .4rem;
+  font-size: .76rem;
+  color: #027a48;
+}
+.cm-monto__capacidad--pasa { color: var(--cm-rojo); font-weight: 600; }
+
+[data-tema="noche"] .cm-monto__capacidad { color: var(--n-verde); }
+[data-tema="noche"] .cm-monto__capacidad--pasa { color: var(--n-rojo); }

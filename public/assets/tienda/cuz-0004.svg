@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300" role="img">
+  <defs>
+    <linearGradient id="f70ad54" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset=".62" stop-color="#f7f8fb"/>
+      <stop offset="1" stop-color="#eceef4"/>
+    </linearGradient>
+    <radialGradient id="s70ad54" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#1d2433" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#1d2433" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="a70ad54" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#dd2590" stop-opacity=".95"/>
+      <stop offset="1" stop-color="#dd2590" stop-opacity=".72"/>
+    </linearGradient>
+    <linearGradient id="m70ad54" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".55"/>
+      <stop offset=".5" stop-color="#ffffff" stop-opacity=".08"/>
+      <stop offset="1" stop-color="#000000" stop-opacity=".10"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="300" fill="url(#f70ad54)"/>
+  <ellipse cx="200" cy="248" rx="112" ry="17" fill="url(#s70ad54)"/>
+
+  <g fill="url(#a70ad54)" stroke="none">
+    
+  <path d="M150 90 Q150 76 166 76 L234 76 Q250 76 250 90 L250 168 Q200 178 150 168 Z"/>
+  <path d="M158 96 L242 96 M158 118 L242 118 M158 140 L242 140" stroke="#fff" stroke-opacity=".4"
+        stroke-width="4"/>
+  <rect x="142" y="178" width="116" height="18" rx="8" fill="#5a6170"/>
+  <rect x="194" y="196" width="12" height="30" fill="#8a93a5"/>
+  <path d="M152 244 L248 244 M200 226 L152 244 M200 226 L248 244" stroke="#5a6170" stroke-width="7"
+        stroke-linecap="round"/>
+  <circle cx="152" cy="248" r="6" fill="#5a6170"/><circle cx="248" cy="248" r="6" fill="#5a6170"/>
+  </g>
+
+  <text x="200" y="285" text-anchor="middle" font-family="Poppins, Segoe UI, sans-serif"
+        font-size="11.5" font-weight="600" fill="#98a2b3">Librería Cuzcatlán</text>
+</svg>

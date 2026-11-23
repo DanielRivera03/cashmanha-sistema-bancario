@@ -1,0 +1,806 @@
+/* =====================================================================
+   CashMan H.A. — pantallas de acceso
+   ---------------------------------------------------------------------
+   Ingresar, recuperar, restablecer y cambio obligatorio de contraseña.
+
+   La estructura es la del sistema base (authincation > auth-form,
+   tarjeta centrada, logo y h4). Aquí solo se repinta el morado de la
+   plantilla con el verde de la marca y se añaden las piezas que el
+   sistema base no tenía: medidor de fuerza, campo de código y avisos.
+   ===================================================================== */
+
+:root {
+  /* Morado institucional, el mismo del panel y de los documentos.
+     Estas pantallas quedaron un tiempo en verde por un cambio que
+     nadie pidió; la identidad de la marca es #6418c3. */
+  --cm-marca:  #6418c3;
+  --cm-oscuro: #41107f;
+  --cm-claro:  #f4eefc;
+  --cm-oro:    #c99a2e;
+  --cm-rojo:   #b42318;
+  --cm-ambar:  #b45309;
+
+  /* Las que usa el calendario, con los mismos nombres que en `cm.css`.
+     Así el bloque copiado de allí no hay que traducirlo: si mañana se
+     vuelve a copiar una pieza del panel, encaja sin tocarla. */
+  --cm-sup:                 #ffffff;
+  --cm-sup-2:               #f6f4fb;
+  --cm-borde:               #e6e9ef;
+  --cm-marca-tenue:         var(--cm-claro);
+  --cm-tinta-2:             #434a57;
+  --cm-tinta-3:             #767f8f;
+  --cm-tinta-sobre-color:   #ffffff;
+}
+
+/* ---------------------------------------------------------------------
+   Fondo
+   --------------------------------------------------------------------- */
+body.cm-acceso-body {
+  background-color: #eef1f6 !important;
+  background-image:
+    radial-gradient(760px 480px at 88% -8%,  rgba(26, 138, 116, .10), transparent 62%),
+    radial-gradient(620px 420px at 6% 104%,  rgba(201, 154, 46, .07), transparent 60%),
+    linear-gradient(180deg, #f6f8fb 0%, #e9edf3 100%) !important;
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* Franja superior con el color de la marca: ancla la página sin
+   invadirla, como la cabecera de un portal bancario. */
+body.cm-acceso-body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--cm-oscuro), var(--cm-marca) 55%, var(--cm-oro));
+  z-index: 10;
+}
+
+/* El tema fija h-100 en html y body. Con un formulario más alto que la
+   pantalla —el de restablecer lo es— eso deja el botón cortado abajo y
+   sin forma de llegar a él. Se cambia por una altura mínima. */
+html.h-100, body.cm-acceso-body.h-100 {
+  height: auto !important;
+  min-height: 100%;
+}
+
+.cm-acceso-body .authincation {
+  padding: 2.5rem 0;
+  height: auto !important;
+  min-height: 100vh;
+}
+.cm-acceso-body .authincation .container.h-100 {
+  height: auto !important;
+  min-height: calc(100vh - 5rem);
+}
+.cm-acceso-body .authincation .row.h-100 {
+  height: auto !important;
+  min-height: calc(100vh - 5rem);
+}
+
+/* Ilustración de la plantilla.
+   Ocupa su propia línea: como hermana del bloque de la tarjeta dentro
+   de un flex, si cabe al lado se coloca al lado y descentra todo. */
+.cm-ilustracion {
+  flex: 0 0 100%;
+  max-width: 280px;
+  margin: 0 auto 1.5rem;
+  opacity: .95;
+}
+
+/* ---------------------------------------------------------------------
+   Tarjeta
+   --------------------------------------------------------------------- */
+.cm-acceso-body .authincation-content {
+  border-radius: 16px !important;
+  border: 1px solid #e3e8ef;
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, .04),
+    0 18px 44px -18px rgba(16, 24, 40, .22) !important;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Filo de color en el borde superior de la tarjeta */
+.cm-acceso-body .authincation-content::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--cm-marca), #8b4ae0 60%, var(--cm-oro));
+}
+
+.cm-acceso-body .auth-form { padding: 2.75rem 2.5rem 2.25rem !important; }
+
+@media (max-width: 575px) {
+  .cm-acceso-body .auth-form { padding: 1.9rem 1.4rem !important; }
+  .cm-acceso-body .authincation { padding: 1.25rem 0; }
+}
+
+.cm-acceso-body .logo-formulario {
+  max-width: 62px;
+  margin-bottom: 1.1rem;
+}
+
+.cm-acceso-body .auth-form h4 {
+  font-size: 1.22rem;
+  font-weight: 600;
+  color: #16202c;
+  letter-spacing: -.015em;
+}
+
+.cm-acceso-body .cm-sub {
+  color: #7e8299;
+  font-size: .85rem;
+  line-height: 1.55;
+  text-align: center;
+  margin-bottom: 1.6rem;
+}
+
+/* ---------------------------------------------------------------------
+   Campos — misma forma que la plantilla, en verde
+   --------------------------------------------------------------------- */
+.cm-acceso-body .text-label {
+  font-size: .78rem;
+  font-weight: 600;
+  color: #475467;
+  margin-bottom: .4rem;
+}
+
+.cm-acceso-body .form-control {
+  height: 48px;
+  border-color: #e4e9f0;
+  color: #16202c;
+  font-size: .92rem;
+}
+.cm-acceso-body .form-control::placeholder { color: #aeb8c9; }
+.cm-acceso-body .form-control:focus {
+  border-color: var(--cm-marca);
+  box-shadow: 0 0 0 3.5px rgba(26,138,116,.12);
+}
+
+/* Icono delantero del input-group */
+.cm-acceso-body .input-group-text {
+  background: #f3f6f9 !important;
+  border-color: #e4e9f0;
+  color: var(--cm-marca);
+  min-width: 46px;
+  justify-content: center;
+}
+
+.cm-acceso-body .input-group > .form-control {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.cm-acceso-body .input-group-prepend .input-group-text {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* Botón de ver contraseña, como en el sistema base */
+.cm-acceso-body .show-pass .btn {
+  background: #f3f6f9;
+  border: 1px solid #e4e9f0;
+  border-left: 0;
+  color: #98a2b3;
+  border-radius: 0 .75rem .75rem 0;
+  padding: 0 .9rem;
+  display: flex;
+  align-items: center;
+  transition: color .14s, background .14s;
+}
+.cm-acceso-body .show-pass .btn:hover { color: var(--cm-marca); background: #f4eefc; }
+.cm-acceso-body .input-group > .show-pass > .form-control,
+.cm-acceso-body .input-group .form-control:not(:last-child) {
+  border-right: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* ---------------------------------------------------------------------
+   Botones y enlaces en verde
+   --------------------------------------------------------------------- */
+.cm-acceso-body .btn-primary {
+  background-color: var(--cm-marca) !important;
+  border-color: var(--cm-marca) !important;
+  height: 48px;
+  font-weight: 600;
+  font-size: .92rem;
+  box-shadow: 0 8px 20px -9px rgba(26,138,116,.75);
+  transition: filter .14s, transform .14s, box-shadow .14s;
+}
+.cm-acceso-body .btn-primary:hover:not(:disabled),
+.cm-acceso-body .btn-primary:focus:not(:disabled) {
+  background-color: #4f12a0 !important;
+  border-color: #4f12a0 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px -10px rgba(26,138,116,.8);
+}
+.cm-acceso-body .btn-primary:disabled { opacity: .6; box-shadow: none; }
+
+/* Los enlaces van en verde, pero NO los que son botones: ahí el texto
+   es blanco sobre el fondo verde. Sin el :not(.btn) esta regla gana por
+   especificidad a la de .btn-primary y el botón se queda sin texto
+   visible. */
+.cm-acceso-body .auth-form a:not(.btn) { color: var(--cm-marca); font-weight: 500; }
+.cm-acceso-body .auth-form a:not(.btn):hover {
+  color: var(--cm-oscuro);
+  text-decoration: underline;
+}
+
+/* Un <a> con clase de botón no centra el texto solo cuando se le fija
+   una altura: hay que decírselo. */
+.cm-acceso-body a.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.cm-acceso-body a.btn:hover { color: #fff; text-decoration: none; }
+.cm-acceso-body a.btn-block { display: flex; }
+
+.cm-acceso-body .custom-control-input:checked ~ .custom-control-label::before {
+  background: var(--cm-marca);
+  border-color: var(--cm-marca);
+}
+.cm-acceso-body .custom-control-label { color: #667085; font-size: .83rem; }
+
+/* ---------------------------------------------------------------------
+   Aviso superior (alert left-icon-big de la plantilla)
+   --------------------------------------------------------------------- */
+.cm-acceso-body .alert-left-icon-big span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cm-acceso-body .left-icon-big {
+  border-radius: 14px;
+  box-shadow: 0 14px 34px -16px rgba(0,0,0,.5);
+}
+.cm-acceso-body .left-icon-big .media-body p { font-size: .82rem; line-height: 1.55; }
+.cm-acceso-body .left-icon-big .media-body h6 { font-size: .9rem; font-weight: 600; }
+
+/* ---------------------------------------------------------------------
+   Piezas propias de v2
+   --------------------------------------------------------------------- */
+
+/* Campo de código, con el espaciado del sistema base */
+.cm-codigo {
+  text-align: center;
+  font-size: 1.45rem !important;
+  letter-spacing: 1rem;
+  text-indent: 1rem;
+  font-family: Consolas, "JetBrains Mono", monospace;
+  font-weight: 600;
+  height: 58px !important;
+  color: var(--cm-oscuro) !important;
+}
+
+/* Medidor de fuerza */
+.cm-fuerza {
+  height: 5px;
+  border-radius: 3px;
+  background: #edf1f6;
+  overflow: hidden;
+  margin-top: .6rem;
+}
+.cm-acceso-body #etiqueta-fuerza {
+  margin-top: .3rem;
+  margin-bottom: 0;
+  min-height: 1.1em;
+  font-weight: 600;
+}
+.cm-fuerza i {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 3px;
+  transition: width .28s ease, background .28s ease;
+}
+
+.cm-reglas { list-style: none; padding: 0; margin: .7rem 0 0; }
+.cm-reglas li {
+  font-size: .76rem;
+  color: #9aa5b8;
+  padding: .15rem 0;
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  transition: color .15s;
+}
+.cm-reglas li::before {
+  content: "";
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 1.6px solid #d6dde8;
+  flex: 0 0 15px;
+  transition: all .16s;
+}
+.cm-reglas li.ok { color: var(--cm-marca); }
+.cm-reglas li.ok::before {
+  background-color: var(--cm-marca);
+  border-color: var(--cm-marca);
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E");
+  background-position: center;
+  background-size: 9px;
+  background-repeat: no-repeat;
+}
+
+/* Aviso en línea del formulario */
+.cm-aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: .6rem;
+  padding: .78rem .92rem;
+  border-radius: .75rem;
+  font-size: .835rem;
+  line-height: 1.5;
+  margin-bottom: 1.1rem;
+  border: 1px solid transparent;
+}
+.cm-aviso svg { flex: 0 0 17px; margin-top: 1px; }
+.cm-aviso--error  { background: #fef3f2; border-color: #fecdca; color: #912018; }
+.cm-aviso--exito  { background: #ecfdf3; border-color: #a6f4c5; color: #05603a; }
+.cm-aviso--info   { background: #f3f8fc; border-color: #d3e6f5; color: #1c4e80; }
+.cm-aviso--alerta { background: #fffaeb; border-color: #fedf89; color: #93370d; }
+
+/* Iconos circulares de las pantallas de confirmación */
+.cm-icono-exito,
+.cm-icono-alerta {
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cm-icono-exito  { background: var(--cm-claro); color: var(--cm-marca); }
+.cm-icono-alerta { background: #fffaeb; color: var(--cm-ambar); }
+
+.cm-pie-acceso { font-size: .76rem; color: #8a94a6; }
+
+/* Sellos de confianza bajo la tarjeta */
+.cm-sellos-pie {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .4rem .9rem;
+  margin-top: 1.1rem;
+}
+.cm-sellos-pie span {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  font-size: .72rem;
+  color: #7d879c;
+  background: rgba(255,255,255,.75);
+  border: 1px solid #e3e8ef;
+  border-radius: 999px;
+  padding: .3rem .7rem;
+}
+.cm-sellos-pie svg { color: var(--cm-marca); flex: 0 0 12px; }
+
+.cm-paso { animation: cmEntra .28s ease both; }
+@keyframes cmEntra {
+  from { opacity: 0; transform: translateY(9px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ---------------------------------------------------------------------
+   Detección del autocompletado
+   ---------------------------------------------------------------------
+   Chrome no avisa cuando rellena un campo: no dispara `input` ni
+   `change`. Lo único que sí hace es aplicar su propio estilo
+   `:-webkit-autofill`. Enganchando una animación vacía a ese estado, el
+   navegador emite `animationstart`, y eso el JavaScript sí lo oye.
+   --------------------------------------------------------------------- */
+
+@keyframes onAutoFillStart { from { /* nada */ } to { /* nada */ } }
+@keyframes onAutoFillCancel { from { } to { } }
+
+input:-webkit-autofill { animation-name: onAutoFillStart; animation-duration: 1ms; }
+input:not(:-webkit-autofill) { animation-name: onAutoFillCancel; animation-duration: 1ms; }
+
+
+/* =====================================================================
+   EL CALENDARIO PROPIO
+   ---------------------------------------------------------------------
+   Copiado de `cm.css`, que es la hoja del panel: traerla entera a una
+   pantalla de acceso serían trescientos kilobytes de menú lateral y
+   tablas que aquí no existen. Solo las reglas del calendario, con sus
+   variables ya resueltas al color de la marca.
+
+   El campo sigue siendo `input[type=date]`: el valor viaja en ISO, la
+   validación del navegador sigue funcionando y, si el guion no cargara,
+   el campo se usa con el selector de siempre. Lo único que cambia es
+   que se ve como el resto del sistema.
+   ===================================================================== */
+
+.cm-cal-campo::-webkit-calendar-picker-indicator { display: none; }
+.cm-cal-campo::-webkit-inner-spin-button { display: none; }
+.cm-cal-campo { padding-right: 2.2rem; }
+
+.cm-cal-contenedor { position: relative; }
+
+.cm-cal-boton {
+  position: absolute;
+  right: .55rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: 0;
+  padding: .15rem;
+  line-height: 0;
+  color: var(--cm-tinta-3);
+  cursor: pointer;
+  transition: color .15s;
+}
+.cm-cal-boton:hover { color: var(--cm-marca); }
+
+/* ---------- El panel ---------- */
+.cm-cal {
+  position: fixed;
+  z-index: 1200;
+  width: 17.5rem;
+  background: var(--cm-sup);
+  border: 1px solid rgba(140, 150, 165, .16);
+  border-radius: 12px;
+  box-shadow: 0 14px 36px rgba(44, 20, 80, .18), 0 2px 6px rgba(44, 20, 80, .06);
+  padding: .7rem;
+  animation: cm-cal-entra .12s ease-out;
+}
+.cm-cal[hidden] { display: none; }
+
+@keyframes cm-cal-entra {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.cm-cal__cab {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  margin-bottom: .5rem;
+}
+
+.cm-cal__nav {
+  background: none;
+  border: 1px solid var(--cm-borde);
+  border-radius: 8px;
+  width: 1.9rem;
+  height: 1.9rem;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--cm-tinta-2);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.cm-cal__nav:hover { background: var(--cm-marca-tenue); color: var(--cm-marca); border-color: #e3d5f7; }
+
+.cm-cal__mes { display: flex; gap: .3rem; flex: 1; min-width: 0; }
+
+.cm-cal__sel {
+  flex: 1;
+  min-width: 0;
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--cm-tinta-2);
+  border: 1px solid var(--cm-borde);
+  border-radius: 8px;
+  padding: .25rem .3rem;
+  background: var(--cm-sup);
+  cursor: pointer;
+}
+.cm-cal__sel:focus { outline: none; border-color: var(--cm-marca); }
+
+.cm-cal__semana,
+.cm-cal__dias {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.cm-cal__semana span {
+  text-align: center;
+  font-size: .66rem;
+  font-weight: 700;
+  color: var(--cm-tinta-3);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  padding: .2rem 0 .3rem;
+}
+
+.cm-cal__dia {
+  background: none;
+  border: 0;
+  border-radius: 8px;
+  padding: .36rem 0;
+  font-size: .82rem;
+  color: var(--cm-tinta-2);
+  cursor: pointer;
+  transition: background .12s, color .12s;
+}
+.cm-cal__dia:hover:not(:disabled) { background: var(--cm-marca-tenue); color: var(--cm-marca); }
+.cm-cal__dia:disabled { color: #d0d5dd; cursor: default; }
+
+/* Hoy se marca con un punto, no con color: el color se reserva para la
+   fecha elegida, que es la que importa de verdad. */
+.cm-cal__dia--hoy { font-weight: 700; position: relative; }
+.cm-cal__dia--hoy::after {
+  content: ''; position: absolute; left: 50%; bottom: .18rem;
+  transform: translateX(-50%);
+  width: 3px; height: 3px; border-radius: 50%; background: var(--cm-marca);
+}
+
+.cm-cal__dia--elegido,
+.cm-cal__dia--elegido:hover {
+  background: var(--cm-marca);
+  color: var(--cm-sup);
+  font-weight: 600;
+}
+.cm-cal__dia--elegido.cm-cal__dia--hoy::after { background: var(--cm-sup); }
+
+.cm-cal__vacio { }
+
+.cm-cal__pie {
+  display: flex;
+  justify-content: space-between;
+  gap: .4rem;
+  margin-top: .55rem;
+  padding-top: .5rem;
+  border-top: 1px solid #f2f4f7;
+}
+
+.cm-cal__accion {
+  background: none;
+  border: 0;
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--cm-marca);
+  cursor: pointer;
+  padding: .2rem .35rem;
+  border-radius: 6px;
+}
+.cm-cal__accion:hover { background: var(--cm-marca-tenue); }
+.cm-cal__accion--tenue { color: var(--cm-tinta-3); }
+.cm-cal__accion--tenue:hover { background: var(--cm-sup-2); color: var(--cm-tinta-2); }
+
+
+/* =====================================================================
+   EL TEMA DEL SITIO, EN LAS PANTALLAS DE ACCESO
+   ---------------------------------------------------------------------
+   Entrar, registrarse, recuperar la contraseña y cambiarla vivían en su
+   propio mundo: fondo gris claro con dos manchas de color, mientras la
+   cara pública tenía degradado animado y paisaje de El Salvador. Quien
+   venía de la portada a entrar notaba el salto, y un salto así en el
+   momento de teclear una contraseña es exactamente donde no conviene
+   que el cliente dude de si sigue en el sitio del banco.
+
+   Ahora comparten el degradado, el escenario y los remates. El guion
+   es el mismo archivo que usa el sitio, así que no hay dos dibujos del
+   mismo volcán que mantener.
+   ===================================================================== */
+
+body.cm-acceso-body {
+  position: relative;
+  /* Gana al `!important` del fondo anterior con una regla más
+     específica, sin añadir otro `!important` encima. */
+  background-color: #41107f !important;
+  background-image: linear-gradient(
+      118deg, #8a35ef 0%, #6418c3 28%, #41107f 58%, #7a2ae0 82%, #4a1596 100%
+  ) !important;
+  background-size: 260% 260% !important;
+  animation: cmAmanecerAcceso 26s ease-in-out infinite;
+}
+
+@keyframes cmAmanecerAcceso {
+  0%   { background-position:   0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position:   0% 50%; }
+}
+
+/* El escenario, al fondo de todo. */
+.cm-acceso-fondo {
+  position: fixed;
+  inset: auto 0 0 0;
+  height: clamp(200px, 36vh, 380px);
+  z-index: 0;
+  pointer-events: none;
+}
+.cm-acceso-fondo .esc { position: absolute; inset: 0; height: 100%; }
+
+.authincation { position: relative; z-index: 1; }
+
+/* ---------------------------------------------------------------- */
+/*  LA TARJETA                                                       */
+/* ---------------------------------------------------------------- */
+
+.authincation-content {
+  border-radius: 22px !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  box-shadow:
+    0 10px 24px rgba(16,10,40,.18),
+    0 34px 70px rgba(26,10,62,.34) !important;
+  /* Un punto de transparencia para que el paisaje se intuya detrás sin
+     restarle legibilidad a lo que se teclea. */
+  background: rgba(255,255,255,.97) !important;
+  backdrop-filter: blur(10px);
+}
+
+/* El filo de color de arriba, el mismo remate de la franja del sitio. */
+.authincation-content::before {
+  content: "";
+  position: absolute; inset: 0 0 auto 0; height: 4px;
+  border-radius: 22px 22px 0 0;
+  background: linear-gradient(90deg, #7a2ae0, #6418c3 45%, #c99a2e);
+}
+.authincation-content { position: relative; overflow: hidden; }
+
+/* ---------------------------------------------------------------- */
+/*  TEXTOS SOBRE EL MORADO                                           */
+/* ---------------------------------------------------------------- */
+
+/* Los sellos del pie y el aviso de copyright iban en gris sobre un
+   fondo claro. Con el fondo morado se perdían igual que se perdía el
+   párrafo de las cabeceras. */
+.cm-sellos-pie span {
+  background: rgba(255,255,255,.12) !important;
+  border: 1px solid rgba(255,255,255,.2) !important;
+  color: rgba(255,255,255,.92) !important;
+  backdrop-filter: blur(6px);
+}
+
+.cm-pie-acceso { color: rgba(255,255,255,.76) !important; }
+
+/* ---------------------------------------------------------------- */
+/*  EL CAMPO DE FECHA                                                */
+/* ---------------------------------------------------------------- */
+
+/* El calendario propio se engancha a cualquier `input[type=date]` y le
+   pone la clase `cm-cal-campo`, que oculta el icono del navegador y
+   deja sitio al nuestro. Aquí solo hay que asegurarse de que el panel
+   flotante quede por encima de la tarjeta. */
+.cm-cal { z-index: 60; }
+
+/* ---------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  body.cm-acceso-body { animation: none; background-position: 0% 50% !important; }
+}
+
+@media (max-width: 575px) {
+  .cm-acceso-fondo { height: 160px; opacity: .7; }
+}
+
+/* =====================================================================
+   LA LISTA DE VENTAJAS DEL REGISTRO
+   ---------------------------------------------------------------------
+   Nadie definía `.cm-ventajas`, así que salía como una lista del
+   navegador en medio de una pantalla con todo lo demás cuidado: cuatro
+   renglones sueltos, enormes, sin viñeta y sin relación con el
+   formulario de abajo.
+   ===================================================================== */
+
+.cm-acceso-body .cm-ventajas {
+  margin: 0 0 1.4rem;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: .45rem;
+}
+
+.cm-acceso-body .cm-ventajas li {
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+  font-size: .845rem;
+  line-height: 1.45;
+  color: #475467;
+}
+
+/* La palomita, dibujada con CSS: una imagen más que pedir, para cuatro
+   renglones, no vale lo que cuesta. */
+.cm-acceso-body .cm-ventajas li::before {
+  content: "";
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  margin-top: .12rem;
+  border-radius: 50%;
+  background: #ecfdf3;
+  box-shadow: inset 0 0 0 1px #a6f4c5;
+  -webkit-mask: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2305603a' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E");
+  background-size: 11px 11px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* El selector del tipo de documento, al lado de su número. */
+.cm-acceso-body select.form-control {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23667085' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-size: 15px 15px;
+  background-position: right .7rem center;
+  background-repeat: no-repeat;
+  padding-right: 2rem;
+}
+
+
+/* =====================================================================
+   EL REGISTRO, EN DOS COLUMNAS
+   ---------------------------------------------------------------------
+   Nueve campos uno debajo de otro, con las ventajas encima, hacían una
+   tira que había que recorrer entera para llegar al botón. En una
+   pantalla de portátil el botón «Crear mi cuenta» no se veía nunca sin
+   bajar, y un formulario cuyo final no se ve se abandona más.
+
+   Ahora las ventajas van al costado —dicen lo mismo y no empujan nada—
+   y los campos se emparejan. En un portátil cabe entero.
+
+   Debajo de 768 px vuelve a una sola columna: en un teléfono dos
+   columnas de campos no se pueden llenar.
+   ===================================================================== */
+
+.cm-acceso-body .cm-registro {
+  display: grid;
+  grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+  gap: 1.75rem;
+  align-items: start;
+}
+
+.cm-acceso-body .cm-registro__lado {
+  padding-right: 1.5rem;
+  border-right: 1px solid #eaecf0;
+}
+
+.cm-acceso-body .cm-registro__titulo {
+  margin: 0 0 .75rem;
+  font-size: .82rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: #667085;
+}
+
+.cm-acceso-body .cm-registro__pie {
+  margin: 1.1rem 0 0;
+  font-size: .76rem;
+  line-height: 1.5;
+  color: #98a2b3;
+}
+
+.cm-acceso-body .cm-registro__ya {
+  margin: 1.1rem 0 0;
+  font-size: .84rem;
+  line-height: 1.6;
+  color: #667085;
+}
+
+/* Los campos, más juntos: cada franja de más es una franja que se baja. */
+.cm-acceso-body .cm-registro__form .form-group { margin-bottom: .7rem; }
+
+.cm-acceso-body .cm-registro__form .form-text {
+  margin-top: .2rem;
+  font-size: .73rem;
+  line-height: 1.35;
+}
+
+.cm-acceso-body .cm-registro__form .btn-block { margin-top: .9rem; }
+
+@media (max-width: 767.98px) {
+  .cm-acceso-body .cm-registro { grid-template-columns: 1fr; gap: 1.1rem; }
+
+  .cm-acceso-body .cm-registro__lado {
+    padding-right: 0;
+    border-right: 0;
+    border-bottom: 1px solid #eaecf0;
+    padding-bottom: 1rem;
+  }
+
+  /* El enlace de «ya soy cliente» se queda: esconderlo en el teléfono
+     dejaba sin salida a quien entró aquí por equivocación, que es
+     justo donde más fácil es equivocarse de pantalla. */
+  .cm-acceso-body .cm-registro__ya { margin-top: .8rem; }
+}

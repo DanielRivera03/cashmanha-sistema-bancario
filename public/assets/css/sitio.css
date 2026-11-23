@@ -1,0 +1,2272 @@
+/* =====================================================================
+   CashMan H.A. — sitio público
+   ---------------------------------------------------------------------
+   Hoja independiente, a propósito. El sitio público no comparte nada
+   estructural con el panel: no tiene menú lateral, ni cabecera fija, ni
+   tarjetas de datos. Reutilizar `style.css` de la plantilla traía 300 kB
+   de reglas para componentes que aquí no existen, y obligaba a deshacer
+   la mitad.
+
+   El color es el morado #6418c3, que es el de la marca desde la primera
+   versión del sistema.
+   ===================================================================== */
+
+:root {
+  --marca:        #6418c3;
+  --marca-oscura: #41107f;
+  --marca-tenue:  #f4eefc;
+  --oro:          #c99a2e;
+  --tinta:        #16181d;
+  --texto:        #434a57;
+  --suave:        #767f8f;
+  --borde:        #e6e9ef;
+  --fondo:        #fbfbfd;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Poppins, "Segoe UI", system-ui, -apple-system, sans-serif;
+  color: var(--texto);
+  background: #fff;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 { color: var(--tinta); line-height: 1.2; margin: 0 0 .6rem; font-weight: 700; }
+h1 { font-size: clamp(1.9rem, 4.2vw, 3.1rem); letter-spacing: -.02em; }
+h2 { font-size: clamp(1.45rem, 2.8vw, 2.1rem); letter-spacing: -.015em; }
+h3 { font-size: 1.05rem; }
+p  { margin: 0 0 1rem; }
+img { max-width: 100%; }
+
+a { color: var(--marca); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* El ancho de lectura de todo el sitio. */
+.sitio-ancho {
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
+  padding-inline: 20px;
+}
+
+/* Enlace para quien navega con teclado: invisible hasta recibir foco. */
+.sitio-saltar {
+  position: absolute; left: -9999px;
+  background: var(--marca); color: #fff;
+  padding: .6rem 1rem; border-radius: 0 0 8px 0; z-index: 100;
+}
+.sitio-saltar:focus { left: 0; top: 0; }
+
+/* ---------------------------------------------------------------------
+   Cabecera
+   --------------------------------------------------------------------- */
+
+.sitio-cabecera {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255,255,255,.92);
+  backdrop-filter: saturate(180%) blur(12px);
+  border-bottom: 1px solid var(--borde);
+}
+
+.sitio-cabecera__fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 72px;
+}
+
+.sitio-marca {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--marca-oscura);
+  letter-spacing: -.01em;
+  white-space: nowrap;
+}
+.sitio-marca:hover { text-decoration: none; }
+.sitio-marca img { height: 34px; width: auto; }
+.sitio-marca b { font-weight: 700; }
+
+.sitio-nav {
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+}
+
+.sitio-nav > a:not(.sitio-btn) {
+  padding: .5rem .8rem;
+  border-radius: 8px;
+  color: var(--texto);
+  font-size: .92rem;
+  font-weight: 500;
+  transition: background .15s, color .15s;
+}
+.sitio-nav > a:not(.sitio-btn):hover {
+  background: var(--marca-tenue);
+  color: var(--marca-oscura);
+  text-decoration: none;
+}
+.sitio-nav > a.activo { color: var(--marca); font-weight: 600; }
+
+.sitio-nav__acceso { margin-left: .5rem; }
+
+/* ---------- Botones ---------- */
+
+.sitio-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .45rem;
+  padding: .7rem 1.25rem;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-size: .93rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .14s, box-shadow .14s, background .14s, color .14s;
+  white-space: nowrap;
+}
+.sitio-btn:hover { text-decoration: none; transform: translateY(-1px); }
+
+.sitio-btn--primario {
+  background: var(--marca);
+  color: #fff;
+  box-shadow: 0 6px 18px -8px rgba(100,24,195,.65);
+}
+.sitio-btn--primario:hover { background: var(--marca-oscura); color: #fff; }
+
+.sitio-btn--linea {
+  border-color: var(--borde);
+  color: var(--marca-oscura);
+  background: #fff;
+}
+.sitio-btn--linea:hover { border-color: var(--marca); color: var(--marca); }
+
+/* Botón sobre fondo morado.
+   Estaba translúcido sobre el morado del pie y quedaba deslavado: el
+   texto blanco sobre un 14 %% de blanco apenas se despegaba del fondo.
+   Sólido y con el morado de la marca como texto es la combinación que
+   más contrasta y la que se lee a la primera. */
+.sitio-btn--claro {
+  background: #fff;
+  color: var(--marca-oscura);
+  border-color: #fff;
+  box-shadow: 0 8px 20px -10px rgba(0,0,0,.55);
+}
+.sitio-btn--claro:hover {
+  background: var(--oro);
+  border-color: var(--oro);
+  color: #3b2a04;
+  box-shadow: 0 10px 24px -10px rgba(0,0,0,.6);
+}
+
+/* ---------- Menú en pantalla estrecha ---------- */
+
+.sitio-menu__boton { display: none; }
+
+@media (max-width: 900px) {
+  .sitio-menu__boton {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 42px; height: 42px;
+    padding: 10px;
+    border: 1px solid var(--borde);
+    border-radius: 9px;
+    cursor: pointer;
+  }
+  .sitio-menu__boton span {
+    display: block; height: 2px; width: 100%;
+    background: var(--marca-oscura); border-radius: 2px;
+  }
+
+  /* El menú se despliega sin una línea de JavaScript: la casilla oculta
+     guarda el estado y el selector hermano lo lee. Menos cosas que
+     puedan fallar en la página que más gente visita. */
+  .sitio-nav {
+    display: none;
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: .15rem;
+    padding: .8rem 20px 1.1rem;
+    background: #fff;
+    border-bottom: 1px solid var(--borde);
+    box-shadow: 0 18px 30px -18px rgba(16,24,40,.25);
+  }
+  .sitio-menu__estado:checked ~ .sitio-nav { display: flex; }
+  .sitio-nav__acceso { margin: .5rem 0 0; }
+  .sitio-cabecera__fila { position: relative; flex-wrap: wrap; }
+}
+
+/* ---------------------------------------------------------------------
+   Portada
+   --------------------------------------------------------------------- */
+
+.sitio-hero {
+  position: relative;
+  background:
+    radial-gradient(1100px 420px at 88% -12%, rgba(100,24,195,.16), transparent 62%),
+    radial-gradient(760px 340px at 4% 8%, rgba(201,154,46,.11), transparent 60%),
+    var(--fondo);
+  border-bottom: 1px solid var(--borde);
+  padding: clamp(2.8rem, 7vw, 5.2rem) 0 clamp(2.4rem, 6vw, 4.4rem);
+  overflow: hidden;
+}
+
+.sitio-hero__rejilla {
+  display: grid;
+  grid-template-columns: 1.05fr .95fr;
+  gap: clamp(1.8rem, 4vw, 3.4rem);
+  align-items: center;
+}
+@media (max-width: 900px) {
+  .sitio-hero__rejilla { grid-template-columns: 1fr; }
+}
+
+.sitio-etiqueta {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  background: #fff;
+  border: 1px solid var(--borde);
+  color: var(--marca-oscura);
+  font-size: .76rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  padding: .36rem .75rem;
+  border-radius: 999px;
+  margin-bottom: 1.1rem;
+}
+.sitio-etiqueta svg { color: var(--marca); }
+
+/* El párrafo de la cabecera.
+ *
+ * Llevaba `var(--suave)`, que es el gris de leer sobre blanco: era
+ * correcto cuando la cabecera ERA blanca. Al volverse un degradado
+ * morado, ese gris quedó a un paso del fondo y el párrafo se perdía
+ * —el titular se leía y la explicación no—.
+ *
+ * Se corrige aquí y no con otra regla encima a propósito: esta tiene
+ * un elemento más en el selector (`p.sitio-entrada`) que cualquier
+ * `.sitio-hero .sitio-entrada`, así que gana siempre. Apilar
+ * especificidad para tapar una regla que ya no vale es cómo se llega a
+ * una hoja donde nadie sabe qué color manda. */
+.sitio-hero p.sitio-entrada {
+  font-size: clamp(1rem, 1.6vw, 1.14rem);
+  color: rgba(255, 255, 255, .92);
+  max-width: 46ch;
+  margin-bottom: 1.7rem;
+}
+
+.sitio-acciones { display: flex; flex-wrap: wrap; gap: .7rem; }
+
+/* Tarjeta ilustrativa del hero. No es un dato de nadie: es una muestra
+   de cómo se ve la banca en línea por dentro. */
+.sitio-muestra {
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: 18px;
+  box-shadow: 0 28px 60px -34px rgba(16,24,40,.4);
+  overflow: hidden;
+}
+.sitio-muestra__barra {
+  background: linear-gradient(100deg, var(--marca-oscura), var(--marca) 70%);
+  color: #fff;
+  padding: 1.1rem 1.3rem;
+}
+.sitio-muestra__barra small { opacity: .75; font-size: .74rem; letter-spacing: .05em; text-transform: uppercase; }
+.sitio-muestra__barra div { font-size: 1.65rem; font-weight: 700; letter-spacing: -.01em; }
+.sitio-muestra__cuerpo { padding: .4rem 1.3rem 1.1rem; }
+
+.sitio-linea {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .72rem 0;
+  border-bottom: 1px solid var(--borde);
+  font-size: .87rem;
+}
+.sitio-linea:last-child { border-bottom: 0; }
+.sitio-linea span { color: var(--suave); }
+.sitio-linea b { color: var(--tinta); font-weight: 600; font-variant-numeric: tabular-nums; }
+.sitio-linea b.neg { color: #b42318; }
+.sitio-linea b.pos { color: #15803d; }
+
+/* ---------------------------------------------------------------------
+   Secciones
+   --------------------------------------------------------------------- */
+
+.sitio-seccion { padding: clamp(2.6rem, 6vw, 4.6rem) 0; }
+.sitio-seccion--tenue { background: var(--fondo); border-block: 1px solid var(--borde); }
+
+.sitio-titulo { max-width: 60ch; margin-bottom: 2.2rem; }
+.sitio-titulo p { color: var(--suave); margin-bottom: 0; }
+.sitio-titulo--centro { margin-inline: auto; text-align: center; }
+
+.sitio-rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
+  gap: 1.1rem;
+}
+
+.sitio-tarjeta {
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: 14px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  transition: border-color .16s, box-shadow .16s, transform .16s;
+}
+.sitio-tarjeta:hover {
+  border-color: #d7c3f0;
+  box-shadow: 0 18px 34px -24px rgba(100,24,195,.5);
+  transform: translateY(-2px);
+}
+
+.sitio-tarjeta__icono {
+  width: 44px; height: 44px;
+  display: grid; place-items: center;
+  border-radius: 12px;
+  background: var(--marca-tenue);
+  color: var(--marca);
+  margin-bottom: 1rem;
+}
+
+.sitio-tarjeta h3 { margin-bottom: .35rem; }
+.sitio-tarjeta p { color: var(--suave); font-size: .89rem; margin-bottom: 1rem; }
+.sitio-tarjeta__pie { margin-top: auto; }
+
+/* Tasa destacada dentro de una tarjeta de producto. */
+.sitio-tasa {
+  display: flex;
+  align-items: baseline;
+  gap: .4rem;
+  padding: .7rem .9rem;
+  background: var(--marca-tenue);
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+.sitio-tasa b { font-size: 1.4rem; color: var(--marca-oscura); font-weight: 700; line-height: 1; }
+.sitio-tasa span { font-size: .76rem; color: var(--suave); }
+
+/* ---------- Cifras ---------- */
+
+.sitio-cifras {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  text-align: center;
+}
+.sitio-cifra b {
+  display: block;
+  font-size: clamp(1.7rem, 3.4vw, 2.5rem);
+  font-weight: 700;
+  color: var(--marca);
+  line-height: 1.1;
+  letter-spacing: -.02em;
+}
+.sitio-cifra span { font-size: .84rem; color: var(--suave); }
+
+/* ---------- Lista de ventajas ---------- */
+
+.sitio-lista { list-style: none; padding: 0; margin: 0; display: grid; gap: .8rem; }
+.sitio-lista li {
+  display: flex;
+  gap: .7rem;
+  align-items: flex-start;
+  font-size: .92rem;
+}
+.sitio-lista svg { color: var(--marca); flex: 0 0 18px; margin-top: .26rem; }
+.sitio-lista b { color: var(--tinta); }
+
+/* ---------- Tabla de tasas ---------- */
+
+.sitio-tabla-caja {
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.sitio-tabla { width: 100%; border-collapse: collapse; font-size: .89rem; }
+.sitio-tabla th {
+  background: var(--marca);
+  color: #fff;
+  text-align: left;
+  font-size: .76rem;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  padding: .8rem 1rem;
+  font-weight: 600;
+}
+.sitio-tabla td { padding: .8rem 1rem; border-bottom: 1px solid var(--borde); }
+.sitio-tabla tr:last-child td { border-bottom: 0; }
+.sitio-tabla tbody tr:nth-child(even) { background: #fcfbfe; }
+.sitio-tabla td:last-child, .sitio-tabla th:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+.sitio-tabla .sitio-tabla__dato { font-weight: 600; color: var(--marca-oscura); }
+
+@media (max-width: 640px) {
+  .sitio-tabla-caja { overflow-x: auto; }
+  .sitio-tabla { min-width: 480px; }
+}
+
+/* ---------- Acordeón de preguntas ---------- */
+
+.sitio-pregunta {
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  margin-bottom: .7rem;
+  overflow: hidden;
+}
+.sitio-pregunta summary {
+  cursor: pointer;
+  padding: 1rem 1.2rem;
+  font-weight: 600;
+  color: var(--tinta);
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+.sitio-pregunta summary::-webkit-details-marker { display: none; }
+.sitio-pregunta summary::after {
+  content: "+";
+  color: var(--marca);
+  font-size: 1.3rem;
+  font-weight: 400;
+  line-height: 1;
+  flex: 0 0 auto;
+}
+.sitio-pregunta[open] summary::after { content: "−"; }
+.sitio-pregunta[open] summary { border-bottom: 1px solid var(--borde); }
+.sitio-pregunta__cuerpo { padding: 1rem 1.2rem; color: var(--suave); font-size: .91rem; }
+.sitio-pregunta__cuerpo p:last-child { margin-bottom: 0; }
+
+/* ---------- Franja de llamada a la acción ---------- */
+
+.sitio-llamada {
+  background: linear-gradient(100deg, var(--marca-oscura), var(--marca) 72%);
+  color: #fff;
+  padding: clamp(2.2rem, 5vw, 3.4rem) 0;
+}
+.sitio-llamada h2 { color: #fff; }
+.sitio-llamada p { color: rgba(255,255,255,.82); max-width: 52ch; }
+.sitio-llamada .sitio-ancho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.6rem;
+  flex-wrap: wrap;
+}
+
+/* ---------------------------------------------------------------------
+   Formulario de contacto
+   --------------------------------------------------------------------- */
+
+.sitio-formulario {
+  display: grid;
+  gap: 1rem;
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: 14px;
+  padding: 1.6rem;
+}
+.sitio-campo { display: grid; gap: .32rem; }
+.sitio-campo label { font-size: .82rem; font-weight: 600; color: var(--tinta); }
+.sitio-campo input,
+.sitio-campo textarea {
+  font: inherit;
+  font-size: .92rem;
+  padding: .66rem .8rem;
+  border: 1px solid var(--borde);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--texto);
+  width: 100%;
+}
+.sitio-campo input:focus,
+.sitio-campo textarea:focus {
+  outline: none;
+  border-color: var(--marca);
+  box-shadow: 0 0 0 3px rgba(100,24,195,.13);
+}
+.sitio-campo textarea { resize: vertical; min-height: 130px; }
+
+/* Campo señuelo. Se saca de la vista sin `display:none` porque algunos
+   robots omiten justamente lo que está oculto así. */
+.sitio-trampa {
+  position: absolute !important;
+  left: -9999px;
+  width: 1px; height: 1px;
+  overflow: hidden;
+}
+
+.sitio-aviso {
+  display: flex;
+  gap: .6rem;
+  padding: .85rem 1rem;
+  border-radius: 10px;
+  font-size: .88rem;
+  border: 1px solid;
+}
+.sitio-aviso--ok   { background: #ecfdf3; border-color: #abefc6; color: #11633b; }
+.sitio-aviso--mal  { background: #fef3f2; border-color: #fecdc9; color: #a3271c; }
+.sitio-aviso--info { background: var(--marca-tenue); border-color: #d7c3f0; color: var(--marca-oscura); }
+
+/* ---------------------------------------------------------------------
+   Pie
+   --------------------------------------------------------------------- */
+
+.sitio-pie {
+  background: var(--marca-oscura);
+  color: rgba(255,255,255,.72);
+  padding: clamp(2.4rem, 5vw, 3.6rem) 0 1.6rem;
+  font-size: .88rem;
+}
+.sitio-pie__rejilla {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1.1fr;
+  gap: 2rem;
+}
+@media (max-width: 900px) {
+  .sitio-pie__rejilla { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+}
+
+.sitio-pie h3 {
+  color: #fff;
+  font-size: .78rem;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  margin-bottom: .9rem;
+}
+/* `:not(.sitio-btn)` no es un adorno: sin él, esta regla gana por
+   especificidad al color del botón —dos clases contra una— y el
+   botón blanco del pie se quedaba con el texto blanco encima, es
+   decir, invisible. Los enlaces del pie son enlaces; el botón no. */
+.sitio-pie a:not(.sitio-btn) {
+  display: block;
+  color: rgba(255,255,255,.72);
+  padding: .2rem 0;
+}
+.sitio-pie a:not(.sitio-btn):hover { color: #fff; text-decoration: none; }
+.sitio-pie .sitio-btn { display: inline-flex; margin-top: .4rem; }
+.sitio-pie__nota { color: rgba(255,255,255,.62); font-size: .84rem; }
+.sitio-pie__nota b { color: #fff; }
+
+.sitio-marca--pie { color: #fff; margin-bottom: .8rem; }
+.sitio-marca--pie img {
+  height: 30px;
+  /* El logo es oscuro y el pie también: se aclara para que se vea. */
+  filter: brightness(0) invert(1);
+  opacity: .92;
+}
+
+.sitio-pie__legal {
+  margin-top: 2.4rem;
+  padding-top: 1.3rem;
+  border-top: 1px solid rgba(255,255,255,.14);
+  font-size: .76rem;
+  color: rgba(255,255,255,.52);
+}
+.sitio-pie__legal p { margin-bottom: .5rem; }
+.sitio-pie__legal p:last-child { margin-bottom: 0; }
+
+/* Quien prefiere menos movimiento no lo tiene. */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+  .sitio-btn:hover, .sitio-tarjeta:hover { transform: none; }
+}
+
+/* =====================================================================
+   TIENDA PÚBLICA
+   =====================================================================
+   Vive en la hoja del sitio y no en la del panel: quien entra a comprar
+   no debería descargar el tema completo de la banca en línea, con su
+   menú lateral y su cabecera fija, para ver un catálogo.
+   ===================================================================== */
+
+.tda-hero {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.6rem;
+}
+.tda-hero__texto h1 { font-size: clamp(1.6rem, 3vw, 2.2rem); margin: 0 0 .5rem; color: #2a0a54; }
+.tda-hero__texto p  { margin: 0; color: #5b6478; max-width: 48rem; line-height: 1.6; }
+
+.tda-hero__carrito {
+  display: inline-flex; align-items: center; gap: .5rem;
+  background: #6418c3; color: #fff; text-decoration: none;
+  padding: .7rem 1.1rem; border-radius: 11px; font-weight: 600;
+  white-space: nowrap;
+}
+.tda-hero__carrito:hover { background: #51149e; color: #fff; text-decoration: none; }
+.tda-hero__cuenta {
+  background: rgba(255,255,255,.25); border-radius: 999px;
+  padding: .05rem .5rem; font-size: .82rem;
+}
+
+/* ---------- Tira de comercios ---------- */
+.tda-tiendas {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: .7rem; margin-bottom: 1.4rem;
+}
+.tda-tienda {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: .25rem; padding: .85rem .6rem; border: 1px solid #e6e8ef; border-radius: 13px;
+  text-decoration: none; background: #fff;
+  transition: border-color .15s, box-shadow .15s, transform .15s;
+}
+.tda-tienda:hover {
+  border-color: #d6bbfb; box-shadow: 0 6px 18px rgba(44,20,80,.09);
+  transform: translateY(-2px); text-decoration: none;
+}
+.tda-tienda--activa { border-color: #6418c3; background: #faf7fe; }
+.tda-tienda__logo {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2.6rem; height: 2.6rem; border-radius: 11px; color: #fff;
+  font-weight: 800; font-size: .9rem; flex-shrink: 0;
+}
+.tda-tienda__nombre { font-size: .82rem; font-weight: 650; color: #2f3545; line-height: 1.25; }
+.tda-tienda__rubro  { font-size: .7rem; color: #98a2b3; }
+.tda-tienda__msi    { font-size: .66rem; color: #6418c3; font-weight: 600; }
+
+/* ---------- Filtros ---------- */
+.tda-filtros {
+  display: flex; gap: .7rem; align-items: flex-end; flex-wrap: wrap;
+  background: #fff; border: 1px solid #e6e8ef; border-radius: 13px;
+  padding: .9rem 1rem; margin-bottom: 1.3rem;
+}
+.tda-filtros__buscar { flex: 1 1 18rem; }
+.tda-filtros__orden  { flex: 0 1 14rem; }
+.tda-etiqueta {
+  display: block; font-size: .72rem; font-weight: 700; color: #667085;
+  text-transform: uppercase; letter-spacing: .05em; margin-bottom: .25rem;
+}
+.tda-filtros input, .tda-filtros select,
+.tda-campo input, .tda-campo select, .tda-campo textarea,
+.tda-clave input, .tda-detalle__comprar input {
+  width: 100%; padding: .6rem .75rem; font-size: .92rem; color: #2f3545;
+  border: 1px solid #dfe3ec; border-radius: 9px; background: #fff;
+  font-family: inherit;
+}
+.tda-filtros input:focus, .tda-filtros select:focus,
+.tda-campo input:focus, .tda-campo select:focus, .tda-campo textarea:focus {
+  outline: none; border-color: #6418c3; box-shadow: 0 0 0 3px rgba(100,24,195,.12);
+}
+
+.tda-conteo { color: #667085; font-size: .86rem; margin: 0 0 .8rem; }
+
+/* ---------- Cuadrícula de artículos ---------- */
+.tda-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 1rem; margin-bottom: 2rem;
+}
+
+.tda-card {
+  display: flex; flex-direction: column; background: #fff;
+  border: 1px solid #e6e8ef; border-radius: 14px; overflow: hidden;
+  transition: border-color .15s, box-shadow .15s, transform .15s;
+}
+.tda-card:hover {
+  border-color: #d6bbfb; box-shadow: 0 8px 22px rgba(44,20,80,.10);
+  transform: translateY(-2px);
+}
+.tda-card--agotado { opacity: .72; }
+
+.tda-card__foto {
+  position: relative; display: block; aspect-ratio: 4 / 3; background: #f7f8fb;
+  overflow: hidden;
+}
+.tda-card__foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.tda-card__sinfoto {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 100%; color: #fff; font-weight: 800; font-size: 1.6rem;
+}
+
+.tda-card__oferta {
+  position: absolute; top: .55rem; left: .55rem; background: #b42318; color: #fff;
+  font-size: .72rem; font-weight: 700; padding: .15rem .45rem; border-radius: 7px;
+}
+.tda-card__agotado {
+  position: absolute; inset: auto 0 0 0; background: rgba(16,24,40,.78); color: #fff;
+  font-size: .76rem; font-weight: 600; text-align: center; padding: .3rem;
+}
+
+.tda-card__cuerpo {
+  padding: .8rem .85rem 1rem; display: flex; flex-direction: column;
+  gap: .3rem; flex: 1;
+}
+.tda-card__tienda {
+  display: inline-flex; align-items: center; gap: .35rem;
+  font-size: .72rem; color: #667085;
+}
+.tda-card__tienda i { width: .55rem; height: .55rem; border-radius: 50%; display: inline-block; }
+
+.tda-card__nombre { font-size: .92rem; font-weight: 650; margin: 0; line-height: 1.35; flex: 1; }
+.tda-card__nombre a { color: #101828; text-decoration: none; }
+.tda-card__nombre a:hover { color: #6418c3; text-decoration: none; }
+
+.tda-card__precio { display: flex; align-items: baseline; gap: .45rem; }
+.tda-card__precio b { font-size: 1.1rem; color: #101828; }
+.tda-card__precio s { font-size: .8rem; color: #98a2b3; }
+.tda-card__msi { font-size: .72rem; color: #6418c3; }
+
+/* ---------- Detalle ---------- */
+.tda-migas { font-size: .82rem; color: #98a2b3; margin-bottom: 1rem; }
+.tda-migas a { color: #6418c3; text-decoration: none; }
+.tda-migas span { margin: 0 .4rem; }
+
+.tda-detalle {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 1.8rem; margin-bottom: 2.4rem; align-items: start;
+}
+.tda-detalle__foto {
+  position: relative; background: #f7f8fb; border: 1px solid #e6e8ef;
+  border-radius: 16px; overflow: hidden; aspect-ratio: 4 / 3;
+}
+.tda-detalle__foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.tda-detalle__datos h1 {
+  font-size: clamp(1.3rem, 2.5vw, 1.8rem); margin: .6rem 0 .3rem; color: #101828;
+}
+.tda-detalle__tienda { display: inline-flex; align-items: center; gap: .6rem; text-decoration: none; }
+.tda-detalle__tienda strong { display: block; font-size: .88rem; color: #2f3545; }
+.tda-detalle__tienda small  { display: block; font-size: .74rem; color: #98a2b3; }
+.tda-detalle__marca { font-size: .86rem; color: #667085; margin: 0 0 .6rem; }
+
+.tda-detalle__precio {
+  display: flex; align-items: baseline; gap: .6rem; flex-wrap: wrap; margin-bottom: .3rem;
+}
+.tda-detalle__precio b { font-size: 2rem; color: #101828; letter-spacing: -.02em; }
+.tda-detalle__precio s { font-size: 1rem; color: #98a2b3; }
+.tda-detalle__ahorro {
+  background: rgba(18,183,106,.12); color: #0f7a49; font-size: .78rem;
+  font-weight: 650; padding: .15rem .5rem; border-radius: 7px;
+}
+.tda-detalle__msi { font-size: .88rem; color: #6418c3; margin: 0 0 1rem; }
+.tda-detalle__desc { color: #5b6478; line-height: 1.65; margin-bottom: 1.2rem; }
+
+.tda-detalle__datos-lista { list-style: none; padding: 0; margin: 0 0 1.4rem; }
+.tda-detalle__datos-lista li {
+  display: flex; justify-content: space-between; gap: 1rem;
+  padding: .5rem 0; border-bottom: 1px solid #f0f2f6; font-size: .88rem;
+}
+.tda-detalle__datos-lista span { color: #667085; }
+.tda-agotado { color: #b42318; }
+
+.tda-detalle__comprar { display: flex; gap: .6rem; align-items: flex-end; flex-wrap: wrap; }
+.tda-detalle__comprar input { width: 5.5rem; }
+
+.tda-agotado-aviso {
+  background: #fff6ed; border: 1px solid #fedf89; border-radius: 11px;
+  padding: .8rem 1rem; color: #93370d; font-size: .9rem;
+}
+
+.tda-relacionados h2 { font-size: 1.15rem; margin-bottom: .9rem; color: #2a0a54; }
+
+/* ---------- Carrito y pago ---------- */
+.tda-titulo { font-size: clamp(1.4rem, 2.6vw, 1.9rem); color: #2a0a54; margin-bottom: 1.2rem; }
+
+.tda-carrito, .tda-pagar {
+  display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 1.4rem; align-items: start;
+}
+
+.tda-linea {
+  display: grid; grid-template-columns: auto 1fr auto auto auto; gap: .9rem;
+  align-items: center; background: #fff; border: 1px solid #e6e8ef;
+  border-radius: 13px; padding: .8rem .9rem; margin-bottom: .7rem;
+}
+.tda-linea__foto { border-radius: 9px; object-fit: cover; background: #f7f8fb; }
+.tda-linea__datos strong { display: block; font-size: .92rem; color: #101828; }
+.tda-linea__datos small  { display: block; font-size: .76rem; color: #98a2b3; }
+.tda-linea__unit { font-size: .78rem; color: #667085; }
+.tda-linea__cant input { width: 4.6rem; text-align: center; }
+.tda-linea__importe { font-weight: 700; font-size: 1rem; color: #101828; white-space: nowrap; }
+
+/* Quitar del carrito.
+   Discreto mientras no se necesita y rojo al acercarse: es una accion
+   destructiva y conviene que se note antes de pulsarla, no despues. */
+/* El resultado de la ultima accion, encima de la pagina. */
+.tda-flash {
+  border-radius: 11px; padding: .7rem .95rem; margin-bottom: 1rem;
+  font-size: .88rem; border: 1px solid transparent;
+}
+.tda-flash--ok  { background: #f2fbf5; border-color: #bbe8ca; color: #15603a; }
+.tda-flash--mal { background: #fef3f2; border-color: #f3c3bd; color: #912018; }
+.tda-linea__quitar {
+  display: inline-flex; flex-direction: column; align-items: center; gap: .15rem;
+  background: none; border: 0; cursor: pointer; padding: .35rem .45rem;
+  border-radius: 9px; color: #98a2b3; font: inherit; font-size: .7rem;
+  line-height: 1; transition: color .15s, background-color .15s;
+}
+.tda-linea__quitar:hover,
+.tda-linea__quitar:focus-visible { color: #b42318; background: #fef3f2; }
+.tda-linea__quitar:focus-visible { outline: 2px solid #b42318; outline-offset: 2px; }
+
+.tda-resumen {
+  background: #fff; border: 1px solid #e6e8ef; border-radius: 15px;
+  padding: 1.1rem 1.2rem; position: sticky; top: 1rem;
+}
+.tda-resumen h2 { font-size: 1.05rem; margin: 0 0 .9rem; color: #2a0a54; }
+.tda-resumen__tienda {
+  display: flex; align-items: center; gap: .6rem; margin-bottom: .9rem;
+  padding-bottom: .9rem; border-bottom: 1px solid #f0f2f6; font-size: .9rem;
+}
+.tda-resumen__lineas { list-style: none; padding: 0; margin: 0 0 .9rem; }
+.tda-resumen__lineas li {
+  display: flex; justify-content: space-between; gap: .8rem;
+  font-size: .84rem; color: #5b6478; padding: .2rem 0;
+}
+.tda-resumen__totales { margin: 0 0 1rem; }
+.tda-resumen__totales > div {
+  display: flex; justify-content: space-between; font-size: .88rem;
+  color: #667085; padding: .18rem 0;
+}
+.tda-resumen__totales dt, .tda-resumen__totales dd { margin: 0; }
+.tda-resumen__total {
+  border-top: 1px solid #f0f2f6; margin-top: .4rem; padding-top: .55rem !important;
+}
+.tda-resumen__total dt, .tda-resumen__total dd {
+  font-size: 1.1rem !important; color: #101828 !important; font-weight: 700;
+}
+.tda-resumen__msi { font-size: .82rem; color: #6418c3; margin: 0 0 .9rem; }
+.tda-resumen .sitio-btn { width: 100%; justify-content: center; margin-bottom: .5rem; }
+.tda-resumen__pagar { display: flex; }
+.tda-resumen__seguir {
+  display: block; text-align: center; font-size: .84rem; color: #6418c3;
+  text-decoration: none; margin-top: .3rem;
+}
+
+/* ---------- Finalizar la compra ---------- */
+.tda-bloque {
+  background: #fff; border: 1px solid #e6e8ef; border-radius: 15px;
+  padding: 1.1rem 1.2rem; margin-bottom: 1.1rem;
+}
+.tda-bloque h2 { font-size: 1.05rem; margin: 0 0 1rem; color: #2a0a54; }
+
+.tda-campos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem; }
+.tda-campo--ancho { grid-column: 1 / -1; }
+.tda-campo small { display: block; font-size: .76rem; color: #98a2b3; margin-top: .2rem; }
+.tda-campo input[readonly] { background: #f7f8fb; color: #667085; }
+
+.tda-separador {
+  display: flex; align-items: center; gap: .8rem; margin: 1.1rem 0;
+  color: #98a2b3; font-size: .8rem;
+}
+.tda-separador::before, .tda-separador::after {
+  content: ""; flex: 1; height: 1px; background: #e6e8ef;
+}
+
+.tda-pagar__marcas { font-size: .84rem; color: #667085; margin: 0 0 .8rem; }
+.tda-pagar__botones { display: flex; gap: .6rem; margin-top: .9rem; }
+.tda-pagar__nota { display: block; font-size: .78rem; color: #98a2b3; margin-top: .9rem; }
+
+.tda-cobro {
+  display: flex; justify-content: space-between; align-items: center;
+  background: #f0e6fb; border-radius: 11px; padding: .8rem 1rem; margin-bottom: 1rem;
+}
+.tda-cobro strong { font-size: 1.4rem; color: #41107f; }
+
+.tda-stripe {
+  padding: .8rem .85rem; border: 1px solid #dfe3ec; border-radius: 10px; background: #fff;
+}
+.tda-error { color: #b42318; font-size: .85rem; margin-top: .5rem; min-height: 1.2rem; }
+
+/* Mes y año de vencimiento, con su barra en medio.
+   Dos campos pegados se leen como una fecha; dos campos sueltos en la
+   rejilla se leen como dos preguntas distintas. */
+.tda-vence { display: flex; align-items: center; gap: .4rem; }
+.tda-vence input { text-align: center; }
+.tda-vence span { color: #98a2b3; font-weight: 600; }
+
+/* El formulario de tarjeta tecleada. Separado de lo que lo rodea
+   porque es donde se escriben datos que no se escriben en ningún otro
+   sitio de la tienda. */
+.tda-numero {
+  border: 1px solid #e4e7ee; border-radius: 12px;
+  padding: 1.1rem; background: #fcfcfe; margin-bottom: 1rem;
+}
+.tda-numero .tda-campos { margin-bottom: .9rem; }
+
+/* ---------- Pedido y avisos ---------- */
+.tda-gracias { text-align: center; margin-bottom: 1.6rem; }
+.tda-gracias h1 { font-size: clamp(1.5rem, 3vw, 2.1rem); color: #2a0a54; margin-bottom: .5rem; }
+.tda-gracias p  { color: #5b6478; margin: 0; }
+.tda-gracias__pie { text-align: center; margin-top: 1.6rem; }
+
+.tda-pedido {
+  background: #fff; border: 1px solid #e6e8ef; border-radius: 15px;
+  padding: 1.2rem 1.3rem; max-width: 44rem; margin: 0 auto;
+}
+.tda-pedido__cab {
+  display: flex; align-items: center; gap: .8rem; margin-bottom: 1.1rem;
+  padding-bottom: 1rem; border-bottom: 1px solid #f0f2f6;
+}
+.tda-pedido__cab strong { display: block; color: #101828; }
+.tda-pedido__cab small  { display: block; font-size: .76rem; color: #98a2b3; }
+.tda-pedido__total { margin-left: auto; font-size: 1.3rem; font-weight: 700; color: #101828; }
+
+.tda-pasos {
+  list-style: none; display: flex; padding: 0; margin: 0 0 1.2rem;
+  gap: .3rem; flex-wrap: wrap;
+}
+.tda-pasos li {
+  flex: 1 1 7rem; display: flex; align-items: center; gap: .4rem;
+  font-size: .78rem; color: #98a2b3;
+}
+.tda-pasos li span {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1.5rem; height: 1.5rem; border-radius: 50%; background: #f0f2f6;
+  font-weight: 700; font-size: .72rem; flex-shrink: 0;
+}
+.tda-pasos--hecho { color: #41107f !important; font-weight: 600; }
+.tda-pasos--hecho span { background: #6418c3; color: #fff; }
+
+.tda-pedido__datos {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: .8rem; margin: 1.1rem 0 0;
+}
+.tda-pedido__datos dt {
+  font-size: .72rem; color: #98a2b3; text-transform: uppercase; letter-spacing: .04em;
+}
+.tda-pedido__datos dd { margin: .1rem 0 0; font-size: .9rem; color: #2f3545; }
+
+.tda-aviso {
+  background: #fff6ed; border: 1px solid #fedf89; border-radius: 11px;
+  padding: .75rem 1rem; color: #93370d; font-size: .88rem; margin-bottom: 1rem;
+}
+.tda-aviso--info { background: #f0e6fb; border-color: #d6bbfb; color: #41107f; }
+.tda-aviso a { color: inherit; font-weight: 600; }
+
+.tda-vacio {
+  text-align: center; background: #fff; border: 1px dashed #dfe3ec;
+  border-radius: 15px; padding: 2.4rem 1.2rem;
+}
+.tda-vacio p { color: #667085; margin-bottom: 1rem; }
+
+.tda-clave {
+  max-width: 28rem; margin: 0 auto; background: #fff; border: 1px solid #e6e8ef;
+  border-radius: 15px; padding: 1.4rem 1.5rem;
+}
+.tda-clave h1 { font-size: 1.3rem; color: #2a0a54; margin-bottom: .6rem; }
+.tda-clave p  { color: #5b6478; font-size: .9rem; line-height: 1.6; }
+.tda-clave .sitio-btn { width: 100%; justify-content: center; margin-top: .9rem; }
+.tda-clave__pie { font-size: .84rem; margin-top: 1rem; margin-bottom: 0; }
+
+.tda-nota {
+  background: #faf7fe; border-radius: 16px; padding: 1.6rem 1.4rem; margin-top: 1.4rem;
+}
+.tda-nota h2 { font-size: 1.15rem; color: #2a0a54; margin: 0 0 1rem; text-align: center; }
+.tda-nota__cols {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1.2rem;
+}
+.tda-nota__cols h3 { font-size: .95rem; color: #41107f; margin: 0 0 .3rem; }
+.tda-nota__cols p  { font-size: .86rem; color: #5b6478; margin: 0; line-height: 1.55; }
+
+.tda-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+@media (max-width: 900px) {
+  .tda-detalle, .tda-carrito, .tda-pagar { grid-template-columns: minmax(0, 1fr); }
+  .tda-resumen { position: static; }
+  .tda-campos { grid-template-columns: minmax(0, 1fr); }
+  .tda-linea { grid-template-columns: auto 1fr; }
+  .tda-linea__cant, .tda-linea__importe { grid-column: 2; }
+  /* El resultado de la ultima accion, encima de la pagina. */
+.tda-flash {
+  border-radius: 11px; padding: .7rem .95rem; margin-bottom: 1rem;
+  font-size: .88rem; border: 1px solid transparent;
+}
+.tda-flash--ok  { background: #f2fbf5; border-color: #bbe8ca; color: #15603a; }
+.tda-flash--mal { background: #fef3f2; border-color: #f3c3bd; color: #912018; }
+.tda-linea__quitar { grid-column: 2; justify-self: start; flex-direction: row; gap: .3rem; }
+}
+
+/* =====================================================================
+   TIENDA · AJUSTES DE DISEÑO
+   =====================================================================
+   Tres cosas que se veían mal y por qué:
+
+   1. El contenido salía pegado al borde izquierdo de la ventana. Las
+      vistas de la tienda volcaban su marcado directo en <main> mientras
+      el resto del sitio lo envuelve en `.sitio-ancho`. Resuelto en el
+      controlador; aquí solo queda el espaciado propio de la tienda.
+
+   2. Nueve comercios repartidos a lo ancho dejaban fichas de alturas
+      distintas, con los nombres largos partidos en tres renglones.
+      Ahora la tira se desplaza en horizontal: cada ficha conserva su
+      tamaño y se recorren con el dedo o la rueda.
+
+   3. Las fotos ocupaban media pantalla. La cuadrícula pasa a columnas
+      más estrechas y la imagen a una proporción fija, de modo que se
+      vean varios artículos de un vistazo, como en cualquier catálogo.
+   ===================================================================== */
+
+.tda-pagina { padding-block: clamp(1.6rem, 4vw, 2.6rem); }
+
+/* ---------- Encabezado ---------- */
+.tda-hero { margin-bottom: 1.4rem; }
+.tda-hero__texto h1 { margin-bottom: .4rem; }
+.tda-hero__texto p { font-size: .95rem; }
+
+/* ---------- Tira de comercios, en horizontal ---------- */
+.tda-tiendas {
+  display: flex;
+  gap: .6rem;
+  overflow-x: auto;
+  padding-bottom: .5rem;
+  margin-bottom: 1.3rem;
+  scroll-snap-type: x proximity;
+  /* La barra, discreta: la tira es para recorrerla, no para mirarla. */
+  scrollbar-width: thin;
+  scrollbar-color: #d6bbfb transparent;
+}
+.tda-tiendas::-webkit-scrollbar { height: 6px; }
+.tda-tiendas::-webkit-scrollbar-track { background: transparent; }
+.tda-tiendas::-webkit-scrollbar-thumb { background: #e3d5f7; border-radius: 3px; }
+
+.tda-tienda {
+  flex: 0 0 9.6rem;
+  scroll-snap-align: start;
+  min-height: 8.6rem;
+  justify-content: flex-start;
+  padding: .8rem .55rem;
+  gap: .3rem;
+}
+.tda-tienda__logo { width: 2.3rem; height: 2.3rem; border-radius: 10px; font-size: .82rem; }
+.tda-tienda__nombre {
+  font-size: .78rem; line-height: 1.25;
+  /* Dos renglones como mucho: el tercero descuadraba la tira. */
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.tda-tienda__rubro {
+  font-size: .68rem; line-height: 1.2;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.tda-tienda__msi { margin-top: auto; }
+
+/* ---------- Cuadrícula más contenida ---------- */
+.tda-grid {
+  grid-template-columns: repeat(auto-fill, minmax(12.5rem, 1fr));
+  gap: .85rem;
+}
+
+.tda-card__foto { aspect-ratio: 4 / 3; background: #fff; }
+/* `contain` y no `cover`: en una foto de producto, recortar los bordes
+   se come justo lo que el cliente quiere ver. */
+.tda-card__foto img { object-fit: contain; padding: .5rem; }
+
+.tda-card__cuerpo { padding: .65rem .75rem .85rem; gap: .25rem; }
+.tda-card__nombre {
+  font-size: .86rem; line-height: 1.3;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; min-height: 2.25rem;
+}
+.tda-card__precio b { font-size: 1.02rem; }
+.tda-card__tienda { font-size: .68rem; }
+.tda-card__msi { font-size: .68rem; }
+
+/* El crédito de la foto, discreto pero presente: casi todas las
+   licencias libres lo piden, y cumplirlo es la condición de uso. */
+.tda-card__credito,
+.tda-detalle__credito {
+  font-size: .62rem;
+  color: #a8b0bf;
+  line-height: 1.3;
+  margin-top: .2rem;
+}
+.tda-detalle__credito { font-size: .7rem; margin-top: .5rem; }
+.tda-detalle__credito a { color: inherit; text-decoration: underline; }
+
+.tda-detalle__foto { background: #fff; }
+.tda-detalle__foto img { object-fit: contain; padding: 1rem; }
+
+/* ---------- Carrito flotante ---------- */
+.tda-flotante {
+  position: fixed;
+  right: clamp(1rem, 3vw, 2rem);
+  bottom: clamp(1rem, 3vw, 2rem);
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  background: #fff;
+  color: #41107f;
+  border: 1px solid #e3d5f7;
+  border-radius: 999px;
+  padding: .7rem 1.1rem;
+  font-weight: 650;
+  font-size: .9rem;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(44, 20, 80, .16);
+  transition: transform .15s, box-shadow .15s, background .15s;
+}
+.tda-flotante:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(44, 20, 80, .22);
+  text-decoration: none;
+  color: #41107f;
+}
+
+/* Con artículos dentro se vuelve morado: el cambio de color es lo que
+   avisa de que algo se agregó sin tener que mirar el número. */
+.tda-flotante--lleno {
+  background: #6418c3;
+  border-color: #6418c3;
+  color: #fff;
+}
+.tda-flotante--lleno:hover { background: #51149e; color: #fff; }
+
+.tda-flotante__n {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 .4rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .26);
+  font-size: .8rem;
+  font-weight: 700;
+}
+
+@media (max-width: 560px) {
+  /* En el teléfono, solo el icono y el número: el texto se come media
+     pantalla y el botón acaba tapando el contenido. */
+  .tda-flotante__texto { display: none; }
+  .tda-flotante { padding: .75rem .9rem; }
+}
+
+/* ---------------------------------------------------------------------
+   Carrusel de comercios
+   ---------------------------------------------------------------------
+   La barra de desplazamiento bajo las fichas se leía como un
+   desperfecto. Se oculta la barra —no el gesto: con el dedo y con la
+   rueda se sigue recorriendo igual— y se ponen dos flechas que solo
+   aparecen cuando de verdad hay más que ver.
+
+   Los degradados de los lados son la pista visual de que la tira
+   continúa: sin ellos, una ficha cortada a la mitad parece un error de
+   maquetación en lugar de una invitación a seguir.
+   --------------------------------------------------------------------- */
+
+.tda-carrusel { position: relative; margin-bottom: 1.3rem; }
+
+.tda-carrusel .tda-tiendas {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  scrollbar-width: none;            /* Firefox */
+  -ms-overflow-style: none;         /* Edge antiguo */
+  scroll-behavior: smooth;
+}
+.tda-carrusel .tda-tiendas::-webkit-scrollbar { display: none; height: 0; }
+
+/* ---------- Las flechas ---------- */
+.tda-carrusel__flecha {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  border-radius: 50%;
+  border: 1px solid #e6e8ef;
+  background: #fff;
+  color: #41107f;
+  cursor: pointer;
+  box-shadow: 0 3px 12px rgba(44, 20, 80, .14);
+  transition: background .14s, color .14s, opacity .14s, box-shadow .14s;
+}
+.tda-carrusel__flecha:hover:not(:disabled) {
+  background: #6418c3;
+  border-color: #6418c3;
+  color: #fff;
+}
+.tda-carrusel__flecha[hidden] { display: none; }
+
+/* Apagada en el extremo: se ve que el recorrido terminó en lugar de
+   pulsar y que no pase nada. */
+.tda-carrusel__flecha:disabled {
+  opacity: .32;
+  cursor: default;
+  box-shadow: none;
+}
+
+.tda-carrusel__flecha--izq { left: -.6rem; }
+.tda-carrusel__flecha--der { right: -.6rem; }
+
+/* ---------- Degradados de continuidad ---------- */
+.tda-carrusel::before,
+.tda-carrusel::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2.6rem;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity .18s;
+}
+.tda-carrusel::before {
+  left: 0;
+  background: linear-gradient(90deg, #fff 18%, rgba(255, 255, 255, 0));
+}
+.tda-carrusel::after {
+  right: 0;
+  background: linear-gradient(270deg, #fff 18%, rgba(255, 255, 255, 0));
+}
+.tda-carrusel--izq::before { opacity: 1; }
+.tda-carrusel--der::after  { opacity: 1; }
+
+@media (max-width: 720px) {
+  /* En el teléfono se recorre con el dedo: las flechas sobran y el
+     espacio hace falta. */
+  .tda-carrusel__flecha { display: none !important; }
+  .tda-carrusel::before, .tda-carrusel::after { width: 1.4rem; }
+}
+
+
+/* =====================================================================
+   PÁGINA DE PAGO POR ENLACE
+   =====================================================================
+   La abre un cliente que llega desde su correo, sin sesión. No ve su
+   cartera ni su saldo: solo qué se le cobra, cuánto, y dónde pagarlo.
+   ===================================================================== */
+
+.enl {
+  display: flex; justify-content: center;
+  padding: 2.5rem 0 3.5rem;
+}
+
+.enl-tarjeta {
+  width: 100%; max-width: 32rem;
+  background: #fff;
+  border: 1px solid #e6e8ef;
+  border-radius: 18px;
+  box-shadow: 0 10px 34px rgba(29, 36, 51, .07);
+  overflow: hidden;
+}
+
+.enl-cabecera {
+  padding: 1.6rem 1.8rem 1.2rem;
+  background: linear-gradient(135deg, var(--cm-marca, #6418c3), var(--cm-marca-oscuro, #41107f));
+  color: #fff;
+}
+.enl-marca {
+  display: block; font-size: .74rem; letter-spacing: .14em;
+  text-transform: uppercase; opacity: .78; margin-bottom: .3rem;
+}
+/* El color va forzado: los titulos del sitio llevan un gris oscuro
+   global que gana por especificidad y dejaba el titulo casi
+   ilegible sobre el morado de la cabecera. */
+.enl-cabecera .enl-titulo {
+  margin: 0; font-size: 1.5rem; font-weight: 700; line-height: 1.25;
+  color: #fff !important;
+}
+.enl-tarjeta .enl-cuerpo > .enl-titulo {
+  color: #2a0a54; font-size: 1.3rem; margin-bottom: .8rem;
+}
+
+.enl-cuerpo { padding: 1.5rem 1.8rem 1.8rem; }
+.enl-saludo { font-size: .95rem; color: #475467; margin-bottom: 1.2rem; }
+
+/* El detalle de lo que se cobra. */
+.enl-detalle { margin: 0 0 1.3rem; }
+.enl-detalle > div {
+  display: flex; justify-content: space-between; align-items: baseline;
+  gap: 1rem; padding: .62rem 0;
+  border-bottom: 1px solid #f0f2f7;
+}
+.enl-detalle dt {
+  margin: 0; font-weight: 400; font-size: .84rem; color: #8a94a6;
+}
+.enl-detalle dd {
+  margin: 0; font-weight: 600; font-size: .9rem; color: #101828;
+  text-align: right;
+}
+.enl-detalle .enl-total {
+  border-bottom: 0; border-top: 2px solid #e6e8ef;
+  margin-top: .35rem; padding-top: .9rem;
+}
+.enl-detalle .enl-total dt { font-size: .92rem; color: #344054; font-weight: 600; }
+.enl-detalle .enl-total dd {
+  font-size: 1.45rem; font-weight: 700; color: var(--cm-marca-oscuro, #41107f);
+}
+
+/* Avisos. */
+.enl-aviso {
+  background: #fffaf0; border: 1px solid #f3dca8; color: #7a5a12;
+  border-radius: 11px; padding: .72rem .9rem;
+  font-size: .82rem; margin-bottom: 1.2rem;
+}
+.enl-aviso--mal { background: #fef3f2; border-color: #f3c3bd; color: #912018; }
+
+/* El campo de la tarjeta. Stripe monta un iframe dentro, y sin altura
+   ni borde propios queda como una raya de dos píxeles. */
+.enl-etiqueta {
+  display: block; font-size: .84rem; font-weight: 600;
+  color: #344054; margin-bottom: .45rem;
+}
+.enl-campo {
+  border: 1px solid #d6dae4; border-radius: 11px;
+  padding: .85rem .9rem; background: #fff;
+  transition: border-color .15s, box-shadow .15s;
+}
+.enl-campo:focus-within {
+  border-color: var(--cm-marca, #6418c3);
+  box-shadow: 0 0 0 3px rgba(100, 24, 195, .12);
+}
+.enl-error {
+  color: #b42318; font-size: .82rem; min-height: 1.2rem;
+  margin-top: .45rem;
+}
+
+.enl-boton {
+  display: block; width: 100%; margin-top: .4rem;
+  background: var(--cm-marca, #6418c3); color: #fff;
+  border: 0; border-radius: 11px;
+  padding: .88rem 1rem; font-size: 1rem; font-weight: 600;
+  cursor: pointer; text-align: center; text-decoration: none;
+  transition: background-color .15s, transform .08s;
+}
+.enl-boton:hover { background: var(--cm-marca-oscuro, #41107f); color: #fff; }
+.enl-boton:active { transform: translateY(1px); }
+.enl-boton:disabled { background: #b9a7d6; cursor: default; transform: none; }
+.enl-boton--claro {
+  background: #fff; color: var(--cm-marca, #6418c3);
+  border: 1px solid var(--cm-marca, #6418c3);
+}
+.enl-boton--claro:hover { background: var(--cm-marca-tenue, #f0e6fb); color: var(--cm-marca-oscuro, #41107f); }
+
+.enl-nota {
+  margin: 1rem 0 0; font-size: .78rem; color: #8a94a6; line-height: 1.55;
+}
+
+/* Confirmación. */
+.enl-tarjeta--exito { border-color: #bbe8ca; }
+.enl-tic {
+  width: 56px; height: 56px; margin: .4rem auto 1rem;
+  border-radius: 50%; background: #e8f7ee; color: #15603a;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.9rem; font-weight: 700;
+}
+.enl-tic--gris { background: #f1f3f8; color: #8a94a6; }
+
+.enl-tarjeta--exito h2,
+.enl-tarjeta .text-center h1 { font-size: 1.3rem; color: #101828; margin-bottom: .6rem; }
+
+@media (max-width: 575px) {
+  .enl { padding: 1.4rem 0 2.4rem; }
+  .enl-cabecera { padding: 1.3rem 1.2rem 1rem; }
+  .enl-cuerpo { padding: 1.2rem 1.2rem 1.5rem; }
+  .enl-detalle .enl-total dd { font-size: 1.25rem; }
+}
+
+/* =====================================================================
+   PIEL DEL SITIO PÚBLICO
+   ---------------------------------------------------------------------
+   Lo de arriba levantó la estructura: ancho de lectura, tipografía,
+   secciones. Esto es lo que hace que no parezca un documento.
+
+   La referencia era la banca local, que llena su portada de color,
+   producto que se ve y profundidad. Aquí no hay fotografías ni
+   ilustración comprada, así que todo lo visual se dibuja en SVG
+   (`src/Vistas/sitio/_graficos.php`) y se tiñe desde aquí.
+
+   REGLA QUE NO SE ROMPE: nada de esto imita la identidad de otra
+   institución. El morado, el oro y las formas son de CashMan H.A.
+   ===================================================================== */
+
+:root {
+  /* Degradados de marca, que es lo que da profundidad sin imágenes. */
+  --grad-marca:  linear-gradient(135deg, #7a2ae0 0%, #4a1596 55%, #2f0b63 100%);
+  --grad-oro:    linear-gradient(135deg, #ffd980 0%, #c99a2e 100%);
+  --grad-suave:  linear-gradient(180deg, #faf7ff 0%, #ffffff 100%);
+
+  /* Un acento por familia de producto. Sin esto, cuatro tarjetas de
+     producto son cuatro rectángulos iguales y el ojo no distingue
+     ahorro de crédito hasta leer el título. */
+  --fam-ahorro:    #0f766e;
+  --fam-corriente: #1d4ed8;
+  --fam-credito:   #b45309;
+  --fam-tarjeta:   #6418c3;
+
+  --sombra-sm: 0 1px 2px rgba(16,24,40,.05), 0 1px 3px rgba(16,24,40,.06);
+  --sombra-md: 0 4px 10px rgba(16,24,40,.06), 0 12px 28px rgba(16,24,40,.07);
+  --sombra-lg: 0 10px 24px rgba(16,24,40,.08), 0 28px 60px rgba(49,20,100,.13);
+}
+
+/* ---------------------------------------------------------------- */
+/*  ICONOS                                                           */
+/* ---------------------------------------------------------------- */
+
+.ico, .ico-duo { display: inline-block; vertical-align: middle; flex: none; }
+
+/* La cápsula que envuelve un icono en una tarjeta de producto. */
+.sitio-icocaja {
+  width: 54px; height: 54px; border-radius: 16px;
+  display: grid; place-items: center;
+  margin-bottom: 1rem;
+  background: color-mix(in srgb, currentColor 13%, transparent);
+  transition: transform .25s ease, background .25s ease;
+}
+
+/* ---------------------------------------------------------------- */
+/*  ORNAMENTOS                                                       */
+/* ---------------------------------------------------------------- */
+
+.orn { position: absolute; pointer-events: none; }
+.orn--puntos  { width: 150px; height: 150px; opacity: .18; }
+.orn--anillos { width: 320px; height: 320px; opacity: .16; }
+.orn--mancha  { width: 420px; height: 420px; opacity: .10; }
+.orn--onda    { left: 0; right: 0; bottom: -1px; width: 100%; height: 70px; }
+
+/* ---------------------------------------------------------------- */
+/*  LA PORTADA                                                       */
+/* ---------------------------------------------------------------- */
+
+.sitio-hero {
+  position: relative;
+  overflow: hidden;
+  background: var(--grad-marca);
+  color: #fff;
+  padding-block: clamp(3rem, 7vw, 5.4rem) clamp(4rem, 9vw, 7rem);
+}
+
+.sitio-hero h1,
+.sitio-hero h2 { color: #fff; }
+
+.sitio-hero .sitio-entrada { max-width: 36rem; }
+
+.sitio-hero__fondo { position: absolute; inset: 0; color: #fff; pointer-events: none; }
+.sitio-hero__fondo .orn--anillos { top: -90px; right: -70px; }
+.sitio-hero__fondo .orn--puntos  { bottom: 90px; left: -30px; }
+.sitio-hero__fondo .orn--mancha  { bottom: -190px; right: 24%; opacity: .07; }
+.sitio-hero__fondo .orn--onda    { color: #fff; }
+
+.sitio-hero .sitio-ancho { position: relative; z-index: 1; }
+
+/* La etiqueta de arriba del título. */
+.sitio-hero .sitio-etiqueta {
+  background: rgba(255,255,255,.14);
+  border: 1px solid rgba(255,255,255,.22);
+  color: #fff;
+  backdrop-filter: blur(6px);
+}
+
+/* ---------------------------------------------------------------- */
+/*  BOTONES                                                          */
+/* ---------------------------------------------------------------- */
+
+.sitio-btn {
+  position: relative;
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.sitio-btn:hover { transform: translateY(-2px); text-decoration: none; }
+
+.sitio-hero .sitio-btn--primario {
+  background: #fff; color: var(--marca-oscura);
+  box-shadow: 0 8px 20px rgba(0,0,0,.18);
+}
+.sitio-hero .sitio-btn--primario:hover { background: #fff; box-shadow: 0 12px 26px rgba(0,0,0,.24); }
+
+.sitio-hero .sitio-btn--linea {
+  border-color: rgba(255,255,255,.45); color: #fff; background: rgba(255,255,255,.06);
+}
+.sitio-hero .sitio-btn--linea:hover {
+  background: rgba(255,255,255,.16);
+  border-color: #fff;
+  /* La regla base tiñe el texto de morado al pasar el ratón, que
+     sobre el morado del hero desaparece. */
+  color: #fff;
+}
+
+/* Botón dorado, para la llamada principal fuera de la portada. */
+.sitio-btn--oro {
+  background: var(--grad-oro); color: #4a3307; border: 0;
+  box-shadow: 0 6px 16px rgba(201,154,46,.35);
+}
+.sitio-btn--oro:hover { box-shadow: 0 10px 22px rgba(201,154,46,.45); color: #3a2705; }
+
+/* ---------------------------------------------------------------- */
+/*  LAS ILUSTRACIONES                                                */
+/* ---------------------------------------------------------------- */
+
+.il { width: 100%; height: auto; display: block; }
+.il--tarjeta   { max-width: 440px; filter: drop-shadow(0 26px 44px rgba(20,8,48,.42)); }
+.il--movil     { max-width: 280px; filter: drop-shadow(0 22px 40px rgba(20,8,48,.34)); }
+.il--seguridad { max-width: 300px; }
+.il--crecer    { max-width: 360px; }
+
+/* Flota despacio: da vida sin distraer de la lectura. */
+@keyframes cmFlota { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-11px); } }
+.il--tarjeta, .il--movil { animation: cmFlota 7s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .il--tarjeta, .il--movil { animation: none; }
+  .sitio-btn:hover { transform: none; }
+}
+
+/* ---------------------------------------------------------------- */
+/*  TARJETAS DE PRODUCTO                                             */
+/* ---------------------------------------------------------------- */
+
+.sitio-producto {
+  position: relative;
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: 18px;
+  padding: 1.5rem 1.4rem;
+  box-shadow: var(--sombra-sm);
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+  overflow: hidden;
+}
+
+/* La cinta de color de arriba: es lo que identifica la familia de un
+   vistazo, antes de leer el título. */
+.sitio-producto::before {
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 4px;
+  background: currentColor; opacity: .9;
+}
+
+.sitio-producto:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--sombra-lg);
+  border-color: color-mix(in srgb, currentColor 35%, var(--borde));
+}
+.sitio-producto:hover .sitio-icocaja {
+  transform: scale(1.06) rotate(-4deg);
+  background: color-mix(in srgb, currentColor 20%, transparent);
+}
+
+.sitio-producto h3 { color: var(--tinta); margin-bottom: .35rem; }
+.sitio-producto p  { color: var(--texto); font-size: .92rem; margin-bottom: .9rem; }
+
+.sitio-producto__ahorro    { color: var(--fam-ahorro); }
+.sitio-producto__corriente { color: var(--fam-corriente); }
+.sitio-producto__credito   { color: var(--fam-credito); }
+.sitio-producto__tarjeta   { color: var(--fam-tarjeta); }
+
+/* El dato que destaca: la tasa, el plazo, el monto. */
+.sitio-dato {
+  display: inline-flex; align-items: baseline; gap: .35rem;
+  font-weight: 700; color: currentColor; font-size: 1.45rem;
+  line-height: 1; letter-spacing: -.02em;
+}
+.sitio-dato small { font-size: .74rem; font-weight: 500; color: var(--suave); letter-spacing: 0; }
+
+.sitio-producto__pie {
+  display: flex; align-items: center; gap: .4rem;
+  margin-top: 1rem; font-size: .86rem; font-weight: 600; color: currentColor;
+}
+.sitio-producto__pie .ico { transition: transform .22s ease; }
+.sitio-producto:hover .sitio-producto__pie .ico { transform: translateX(4px); }
+
+/* ---------------------------------------------------------------- */
+/*  GALERÍA DE TARJETAS                                              */
+/* ---------------------------------------------------------------- */
+
+/* Una fila que se desliza en el teléfono y se reparte en el escritorio.
+   El desbordamiento con `scroll-snap` es lo que hace que en móvil se
+   pase de una a otra sin que queden a medias. */
+.sitio-galeria {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(230px, 1fr);
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: .6rem;
+  scrollbar-width: thin;
+}
+.sitio-galeria > * { scroll-snap-align: start; }
+
+@media (min-width: 992px) {
+  .sitio-galeria {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    overflow: visible;
+  }
+}
+
+.sitio-plastico {
+  position: relative;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  min-height: 320px;
+  padding: 1.3rem;
+  border-radius: 20px;
+  overflow: hidden;
+  color: #fff;
+  text-decoration: none;
+  background: #2f1070;
+  box-shadow: var(--sombra-md);
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.sitio-plastico:hover { transform: translateY(-6px); box-shadow: var(--sombra-lg); text-decoration: none; }
+
+/* El plástico dibujado, asomando por arriba y girado. */
+.sitio-plastico .plastico {
+  position: absolute; top: -8%; right: -26%;
+  width: 136%; height: auto;
+  filter: drop-shadow(0 16px 26px rgba(0,0,0,.34));
+  transition: transform .3s ease;
+}
+.sitio-plastico:hover .plastico { transform: translateY(-6px) scale(1.03); }
+
+.sitio-plastico__texto { position: relative; z-index: 1; }
+.sitio-plastico h3 { color: #fff; font-size: 1.12rem; margin-bottom: .5rem; }
+
+/* El subrayado dorado bajo el nombre: el remate que lo hace producto
+   y no una caja de color. */
+.sitio-plastico h3::after {
+  content: ""; display: block; width: 46px; height: 3px; margin-top: .55rem;
+  border-radius: 2px; background: var(--grad-oro);
+}
+.sitio-plastico p { color: rgba(255,255,255,.8); font-size: .84rem; margin: 0; }
+
+/* Los fondos por nivel. */
+.sitio-plastico--clasica   { background: linear-gradient(160deg,#5b2bd6,#2f1070); }
+.sitio-plastico--oro       { background: linear-gradient(160deg,#b8860f,#5b3d03); }
+.sitio-plastico--platinum  { background: linear-gradient(160deg,#4a5568,#1f2733); }
+.sitio-plastico--signature { background: linear-gradient(160deg,#1f3a5f,#0b1a2e); }
+.sitio-plastico--obsidiana { background: linear-gradient(160deg,#2a2a30,#0c0c0f); }
+.sitio-plastico--debito    { background: linear-gradient(160deg,#0f766e,#063f3a); }
+.sitio-plastico--inicia    { background: linear-gradient(160deg,#c2410c,#6b2208); }
+.sitio-plastico--cashback  { background: linear-gradient(160deg,#be185d,#6b0d35); }
+.sitio-plastico--empresa   { background: linear-gradient(160deg,#334155,#111827); }
+
+/* ---------------------------------------------------------------- */
+/*  BLOQUES CON FIGURA                                               */
+/* ---------------------------------------------------------------- */
+
+/* Texto a un lado, ilustración al otro. Alterna el orden para que la
+   página no caiga siempre del mismo lado. */
+.sitio-dupla {
+  display: grid; gap: clamp(1.6rem, 4vw, 3.2rem);
+  grid-template-columns: 1fr;
+  align-items: center;
+}
+@media (min-width: 880px) {
+  .sitio-dupla { grid-template-columns: 1.05fr .95fr; }
+  .sitio-dupla--invertida > :first-child { order: 2; }
+}
+.sitio-dupla__figura { display: grid; place-items: center; }
+
+/* Lista de ventajas con palomita. */
+.sitio-ventajas { list-style: none; margin: 0 0 1.3rem; padding: 0; display: grid; gap: .65rem; }
+.sitio-ventajas li {
+  display: grid; grid-template-columns: 22px 1fr; gap: .65rem;
+  align-items: start; font-size: .94rem;
+}
+.sitio-ventajas li::before {
+  content: ""; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--marca-tenue) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236418c3' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E") center/13px no-repeat;
+}
+
+/* ---------------------------------------------------------------- */
+/*  CIFRAS                                                           */
+/* ---------------------------------------------------------------- */
+
+.sitio-cifras {
+  display: grid; gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+.sitio-cifra {
+  position: relative; overflow: hidden;
+  text-align: center; padding: 1.5rem 1rem;
+  border-radius: 18px; background: #fff;
+  border: 1px solid var(--borde); box-shadow: var(--sombra-sm);
+}
+.sitio-cifra b {
+  display: block; font-size: clamp(1.6rem, 3.4vw, 2.3rem);
+  color: var(--marca); letter-spacing: -.03em; line-height: 1.05;
+}
+.sitio-cifra span { font-size: .84rem; color: var(--suave); }
+.sitio-cifra .ico-duo { color: var(--marca); opacity: .9; margin-bottom: .5rem; }
+
+/* ---------------------------------------------------------------- */
+/*  LA FRANJA DE CIERRE                                              */
+/* ---------------------------------------------------------------- */
+
+.sitio-franja {
+  position: relative; overflow: hidden;
+  background: var(--grad-marca); color: #fff;
+  border-radius: 24px;
+  padding: clamp(2rem, 5vw, 3.4rem);
+  text-align: center;
+  box-shadow: var(--sombra-lg);
+}
+.sitio-franja h2 { color: #fff; }
+.sitio-franja p  { color: rgba(255,255,255,.84); max-width: 40rem; margin-inline: auto; }
+.sitio-franja .orn--anillos { top: -120px; left: -80px; color: #fff; }
+.sitio-franja .orn--puntos  { right: 20px; bottom: 10px; color: #fff; }
+.sitio-franja > * { position: relative; z-index: 1; }
+
+/* ---------------------------------------------------------------- */
+/*  PASOS NUMERADOS                                                  */
+/* ---------------------------------------------------------------- */
+
+.sitio-pasos {
+  display: grid; gap: 1.2rem; counter-reset: paso;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+.sitio-paso {
+  position: relative; padding: 1.4rem 1.2rem 1.2rem;
+  border-radius: 18px; background: #fff;
+  border: 1px solid var(--borde); box-shadow: var(--sombra-sm);
+}
+.sitio-paso::before {
+  counter-increment: paso; content: counter(paso);
+  display: grid; place-items: center;
+  width: 34px; height: 34px; margin-bottom: .8rem;
+  border-radius: 11px; background: var(--grad-marca);
+  color: #fff; font-weight: 700; font-size: .95rem;
+}
+.sitio-paso h3 { font-size: .98rem; margin-bottom: .3rem; }
+.sitio-paso p  { font-size: .88rem; margin: 0; color: var(--texto); }
+/* Variantes que usa la portada y que conviene tener con nombre en vez
+   de con `style=""` suelto: un color a mano en el HTML es el que nadie
+   encuentra el día que cambia la marca. */
+
+.sitio-etiqueta--marca {
+  color: var(--marca);
+  background: var(--marca-tenue);
+  border: 1px solid color-mix(in srgb, var(--marca) 18%, transparent);
+}
+
+/* La lista de ventajas sobre el degradado de la portada. */
+.sitio-ventajas--claro { margin-top: 1.6rem; color: rgba(255,255,255,.88); }
+.sitio-ventajas--claro li::before {
+  background: rgba(255,255,255,.18) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E") center/13px no-repeat;
+}
+
+.sitio-acciones--centro { justify-content: center; }
+
+/* Los pasos, separados del bloque que los explica. */
+.sitio-pasos { margin-top: clamp(2rem, 5vw, 3rem); }
+
+/* El botón de línea cuando va sobre fondo claro y no sobre el morado. */
+.sitio-seccion .sitio-btn--linea { border-color: var(--borde); color: var(--marca); }
+.sitio-seccion .sitio-btn--linea:hover { background: var(--marca-tenue); }
+
+/* La franja de cierre va sobre morado, así que su botón secundario
+   tiene que volver a ser claro.
+ *
+ * Y el FONDO hay que decirlo, no solo el color del texto: la regla
+ * base de `.sitio-btn--linea` trae `background: #fff` porque está
+ * pensada para fondo claro. Al poner aquí únicamente `color: #fff`
+ * quedaba texto blanco sobre caja blanca — un botón en blanco, con su
+ * borde y sin una letra dentro.
+ *
+ * Transparente y no translúcido: ya hay una nota más arriba, en
+ * `.sitio-btn--claro`, sobre que un 14 % de blanco sobre el morado se
+ * ve deslavado. Sobre el degradado, el borde a 55 % y el texto blanco
+ * pleno es lo que se lee a la primera. */
+.sitio-franja .sitio-btn--linea {
+  background: transparent;
+  border-color: rgba(255,255,255,.55);
+  color: #fff;
+}
+.sitio-franja .sitio-btn--linea:hover {
+  background: rgba(255,255,255,.16);
+  border-color: #fff;
+  color: #fff;
+}
+
+.sitio-franja .sitio-btn--primario {
+  background: #fff;
+  color: var(--marca-oscura);
+  border-color: #fff;
+}
+.sitio-franja .sitio-btn--primario:hover {
+  background: var(--oro);
+  border-color: var(--oro);
+  color: #3b2a04;
+}
+
+/* La rejilla de la portada: dos columnas en escritorio, apilada en el
+   teléfono, con la figura centrada. */
+@media (max-width: 879px) {
+  .sitio-hero__rejilla .sitio-dupla__figura { margin-top: 2rem; }
+  .il--tarjeta { max-width: 340px; }
+  .il--movil   { max-width: 230px; }
+}
+/* ---------------------------------------------------------------- */
+/*  LA TARJETA DE SIEMPRE, AL DÍA                                    */
+/* ---------------------------------------------------------------- */
+
+/* `.sitio-tarjeta` la usan las otras cinco páginas del sitio. En vez
+   de reescribir cinco plantillas para que luzcan como la portada, se
+   le da aquí el mismo acabado: la cinta de color arriba, la sombra con
+   profundidad y el icono que reacciona. Así el sitio entero sube de
+   nivel con una regla, y las vistas no se tocan.
+
+   Va al final del archivo a propósito: tiene que ganar a la definición
+   original sin tener que marcarla `!important`. */
+
+.sitio-tarjeta {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  box-shadow: var(--sombra-sm);
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+}
+
+.sitio-tarjeta::before {
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 4px;
+  background: var(--marca); opacity: .9;
+}
+
+.sitio-tarjeta:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--sombra-lg);
+  border-color: color-mix(in srgb, var(--marca) 32%, var(--borde));
+}
+
+.sitio-tarjeta__icono {
+  width: 54px; height: 54px; border-radius: 16px;
+  transition: transform .25s ease, background .25s ease;
+}
+.sitio-tarjeta:hover .sitio-tarjeta__icono {
+  transform: scale(1.06) rotate(-4deg);
+  background: color-mix(in srgb, var(--marca) 20%, transparent);
+}
+
+/* El icono de dos tonos cabe donde cabía el de línea. */
+.sitio-tarjeta__icono .ico-duo { color: var(--marca); }
+/* =====================================================================
+   ESCENARIOS DE EL SALVADOR
+   ---------------------------------------------------------------------
+   El telón de fondo de cada cabecera. Un banco salvadoreño con un
+   degradado morado y nada más podría ser de cualquier parte; esto lo
+   ancla aquí.
+
+   El movimiento vive en esta hoja y no en un guion: son transformaciones
+   y opacidades, que el navegador compone en la tarjeta gráfica sin
+   tocar el hilo de la página. Una cabecera que da tirones al hacer
+   scroll es peor que una cabecera quieta.
+
+   Al final del archivo hay un bloque que lo detiene todo cuando el
+   sistema pide menos movimiento.
+   ===================================================================== */
+
+/* El degradado de la cabecera, respirando.
+   Se desplaza una capa ancha en lugar de animar los `stop` del
+   degradado: animar colores obliga a recalcular el pintado en cada
+   cuadro, mover una posición no. */
+.sitio-hero {
+  background: linear-gradient(118deg, #8a35ef 0%, #6418c3 28%, #41107f 58%, #7a2ae0 82%, #4a1596 100%);
+  background-size: 260% 260%;
+  animation: cmAmanecer 26s ease-in-out infinite;
+}
+
+@keyframes cmAmanecer {
+  0%   { background-position:   0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position:   0% 50%; }
+}
+
+/* ---------------------------------------------------------------- */
+
+.esc {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: clamp(190px, 34vw, 340px);
+  pointer-events: none;
+  z-index: 0;
+  /* Se funde con el degradado por arriba en vez de cortarse en seco. */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 26%, #000 100%);
+          mask-image: linear-gradient(to bottom, transparent 0%, #000 26%, #000 100%);
+}
+
+.esc svg { width: 100%; height: 100%; display: block; }
+
+/* El contenido de la cabecera va por encima del escenario. */
+.sitio-hero .sitio-ancho { position: relative; z-index: 1; }
+
+/* ---------------------------------------------------------------- */
+/*  LO QUE SE MUEVE                                                  */
+/* ---------------------------------------------------------------- */
+
+/* El sol late despacio: es lo que hace que la escena no parezca un
+   dibujo pegado. */
+.esc-sol {
+  transform-origin: center;
+  animation: cmLatir 9s ease-in-out infinite;
+}
+.esc-sol--nucleo { animation-duration: 6s; animation-direction: alternate; }
+
+@keyframes cmLatir {
+  0%, 100% { transform: scale(1);    opacity: .85; }
+  50%      { transform: scale(1.09); opacity: 1; }
+}
+
+/* Las nubes cruzan de izquierda a derecha y vuelven a entrar. */
+.esc-nubes { animation: cmNubes 64s linear infinite; }
+
+@keyframes cmNubes {
+  from { transform: translateX(-16%); }
+  to   { transform: translateX(16%); }
+}
+
+/* Los pájaros, más rápidos y en el otro sentido. */
+.esc-aves { animation: cmAves 38s linear infinite; }
+
+@keyframes cmAves {
+  0%   { transform: translate(6%, 0) scale(1); opacity: 0; }
+  12%  { opacity: 1; }
+  88%  { opacity: 1; }
+  100% { transform: translate(-22%, -24px) scale(.82); opacity: 0; }
+}
+
+/* El penacho del volcán sube y se deshace. */
+.esc-humo { animation: cmHumo 11s ease-in-out infinite; transform-origin: 700px 120px; }
+
+@keyframes cmHumo {
+  0%, 100% { transform: translateY(0) scale(1);      opacity: .9; }
+  50%      { transform: translateY(-14px) scale(1.12); opacity: .5; }
+}
+
+/* El agua de la laguna, con su brillo. */
+.esc-agua   { animation: cmAgua 13s ease-in-out infinite; }
+.esc-brillo { animation: cmBrillo 7s ease-in-out infinite; }
+
+@keyframes cmAgua   { 0%,100% { transform: translateX(0); } 50% { transform: translateX(-10px); } }
+@keyframes cmBrillo { 0%,100% { opacity: .06; } 50% { opacity: .16; } }
+
+/* Las olas, una más lenta que la otra: es lo que da la sensación de
+   que el mar tiene fondo. */
+.esc-ola--1 { animation: cmOla 17s ease-in-out infinite; }
+.esc-ola--2 { animation: cmOla 11s ease-in-out infinite reverse; }
+
+@keyframes cmOla {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(72px); }
+}
+
+/* Las ventanas de la ciudad se encienden y se apagan, desfasadas. */
+.esc-ventanas rect { animation: cmVentana 5.5s ease-in-out infinite; }
+.esc-ventanas rect:nth-child(2n)  { animation-delay: .9s;  animation-duration: 7s; }
+.esc-ventanas rect:nth-child(3n)  { animation-delay: 2.1s; animation-duration: 6.2s; }
+.esc-ventanas rect:nth-child(5n)  { animation-delay: 3.4s; }
+
+@keyframes cmVentana { 0%, 100% { opacity: .18; } 50% { opacity: .72; } }
+
+/* El monumento sube un punto, como si respirara con la escena. */
+.esc-monumento { animation: cmFlotaLento 14s ease-in-out infinite; }
+
+@keyframes cmFlotaLento {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-5px); }
+}
+
+/* ---------------------------------------------------------------- */
+
+/* En pantallas pequeñas la escena se recorta y estorbaría al texto. */
+@media (max-width: 600px) {
+  .esc { height: 150px; opacity: .72; }
+}
+
+/* Quien pide menos movimiento, no recibe ninguno. No se esconde la
+   escena —sigue siendo el fondo— pero se queda quieta. */
+@media (prefers-reduced-motion: reduce) {
+  .sitio-hero { animation: none; background-position: 0% 50%; }
+  .esc-sol, .esc-nubes, .esc-aves, .esc-humo, .esc-agua, .esc-brillo,
+  .esc-ola--1, .esc-ola--2, .esc-ventanas rect, .esc-monumento {
+    animation: none;
+  }
+}
+/* ---------------------------------------------------------------- */
+/*  LA CABECERA DE LA TIENDA                                         */
+/* ---------------------------------------------------------------- */
+
+/* Era un título oscuro sobre blanco mientras el resto del sitio tenía
+   cabecera de color: al pasar de «Personas» a «Tienda» parecía que uno
+   se había salido del banco. Ahora lleva el mismo degradado animado y
+   su propio escenario. */
+.tda-hero {
+  position: relative;
+  overflow: hidden;
+  margin: 0 0 1.8rem;
+  padding: clamp(2rem, 5vw, 3.4rem) clamp(1.2rem, 3vw, 2.4rem) clamp(3.4rem, 7vw, 5rem);
+  border-radius: 22px;
+  color: #fff;
+  background: linear-gradient(118deg, #8a35ef 0%, #6418c3 28%, #41107f 58%, #7a2ae0 82%, #4a1596 100%);
+  background-size: 260% 260%;
+  animation: cmAmanecer 26s ease-in-out infinite;
+  box-shadow: var(--sombra-lg);
+}
+
+.tda-hero__texto { position: relative; z-index: 1; }
+.tda-hero__texto h1 { color: #fff; }
+.tda-hero__texto p  { color: rgba(255,255,255,.86); }
+
+/* El escenario de la tienda se recorta con el borde redondeado del
+   bloque, no con el ancho de la pantalla. */
+.tda-hero .esc { height: clamp(150px, 26vw, 250px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .tda-hero { animation: none; background-position: 0% 50%; }
+}
+/* ---------------------------------------------------------------- */
+/*  EL CARRITO, POR TIENDA                                           */
+/* ---------------------------------------------------------------- */
+
+/* Cada comercio en su propio bloque, con su cabecera. De un carrito
+   salen varios pedidos y conviene que se vea desde aquí: quien compra
+   en dos tiendas va a recibir dos entregas y paga dos envíos. */
+.tda-grupo {
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+  background: #fff;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  box-shadow: var(--sombra-sm);
+}
+
+.tda-grupo__cab {
+  display: flex; align-items: center; gap: .8rem;
+  padding: .85rem 1rem;
+  background: linear-gradient(180deg, #faf8ff, #fff);
+  border-bottom: 1px solid var(--borde);
+}
+.tda-grupo__quien { min-width: 0; }
+.tda-grupo__quien strong { display: block; font-size: .95rem; color: var(--tinta); }
+.tda-grupo__quien small  { color: var(--suave); font-size: .78rem; }
+.tda-grupo__subtotal {
+  margin-left: auto; font-weight: 700; color: var(--tinta);
+  white-space: nowrap; font-size: 1rem;
+}
+
+.tda-grupo .tda-linea { border-bottom: 1px solid #f1f3f8; }
+.tda-grupo .tda-linea:last-child { border-bottom: 0; }
+
+/* ---------------------------------------------------------------- */
+/*  BOTONES DE CANTIDAD                                              */
+/* ---------------------------------------------------------------- */
+
+/* Menos, número, más. En un teléfono, seleccionar lo que hay dentro de
+   un campo y teclear otra cosa son tres gestos; pulsar dos veces, uno. */
+.tda-paso {
+  display: inline-flex; align-items: center;
+  border: 1px solid var(--borde);
+  border-radius: 11px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.tda-paso__btn {
+  width: 36px; height: 38px;
+  border: 0; background: #fff;
+  color: var(--marca);
+  font-size: 1.15rem; line-height: 1;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease;
+}
+.tda-paso__btn:hover:not(:disabled) { background: var(--marca-tenue); }
+.tda-paso__btn:active:not(:disabled) { background: #e9dcfa; }
+
+/* Deshabilitado y no escondido: que el botón siga ahí en gris dice
+   «ya no se puede bajar más», mientras que desaparecer deja al usuario
+   buscando a dónde se fue. */
+.tda-paso__btn:disabled { color: #c3c8d2; cursor: not-allowed; }
+
+.tda-paso__num {
+  width: 46px; height: 38px;
+  border: 0; border-inline: 1px solid var(--borde);
+  text-align: center;
+  font-weight: 600; font-size: .95rem;
+  color: var(--tinta);
+  background: #fff;
+  -moz-appearance: textfield;
+}
+/* Las flechitas del navegador sobran: ya hay dos botones de verdad. */
+.tda-paso__num::-webkit-outer-spin-button,
+.tda-paso__num::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.tda-paso__num:focus { outline: 2px solid var(--marca); outline-offset: -2px; }
+
+/* ---------------------------------------------------------------- */
+/*  EL RESUMEN                                                       */
+/* ---------------------------------------------------------------- */
+
+.tda-resumen__nota {
+  background: var(--marca-tenue);
+  border-radius: 11px;
+  padding: .7rem .85rem;
+  font-size: .84rem;
+  color: #4a1596;
+  margin-bottom: 1rem;
+}
+
+.tda-resumen__msi {
+  background: #fff9ec;
+  border: 1px solid #f3e2bd;
+  border-radius: 11px;
+  padding: .8rem .9rem;
+  font-size: .86rem;
+  color: #6b4d0c;
+  margin: 1rem 0;
+}
+.tda-resumen__msi strong { display: block; color: #5a3f06; }
+.tda-resumen__msi small  { display: block; margin-top: .4rem; color: #8a6c2b; line-height: 1.5; }
+
+/* El importe de cada línea cambia al pulsar: una transición corta
+   hace que se note que cambió sin que parezca un parpadeo. */
+.tda-linea__importe { transition: color .2s ease; }
+
+/* ---------------------------------------------------------------- */
+/*  CARRITO VACÍO                                                    */
+/* ---------------------------------------------------------------- */
+
+.tda-vacio svg { color: #d6ccea; margin-bottom: .6rem; }
+
+@media (max-width: 575px) {
+  .tda-grupo__cab { flex-wrap: wrap; }
+  .tda-grupo__subtotal { width: 100%; margin-left: 0; text-align: right; }
+}
+
+
+/* =====================================================================
+   LOS OTROS PEDIDOS DEL MISMO COBRO
+   ---------------------------------------------------------------------
+   Un carrito con varias tiendas se cobra una vez y abre un pedido por
+   tienda. Esta es la única pantalla donde vuelven a aparecer las claves
+   de seguimiento de los demás.
+   ===================================================================== */
+
+.tda-hermanos {
+  margin-top: 1.25rem;
+  padding: 1rem 1.1rem 1.1rem;
+  border: 1px solid var(--borde);
+  border-radius: .9rem;
+  background: linear-gradient(180deg, #fbfaff 0%, #ffffff 100%);
+}
+
+.tda-hermanos__titulo {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  margin: 0 0 .35rem;
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--tinta);
+}
+.tda-hermanos__titulo svg { color: var(--marca); flex: 0 0 auto; }
+
+.tda-hermanos__nota {
+  margin: 0 0 .8rem;
+  font-size: .82rem;
+  line-height: 1.5;
+  color: var(--suave);
+}
+
+.tda-hermanos__lista { margin: 0; padding: 0; list-style: none; }
+
+.tda-hermanos__lista li {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  padding: .6rem 0;
+  border-top: 1px solid #f1f3f8;
+}
+
+.tda-hermanos__sello {
+  flex: 0 0 38px;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: .6rem;
+  background: var(--sello, var(--marca));
+  color: #fff;
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+
+.tda-hermanos__datos { flex: 1 1 auto; min-width: 0; }
+.tda-hermanos__datos b { display: block; font-size: .9rem; color: var(--tinta); }
+.tda-hermanos__datos small {
+  display: block;
+  font-size: .76rem;
+  color: var(--suave);
+  overflow-wrap: anywhere;
+}
+
+/* =====================================================================
+   LA MARCA DE LA TARJETA QUE SE ESTÁ ESCRIBIENDO
+   ---------------------------------------------------------------------
+   Sale sola en cuanto los primeros dígitos la delatan. Sirve de acuse
+   de recibo —«sí, leí Visa»— en un campo donde ya no se ve el número.
+   ===================================================================== */
+
+.tda-marca {
+  display: inline-block;
+  margin-left: .45rem;
+  padding: .1rem .45rem;
+  border-radius: .35rem;
+  background: var(--marca-tenue, #f1ebfb);
+  color: var(--marca, #5b21b6);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+.tda-marca--visa       { background: #e8efff; color: #1a1f71; }
+.tda-marca--mastercard { background: #fff0e6; color: #a4420a; }
+.tda-marca--amex       { background: #e6f3fb; color: #016fd0; }
+.tda-marca--discover   { background: #fff4e0; color: #8a5a00; }
+
+/* El documento: el tipo manda, el número va al lado. */
+.tda-doc {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, 34%) 1fr;
+  gap: .5rem;
+  align-items: stretch;
+}
+.tda-doc > select,
+.tda-doc > input { min-width: 0; }
+
+@media (max-width: 420px) {
+  .tda-doc { grid-template-columns: 1fr; }
+}
+
+/* Cada paso, con la fecha en que ocurrió. */
+.tda-pasos li { flex-direction: column; align-items: center; gap: .2rem; text-align: center; }
+.tda-pasos li em { font-style: normal; }
+.tda-pasos li small {
+  font-size: .68rem;
+  color: var(--suave);
+  font-variant-numeric: tabular-nums;
+}
+.tda-pasos--hecho small { color: var(--marca); }
+
+.tda-pasos__nota {
+  margin: .2rem 0 1rem;
+  font-size: .76rem;
+  line-height: 1.45;
+  color: var(--suave);
+  text-align: center;
+}

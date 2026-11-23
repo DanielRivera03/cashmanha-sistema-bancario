@@ -1,0 +1,8 @@
+# =====================================================================
+# Raíz del proyecto: NADA es accesible por URL desde aquí.
+#
+# Lo correcto sería tener solo public/ dentro del webroot. Como el
+# proyecto completo vive en htdocs, este archivo es la barrera que
+# impide servir .env, src/, storage/ y las migraciones.
+# =====================================================================
+Require all denied

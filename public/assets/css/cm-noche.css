@@ -1,0 +1,937 @@
+/* =====================================================================
+   CashMan H.A. — Modo noche
+   =====================================================================
+
+   Se enciende con `data-tema="noche"` en el <html> y
+   `data-theme-version="dark"` en el <body>, las dos cosas a la vez:
+
+     LA PLANTILLA trae su propio modo oscuro, mil y pico de reglas que
+       ya cubren el menú, la cabecera, las tablas, los formularios y
+       todo lo que vino de fábrica. Rehacer eso a mano sería repetir
+       trabajo hecho, y cada componente olvidado quedaría en blanco
+       sobre negro.
+
+     ESTA HOJA se ocupa de lo demás: las piezas propias de CashMan —que
+       la plantilla no conoce— y los puntos donde su modo oscuro deja
+       texto negro sobre fondo negro.
+
+   NO ES UN FILTRO INVERTIDO. Invertir la página con `filter` es un
+   truco de cinco líneas y se nota: las fotos salen en negativo, el
+   logo pierde su color y los verdes de «pagado» se vuelven rojos, que
+   en un banco es justo lo que no puede pasar.
+
+   La paleta es la de la plantilla —azul noche #181f39 de fondo y
+   #1e2746 de panel— para que las dos capas hablen el mismo idioma.
+   ===================================================================== */
+
+[data-tema="noche"] {
+  /* --- Superficies, de atrás hacia adelante --- */
+  --n-fondo:       #181f39;   /* el lienzo, el de la plantilla */
+  --n-panel:       #1e2746;   /* tarjetas, cabecera y menú */
+  --n-panel-alto:  #27315a;   /* lo que va encima de un panel */
+  --n-borde:       #333a54;
+  --n-borde-sutil: #2a3150;
+
+  /* --- Tinta ---
+     La plantilla deja el texto en #828690, que vale para lo secundario
+     y se queda corto para un importe. Aquí hay tres niveles. */
+  --n-texto:       #e8ebf2;
+  --n-texto-sec:   #a0a7b8;
+  --n-texto-debil: #767d91;
+
+  /* --- La marca, aclarada ---
+     El morado #6418c3 sobre azul noche es casi invisible. */
+  --n-marca:       #a479f5;
+  --n-marca-alto:  #c9b0ff;
+  --n-marca-tenue: #2e2456;
+
+  /* --- Estados. Mismo significado, más claros. --- */
+  --n-verde: #4ade80;
+  --n-rojo:  #ff8078;
+  --n-ambar: #fbbf4e;
+  --n-azul:  #6cb0fb;
+  --n-oro:   #e0b65c;
+
+  color-scheme: dark;
+}
+
+/* Los tokens de marca que ya usa el sistema, redefinidos: así todo lo
+   que los lee cambia de color sin tocar una regla más. */
+[data-tema="noche"] {
+  --cm-marca:        var(--n-marca);
+  --cm-marca-oscuro: var(--n-marca-alto);
+  --cm-marca-tenue:  var(--n-marca-tenue);
+  --cm-rojo:         var(--n-rojo);
+  --cm-ambar:        var(--n-ambar);
+  --cm-azul:         var(--n-azul);
+  --cm-oro:          var(--n-oro);
+}
+
+/* El fondo, antes de que cargue nada más: sin esto se ve un fogonazo
+   blanco entre que llega el HTML y se aplica el resto. */
+[data-tema="noche"],
+[data-tema="noche"] body { background: var(--n-fondo); }
+
+/* =====================================================================
+   1. Lo que la plantilla deja en negro sobre negro
+   ===================================================================== */
+
+/* El título de la pantalla. La plantilla lo fija en #000 y su propio
+   modo oscuro no lo toca: quedaba ilegible sobre la cabecera. */
+[data-tema="noche"] .header-left .dashboard_bar,
+[data-tema="noche"] .dashboard_bar { color: var(--n-texto); }
+
+/* El nombre y el rol de quien está dentro, arriba a la derecha. */
+[data-tema="noche"] .header-right .header-info span,
+[data-tema="noche"] .header-info .font-w600 { color: var(--n-texto); }
+[data-tema="noche"] .header-right .header-profile > a.nav-link .header-info small,
+[data-tema="noche"] .header-info small { color: var(--n-texto-sec); }
+
+[data-tema="noche"] .header-right .nav-item .nav-link { color: var(--n-texto-sec); }
+[data-tema="noche"] .nav-header .brand-title,
+[data-tema="noche"] .brand-title { color: var(--n-texto); }
+
+/* Encabezados y texto fuerte: el modo oscuro de la plantilla los deja
+   en el gris de los párrafos, y un importe tiene que destacar. */
+[data-tema="noche"] h1, [data-tema="noche"] h2, [data-tema="noche"] h3,
+[data-tema="noche"] h4, [data-tema="noche"] h5, [data-tema="noche"] h6,
+[data-tema="noche"] .card-title,
+[data-tema="noche"] .table strong,
+[data-tema="noche"] .table b,
+[data-tema="noche"] td strong, [data-tema="noche"] td b {
+  color: var(--n-texto);
+}
+
+[data-tema="noche"] .table { color: var(--n-texto-sec); }
+[data-tema="noche"] .table thead th { color: var(--n-texto-sec); }
+[data-tema="noche"] .table td, [data-tema="noche"] .table th { border-color: var(--n-borde-sutil); }
+[data-tema="noche"] .table-hover tbody tr:hover { background: var(--n-panel-alto); color: var(--n-texto); }
+[data-tema="noche"] .table-warning,
+[data-tema="noche"] .table-warning > td {
+  background: rgba(251,191,78,.12) !important;
+  color: var(--n-texto) !important;
+}
+
+/* Lo que en claro es un gris casi blanco tiene que ser aquí más CLARO
+   que el panel, no más oscuro, o se hunde en el fondo. */
+[data-tema="noche"] .bg-light,
+[data-tema="noche"] .bg-white { background: var(--n-panel-alto) !important; color: var(--n-texto); }
+
+[data-tema="noche"] .border,       [data-tema="noche"] .border-top,
+[data-tema="noche"] .border-right, [data-tema="noche"] .border-bottom,
+[data-tema="noche"] .border-left { border-color: var(--n-borde) !important; }
+
+[data-tema="noche"] .btn-outline-secondary { color: var(--n-texto-sec); border-color: var(--n-borde); }
+[data-tema="noche"] .btn-outline-secondary:hover {
+  background: var(--n-panel-alto); color: var(--n-texto); border-color: var(--n-texto-debil);
+}
+[data-tema="noche"] .btn-light { background: var(--n-panel-alto); border-color: var(--n-borde); color: var(--n-texto); }
+[data-tema="noche"] .btn-link  { color: var(--n-marca-alto); }
+
+[data-tema="noche"] .badge-light,
+[data-tema="noche"] .badge-secondary { background: var(--n-borde); color: var(--n-texto-sec); }
+[data-tema="noche"] .badge-success { background: rgba(74,222,128,.18); color: var(--n-verde); }
+[data-tema="noche"] .badge-danger  { background: rgba(255,128,120,.18); color: var(--n-rojo); }
+[data-tema="noche"] .badge-warning { background: rgba(251,191,78,.18); color: var(--n-ambar); }
+[data-tema="noche"] .badge-info    { background: rgba(108,176,251,.18); color: var(--n-azul); }
+[data-tema="noche"] .badge-primary { background: var(--n-marca-tenue); color: var(--n-marca-alto); }
+
+[data-tema="noche"] .text-success { color: var(--n-verde) !important; }
+[data-tema="noche"] .text-danger  { color: var(--n-rojo)  !important; }
+[data-tema="noche"] .text-warning { color: var(--n-ambar) !important; }
+[data-tema="noche"] .text-info    { color: var(--n-azul)  !important; }
+[data-tema="noche"] .text-primary { color: var(--n-marca-alto) !important; }
+[data-tema="noche"] .text-dark    { color: var(--n-texto) !important; }
+
+[data-tema="noche"] .alert-light   { background: var(--n-panel-alto); border-color: var(--n-borde); color: var(--n-texto-sec); }
+[data-tema="noche"] .alert-info    { background: rgba(108,176,251,.12); border-color: rgba(108,176,251,.3); color: #c3dfff; }
+[data-tema="noche"] .alert-success { background: rgba(74,222,128,.12);  border-color: rgba(74,222,128,.3);  color: #b6f2cd; }
+[data-tema="noche"] .alert-warning { background: rgba(251,191,78,.12);  border-color: rgba(251,191,78,.3);  color: #ffe0a8; }
+[data-tema="noche"] .alert-danger  { background: rgba(255,128,120,.12); border-color: rgba(255,128,120,.3); color: #ffc9c4; }
+
+[data-tema="noche"] .nav-tabs { border-color: var(--n-borde) !important; }
+[data-tema="noche"] .nav-tabs .nav-link { color: var(--n-texto-sec); }
+[data-tema="noche"] .nav-tabs .nav-link.active {
+  color: var(--n-marca-alto);
+  background: transparent;
+  border-color: var(--n-borde) var(--n-borde) transparent;
+}
+
+[data-tema="noche"] .page-link { background: var(--n-panel); border-color: var(--n-borde); color: var(--n-texto-sec); }
+[data-tema="noche"] .page-item.active .page-link { background: var(--n-marca); border-color: var(--n-marca); color: #140a25; }
+[data-tema="noche"] .page-item.disabled .page-link { color: var(--n-texto-debil); background: var(--n-panel); }
+
+[data-tema="noche"] .dropdown-item { color: var(--n-texto-sec); }
+[data-tema="noche"] .dropdown-item:hover,
+[data-tema="noche"] .dropdown-item:focus { background: var(--n-panel-alto); color: var(--n-texto); }
+[data-tema="noche"] .dropdown-divider { border-color: var(--n-borde); }
+
+[data-tema="noche"] .progress { background: var(--n-borde); }
+[data-tema="noche"] .input-group-text { background: var(--n-borde); border-color: var(--n-borde); color: var(--n-texto-sec); }
+[data-tema="noche"] .form-control::placeholder { color: var(--n-texto-debil); }
+[data-tema="noche"] .form-control:disabled,
+[data-tema="noche"] .form-control[readonly] { background: var(--n-borde-sutil); color: var(--n-texto-sec); }
+[data-tema="noche"] .form-control:focus { box-shadow: 0 0 0 3px rgba(164,121,245,.2); border-color: var(--n-marca); }
+
+/* =====================================================================
+   2. Las piezas propias de CashMan
+   ===================================================================== */
+
+[data-tema="noche"] .cm-kpi,
+[data-tema="noche"] .cm-vacio,
+[data-tema="noche"] .cm-aviso-toast,
+[data-tema="noche"] .cm-modal__caja,
+[data-tema="noche"] .cm-carga__caja {
+  background: var(--n-panel);
+  border-color: var(--n-borde);
+  color: var(--n-texto);
+}
+[data-tema="noche"] .cm-kpi__val { color: var(--n-texto); }
+[data-tema="noche"] .cm-kpi__et  { color: var(--n-texto-debil); }
+[data-tema="noche"] .cm-vacio p  { color: var(--n-texto-sec); }
+
+[data-tema="noche"] .cm-carga__titulo { color: var(--n-texto); }
+[data-tema="noche"] .cm-carga__texto  { color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-carga__barra  { background: var(--n-borde); }
+[data-tema="noche"] .cm-modal__caja h5 { color: var(--n-texto); }
+
+[data-tema="noche"] .cm-neg { color: var(--n-rojo); }
+[data-tema="noche"] .cm-pos { color: var(--n-verde); }
+[data-tema="noche"] .cm-mono { color: inherit; }
+
+/* Cajas tenues: en claro son un gris de fondo; aquí tienen que subir. */
+[data-tema="noche"] .cm-pedido__lineas,
+[data-tema="noche"] .cm-ciclo,
+[data-tema="noche"] .cm-ficha__datos,
+[data-tema="noche"] .cm-riesgo-cab,
+[data-tema="noche"] .cm-pref__falta,
+[data-tema="noche"] .cm-stripe-caja,
+[data-tema="noche"] .cm-amort-totales,
+[data-tema="noche"] .cm-amort-lote {
+  background: var(--n-panel-alto) !important;
+  border-color: var(--n-borde);
+  color: var(--n-texto);
+}
+[data-tema="noche"] .cm-ciclo small { color: var(--n-texto-debil); }
+[data-tema="noche"] .cm-ciclo b     { color: var(--n-texto); }
+
+/* El panel del porqué de una oferta: en claro es morado muy pálido con
+   texto oscuro. Invertir los dos papeles es lo que lo vuelve legible. */
+[data-tema="noche"] .cm-oferta__motivo {
+  background: var(--n-marca-tenue);
+  border-color: #3f3270;
+  color: var(--n-texto-sec);
+}
+[data-tema="noche"] .cm-oferta__motivo strong,
+[data-tema="noche"] .cm-oferta__motivo b { color: var(--n-marca-alto); }
+[data-tema="noche"] .cm-oferta__motivo li { color: var(--n-texto-sec); }
+
+[data-tema="noche"] .cm-plazo { background: var(--n-panel-alto); border-color: var(--n-borde); }
+[data-tema="noche"] .cm-plazo strong { color: var(--n-texto); }
+[data-tema="noche"] .cm-plazo small  { color: var(--n-texto-debil); }
+[data-tema="noche"] .cm-plazo span   { color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-plazo--activo { background: var(--n-marca-tenue); border-color: var(--n-marca); }
+[data-tema="noche"] .cm-plazo--activo strong,
+[data-tema="noche"] .cm-plazo--activo span { color: var(--n-marca-alto); }
+
+/* El que no cabe: apagado, pero LEGIBLE. Al 42% sobre fondo oscuro se
+   volvía invisible, y el cliente necesita verlo para entender dónde
+   queda su techo. */
+[data-tema="noche"] .cm-plazo:disabled { opacity: .62; }
+[data-tema="noche"] .cm-plazos__et { color: var(--n-texto-debil); }
+[data-tema="noche"] .cm-plazos__aviso {
+  background: rgba(251,191,78,.12); border-color: rgba(251,191,78,.3); color: #ffe0a8;
+}
+
+[data-tema="noche"] .cm-adelantar { background: var(--n-marca-tenue); border-color: #3f3270; }
+[data-tema="noche"] .cm-adelantar__texto strong { color: var(--n-marca-alto); }
+[data-tema="noche"] .cm-adelantar__texto span,
+[data-tema="noche"] .cm-adelantar__total small { color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-adelantar__total strong { color: var(--n-texto); }
+
+[data-tema="noche"] .cm-pedido__porque--malo   { background: rgba(255,128,120,.14); color: #ffc9c4; }
+[data-tema="noche"] .cm-pedido__porque--espera { background: rgba(251,191,78,.14); color: #ffe0a8; }
+
+[data-tema="noche"] .cm-debito-saldo { background: rgba(108,176,251,.1); border-color: rgba(108,176,251,.28); }
+[data-tema="noche"] .cm-debito-saldo small  { color: #93c7f7; }
+[data-tema="noche"] .cm-debito-saldo strong { color: #d4e8ff; }
+
+[data-tema="noche"] .cm-ficha__nombre { color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-ficha__cifra small  { color: var(--n-texto-debil); }
+[data-tema="noche"] .cm-ficha__cifra strong { color: var(--n-texto); }
+[data-tema="noche"] .cm-ficha__tipo--credito { background: var(--n-marca-tenue); color: var(--n-marca-alto); }
+[data-tema="noche"] .cm-ficha__tipo--debito  { background: rgba(108,176,251,.18); color: var(--n-azul); }
+[data-tema="noche"] .cm-ficha__tipo--prepago { background: rgba(251,191,78,.18); color: var(--n-ambar); }
+
+[data-tema="noche"] .cm-riesgo-cab__puntaje { color: var(--n-texto); }
+[data-tema="noche"] .cm-riesgo-cab__puntaje small { color: var(--n-texto-debil); }
+[data-tema="noche"] .cm-riesgo-factor small { color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-riesgo-factor__codigo { color: var(--n-texto-debil); }
+[data-tema="noche"] .cm-riesgo-factor--fuera .progress {
+  background: repeating-linear-gradient(45deg,
+    var(--n-borde), var(--n-borde) 4px, var(--n-borde-sutil) 4px, var(--n-borde-sutil) 8px);
+}
+
+[data-tema="noche"] .cm-pref__lista li     { border-color: var(--n-borde-sutil); }
+[data-tema="noche"] .cm-pref__lista strong { color: var(--n-texto); }
+[data-tema="noche"] .cm-pref__lista span   { color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-pref__falta strong { color: var(--n-texto); }
+[data-tema="noche"] .cm-pref__falta ul     { color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-pref__banquero     { background: var(--n-marca-tenue); }
+[data-tema="noche"] .cm-pref__banquero strong { color: var(--n-marca-alto); }
+[data-tema="noche"] .cm-pref__banquero p      { color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-pref__beneficios      { color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-pref-escalon--patrimonial .card-header { background: rgba(224,182,92,.1); }
+[data-tema="noche"] .cm-pref-escalon--preferente  .card-header { background: var(--n-marca-tenue); }
+
+[data-tema="noche"] .cm-pildora { background: var(--n-panel-alto); border-color: var(--n-borde); color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-pildora.activa { background: var(--n-marca); color: #140a25; border-color: var(--n-marca); }
+
+[data-tema="noche"] .cm-clima { background: var(--n-panel-alto); color: var(--n-texto); }
+[data-tema="noche"] .cm-clima__temp { color: var(--n-texto); }
+[data-tema="noche"] .cm-vivo { background: var(--n-panel-alto); color: var(--n-texto-debil); }
+
+[data-tema="noche"] .cm-acciones__btn { background: transparent; border-color: var(--n-borde); color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-acciones__menu { background: var(--n-panel); border-color: var(--n-borde); }
+[data-tema="noche"] .cm-accion-item { color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-accion-item:hover { background: var(--n-panel-alto); color: var(--n-texto); }
+
+/* El plástico NO se toca: una tarjeta de crédito es del color que es,
+   y oscurecerla la volvería irreconocible frente a la que el cliente
+   tiene en la mano. Tampoco la cabecera de la banca preferente, que
+   lleva su propio color por segmento. */
+
+/* =====================================================================
+   3. El botón flotante de personalización
+   ===================================================================== */
+
+.cm-tema-boton {
+  position: fixed;
+  right: 1.1rem;
+  bottom: 1.1rem;
+  z-index: 10800;
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  border: 1px solid #e3e8ee;
+  background: #fff;
+  color: #475467;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 24px rgba(16,24,40,.18);
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.cm-tema-boton:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(16,24,40,.24); }
+.cm-tema-boton:focus-visible { outline: 3px solid rgba(100,24,195,.4); outline-offset: 2px; }
+
+[data-tema="noche"] .cm-tema-boton {
+  background: var(--n-panel-alto);
+  border-color: var(--n-borde);
+  color: var(--n-marca-alto);
+  box-shadow: 0 8px 24px rgba(0,0,0,.55);
+}
+
+.cm-tema-panel {
+  position: fixed;
+  right: 1.1rem;
+  bottom: 4.4rem;
+  z-index: 10801;
+  width: 16.5rem;
+  background: #fff;
+  border: 1px solid #e3e8ee;
+  border-radius: 14px;
+  box-shadow: 0 16px 40px rgba(16,24,40,.22);
+  padding: .9rem;
+  opacity: 0;
+  transform: translateY(8px) scale(.98);
+  pointer-events: none;
+  transition: opacity .18s ease, transform .18s ease;
+}
+.cm-tema-panel--abierto { opacity: 1; transform: none; pointer-events: auto; }
+
+[data-tema="noche"] .cm-tema-panel {
+  background: var(--n-panel);
+  border-color: var(--n-borde);
+  box-shadow: 0 16px 40px rgba(0,0,0,.65);
+}
+
+.cm-tema-panel__titulo {
+  font-size: .7rem;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: #98a2b3;
+  margin-bottom: .6rem;
+}
+
+.cm-tema-opcion {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  width: 100%;
+  padding: .55rem .65rem;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #344054;
+  font-size: .86rem;
+  text-align: left;
+  cursor: pointer;
+}
+.cm-tema-opcion:hover { background: #f4f6f8; }
+.cm-tema-opcion--activa {
+  background: var(--cm-marca-tenue);
+  border-color: var(--cm-marca);
+  color: var(--cm-marca-oscuro);
+  font-weight: 600;
+}
+.cm-tema-opcion svg { flex-shrink: 0; }
+
+[data-tema="noche"] .cm-tema-opcion { color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-tema-opcion:hover { background: var(--n-panel-alto); color: var(--n-texto); }
+[data-tema="noche"] .cm-tema-opcion--activa {
+  background: var(--n-marca-tenue);
+  border-color: var(--n-marca);
+  color: var(--n-marca-alto);
+}
+[data-tema="noche"] .cm-tema-opcion strong { color: inherit; }
+
+.cm-tema-panel__nota {
+  margin-top: .6rem;
+  padding-top: .6rem;
+  border-top: 1px solid #eaecf0;
+  font-size: .72rem;
+  line-height: 1.45;
+  color: #98a2b3;
+}
+[data-tema="noche"] .cm-tema-panel__nota { border-color: var(--n-borde); }
+
+/* El cambio de tema no se anima: una página entera cambiando de color
+   con transición marea, y en pantallas lentas se ve a trozos. */
+@media (prefers-reduced-motion: reduce) {
+  .cm-tema-boton, .cm-tema-panel { transition: none; }
+}
+
+/* =====================================================================
+   4. Lo que pinta NUESTRA propia hoja y hay que apagar de noche
+
+   Son sombras y degradados en blanco que en claro dan profundidad y de
+   noche tapan el fondo oscuro. El del menú era el culpable de que la
+   barra lateral siguiera blanca con todo lo demás ya oscuro.
+   ===================================================================== */
+
+[data-tema="noche"] .deznav,
+[data-tema="noche"] .deznav .deznav-scroll {
+  background: var(--n-panel) !important;
+}
+
+/* La marca del logotipo: en claro va en tinta oscura y de noche
+   desaparecía contra el panel. */
+[data-tema="noche"] .nav-header .brand-title,
+[data-tema="noche"] .nav-header .brand-logo span,
+[data-tema="noche"] .nav-header .brand-logo .logo-abbr + span,
+[data-tema="noche"] .cm-marca-texto { color: var(--n-texto) !important; }
+
+/* El resaltado del menú, en el morado aclarado. El original es un
+   morado al 7% que sobre azul noche no se percibe. */
+[data-tema="noche"] .deznav .metismenu > li.mm-active > a,
+[data-tema="noche"] [data-sidebar-style] .deznav .metismenu > li.mm-active > a {
+  background: rgba(164,121,245,.16) !important;
+  color: var(--n-marca-alto) !important;
+}
+[data-tema="noche"] .deznav .metismenu > li > a:hover,
+[data-tema="noche"] #main-wrapper.menu-toggle .deznav .metismenu > li > a:hover {
+  background: rgba(164,121,245,.1) !important;
+  color: var(--n-marca-alto) !important;
+}
+[data-tema="noche"] #main-wrapper.menu-toggle .deznav .metismenu > li.mm-active > a {
+  background: rgba(164,121,245,.2) !important;
+}
+[data-tema="noche"] .deznav .metismenu > li > a::before,
+[data-tema="noche"] [data-sidebar-style] .deznav .metismenu > li > a::before {
+  background: var(--n-marca) !important;
+}
+[data-tema="noche"] .deznav .metismenu > li > a,
+[data-tema="noche"] #main-wrapper .deznav .metismenu > li > a,
+[data-tema="noche"] .deznav .metismenu ul a,
+[data-tema="noche"] #main-wrapper .deznav .metismenu ul a { color: var(--n-texto-sec); }
+/* La opción encendida del submenú. El morado de día queda apagado
+   sobre una barra oscura; de noche lleva el tono alto de la marca y un
+   fondo algo más presente, para que se encuentre igual de rápido. */
+[data-tema="noche"] .deznav .metismenu ul a.mm-active,
+[data-tema="noche"] #main-wrapper .deznav .metismenu ul a.mm-active {
+  color: var(--n-marca-alto) !important;
+  background: rgba(164,121,245,.14) !important;
+}
+[data-tema="noche"] .deznav .metismenu ul a.mm-active::before {
+  background: var(--n-marca);
+}
+[data-tema="noche"] .deznav .metismenu ul a:hover,
+[data-tema="noche"] #main-wrapper .deznav .metismenu ul a:hover {
+  color: var(--n-marca-alto) !important;
+}
+
+[data-tema="noche"] .deznav .metismenu .nav-label,
+[data-tema="noche"] .nav-label { color: var(--n-texto-debil); border-color: var(--n-borde); }
+[data-tema="noche"] .deznav .copyright { color: var(--n-texto-debil); }
+
+/* El rótulo bajo cada plástico del panel. */
+[data-tema="noche"] .cm-ficha__datos,
+[data-tema="noche"] .cm-tarjeta-pie,
+[data-tema="noche"] .cm-panel-tarjeta small { color: var(--n-texto-sec); }
+
+/* El pie de la aplicación. */
+[data-tema="noche"] .footer,
+[data-tema="noche"] .footer .copyright,
+[data-tema="noche"] .footer p { background: transparent; color: var(--n-texto-debil); }
+
+/* El indicador «en vivo» de los movimientos. */
+[data-tema="noche"] .cm-vivo.conectado { background: var(--n-marca-tenue); color: var(--n-marca-alto); }
+
+/* El buscador de la cabecera, que la plantilla fija en #fbfbfb con
+   !important y por eso necesita el suyo. */
+[data-tema="noche"] .header-left input,
+[data-tema="noche"] .header-left .search_bar .search_icon {
+  background: var(--n-panel-alto) !important;
+  border-color: var(--n-borde) !important;
+  color: var(--n-texto);
+}
+
+/* Las tablas del panel: la plantilla las deja en su gris y los
+   importes se pierden. */
+[data-tema="noche"] .table .cm-mono,
+[data-tema="noche"] .table .cm-num { color: var(--n-texto); }
+[data-tema="noche"] .table .text-muted { color: var(--n-texto-debil) !important; }
+
+/* =====================================================================
+   5. LAS DOCE VARIABLES
+   =====================================================================
+
+   Aquí está el modo noche de verdad. La hoja dejó de nombrar colores
+   —un gris de fondo ya no es «#f9fafb» sino «la superficie de segundo
+   nivel»—, así que redefinir estas doce cambia la aplicación entera.
+
+   Antes esto eran 139 reglas dobladas a mano, y cada pieza nueva nacía
+   en blanco hasta que alguien se acordaba de doblarla también.
+   ===================================================================== */
+
+[data-tema="noche"] {
+  --cm-sup:         var(--n-panel);
+  --cm-sup-2:       var(--n-panel-alto);
+  --cm-sup-3:       var(--n-borde);
+  --cm-borde:       var(--n-borde);
+  --cm-borde-suave: var(--n-borde-sutil);
+
+  --cm-tinta:       var(--n-texto);
+  --cm-tinta-2:     var(--n-texto-sec);
+  --cm-tinta-3:     var(--n-texto-debil);
+
+  --cm-verde:       var(--n-verde);
+
+  /* Los tintes de estado: en claro son un lavado casi blanco; aquí
+     tienen que ser el mismo color pero muy bajo sobre el panel, o se
+     ven como un parche claro en mitad de la pantalla. */
+  --cm-verde-tenue: rgba(74, 222, 128, .12);
+  --cm-rojo-tenue:  rgba(255, 128, 120, .12);
+  --cm-ambar-tenue: rgba(251, 191, 78, .12);
+  --cm-azul-tenue:  rgba(108, 176, 251, .12);
+}
+
+/* =====================================================================
+   6. Lo que NO sigue al tema
+   =====================================================================
+
+   Hay piezas que llevan su propio fondo de color pase lo que pase: un
+   plástico, la cabecera de la banca preferente, un avatar. Dentro de
+   ellas el blanco sigue siendo blanco y la tinta oscura sigue siendo
+   oscura, porque su fondo no cambió.
+
+   Al convertir la hoja a variables, el `#fff` del número de una
+   tarjeta se volvió «la superficie de un panel», y de noche eso es
+   azul oscuro: el número desaparecía sobre el propio plástico. Aquí
+   se devuelven los valores claros SOLO dentro de esas piezas.
+
+   Se hace con variables y no repitiendo reglas: así una pieza nueva
+   dentro del plástico hereda lo correcto sin que nadie se acuerde.
+   ===================================================================== */
+
+[data-tema="noche"] .cm-pl,
+[data-tema="noche"] .cm-pl-giro,
+[data-tema="noche"] .cm-plastico,
+[data-tema="noche"] .cm-pref,
+[data-tema="noche"] .cm-avatar,
+[data-tema="noche"] .cm-pref__sello {
+  --cm-sup:          #ffffff;
+  --cm-sup-2:        #f9fafb;
+  --cm-sup-3:        #eef1f5;
+  --cm-borde:        #e3e8ee;
+  --cm-borde-suave:  #f2f4f7;
+  --cm-tinta:        #101828;
+  --cm-tinta-2:      #667085;
+  --cm-tinta-3:      #98a2b3;
+  --cm-verde:        #027a48;
+  --cm-verde-tenue:  #f2fbf6;
+  --cm-rojo-tenue:   #fef3f2;
+  --cm-ambar-tenue:  #fffaeb;
+  --cm-azul-tenue:   #f0f9ff;
+}
+
+/* =====================================================================
+   7. El logotipo, y el morado que de noche deslumbra
+   =====================================================================
+
+   Dos cosas que salieron a la luz usando el modo noche de verdad.
+
+   La primera: el logotipo no se veía. Estaba resuelto con
+   `color: var(--n-texto)` sobre `.brand-title`, y eso no podía
+   funcionar nunca, porque `.brand-title` es una IMAGEN y a una imagen
+   no la tiñe el color del texto. El logotipo es azul marino sobre
+   fondo transparente; encima del panel azul noche era tinta oscura
+   sobre oscuro. Ahora hay dos juegos de archivos, el normal y el de
+   reverso, y aquí se decide cuál se enseña.
+
+   La segunda: los bloques grandes de marca quedaban como focos. El
+   token `--cm-marca` se aclara de noche —y debe aclararse, porque
+   sirve de TINTA sobre fondo oscuro y el morado original ahí no se
+   lee—, pero esos mismos bloques lo usan de RELLENO. Al aclararse el
+   token, el saludo del inicio y la tarjeta de cuenta pasaban de
+   morado profundo a lavanda encendido, con texto blanco encima: el
+   cuadro más brillante de toda la pantalla, justo en el tema que se
+   elige para que no brille.
+
+   El arreglo distingue los dos papeles. Donde el morado es tinta se
+   queda claro; donde es relleno con texto claro encima, se hunde.
+   ===================================================================== */
+
+[data-tema="noche"] {
+  /* El morado de RELLENO. Más hondo que el de día a propósito: sobre
+     el lienzo azul noche, el morado de día ya parecía iluminado. */
+  --n-marca-honda:   #3a1177;
+  --n-marca-honda-2: #230a4d;
+}
+
+/* --- El logotipo ------------------------------------------------------ */
+
+/* Aquí NO hay reglas de logotipo a propósito.
+
+   El primer intento fue tener las dos imágenes en el marcado y enseñar
+   una u otra con `display`. Salió mal: la plantilla dimensiona esas
+   imágenes con reglas que cuentan con el `display` que ella les pone,
+   y al forzarlo el logotipo salió a tamaño natural —3500 píxeles de
+   ancho— por encima de toda la pantalla.
+
+   El cambio lo hace ahora `tema.js` sobre el `src`, que es lo único
+   que se puede tocar sin alterar cómo se mide la imagen. */
+
+/* --- Los rellenos de marca -------------------------------------------- */
+
+/* El saludo del inicio. */
+[data-tema="noche"] .cm-bienvenida {
+  background: linear-gradient(120deg, var(--n-marca-honda-2) 0%, var(--n-marca-honda) 100%);
+  border: 1px solid rgba(164, 121, 245, .22);
+}
+[data-tema="noche"] .cm-bienvenida h2 { color: var(--n-texto); }
+[data-tema="noche"] .cm-bienvenida p,
+[data-tema="noche"] .cm-bienvenida__det { color: #cfc2ea; }
+
+/* La tarjeta de cuenta. */
+[data-tema="noche"] .cm-cuenta {
+  background: linear-gradient(135deg, var(--n-marca-honda) 0%, var(--n-marca-honda-2) 100%);
+  border: 1px solid rgba(164, 121, 245, .22);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .35);
+}
+[data-tema="noche"] .cm-cuenta:hover { box-shadow: 0 10px 26px rgba(0, 0, 0, .45); }
+[data-tema="noche"] .cm-cuenta__tipo { color: #b9a6e0; }
+
+/* --- Texto claro sobre el morado aclarado -----------------------------
+
+   Estas piezas son pequeñas y el morado vivo les sienta bien, pero
+   llevan texto encima. Blanco sobre #a479f5 da una relación de 2.9:1,
+   por debajo del mínimo legible; con tinta oscura sube a 7:1 y además
+   se distingue mejor cuál está activo. */
+
+[data-tema="noche"] .cm-avatar,
+[data-tema="noche"] .cm-pildora.is-activa,
+[data-tema="noche"] .cm-pildora.is-activa span,
+[data-tema="noche"] .cm-cal__dia--elegido,
+[data-tema="noche"] .cm-cal__dia--elegido:hover,
+[data-tema="noche"] .cm-tabla-dt .paginate_button.current,
+[data-tema="noche"] .cm-paginacion--dt .paginate_button.current,
+[data-tema="noche"] .pagination .page-item.active .page-link {
+  color: #1a1033 !important;
+  font-weight: 700;
+}
+
+/* --- El calendario de noche ------------------------------------------- */
+[data-tema="noche"] .cm-cal {
+  background: var(--n-panel-alto);
+  border-color: var(--n-borde);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .5);
+}
+[data-tema="noche"] .cm-cal__sel {
+  background: var(--n-panel);
+  color: var(--n-texto);
+  border-color: var(--n-borde);
+}
+[data-tema="noche"] .cm-cal__sel option { background: var(--n-panel); color: var(--n-texto); }
+[data-tema="noche"] .cm-cal__dia { color: var(--n-texto); }
+[data-tema="noche"] .cm-cal__dia:hover { background: var(--n-panel); }
+[data-tema="noche"] .cm-cal__vacio { color: var(--n-texto-debil); }
+[data-tema="noche"] .cm-cal__semana { color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-cal__cab { color: var(--n-texto); }
+[data-tema="noche"] .cm-cal__mes { color: var(--n-texto); }
+[data-tema="noche"] .cm-cal__accion { color: var(--n-marca-alto); }
+[data-tema="noche"] .cm-cal__accion--tenue { color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-cal__pie { border-top-color: var(--n-borde); }
+[data-tema="noche"] .cm-cal__nav { color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-cal__nav:hover { background: var(--n-panel); color: var(--n-texto); }
+
+/* --- Los botones de contorno -----------------------------------------
+
+   La plantilla los pinta con el color de la marca tal cual: morado
+   #6418c3 para el primario, rojo oscuro para el de peligro. De día,
+   sobre papel blanco, se leen bien. De noche son tinta oscura sobre
+   panel oscuro, que es justo lo que pasaba en «Sus Gestiones»: tres
+   botones en morado profundo sobre azul noche, casi invisibles.
+
+   Se usan los mismos colores aclarados que el resto del tema, y el
+   relleno del `hover` es el mismo color al 15%, no sólido: sólido
+   obligaría a invertir también la tinta y el botón daría un salto. */
+
+[data-tema="noche"] .btn-outline-primary {
+  color: var(--n-marca-alto);
+  border-color: rgba(164, 121, 245, .5);
+}
+[data-tema="noche"] .btn-outline-primary:hover,
+[data-tema="noche"] .btn-outline-primary:focus {
+  background: rgba(164, 121, 245, .15);
+  border-color: var(--n-marca);
+  color: var(--n-marca-alto);
+}
+
+[data-tema="noche"] .btn-outline-danger {
+  color: var(--n-rojo);
+  border-color: rgba(255, 128, 120, .45);
+}
+[data-tema="noche"] .btn-outline-danger:hover,
+[data-tema="noche"] .btn-outline-danger:focus {
+  background: rgba(255, 128, 120, .14);
+  border-color: var(--n-rojo);
+  color: var(--n-rojo);
+}
+
+[data-tema="noche"] .btn-outline-success {
+  color: var(--n-verde);
+  border-color: rgba(74, 222, 128, .45);
+}
+[data-tema="noche"] .btn-outline-success:hover,
+[data-tema="noche"] .btn-outline-success:focus {
+  background: rgba(74, 222, 128, .14);
+  border-color: var(--n-verde);
+  color: var(--n-verde);
+}
+
+[data-tema="noche"] .btn-outline-warning {
+  color: var(--n-ambar);
+  border-color: rgba(251, 191, 78, .45);
+}
+[data-tema="noche"] .btn-outline-warning:hover,
+[data-tema="noche"] .btn-outline-warning:focus {
+  background: rgba(251, 191, 78, .14);
+  border-color: var(--n-ambar);
+  color: var(--n-ambar);
+}
+
+[data-tema="noche"] .btn-outline-info {
+  color: var(--n-azul);
+  border-color: rgba(108, 176, 251, .45);
+}
+[data-tema="noche"] .btn-outline-info:hover,
+[data-tema="noche"] .btn-outline-info:focus {
+  background: rgba(108, 176, 251, .14);
+  border-color: var(--n-azul);
+  color: var(--n-azul);
+}
+
+/* Y el icono que va dentro, que hereda el color del botón salvo que
+   alguien se lo fije: se asegura aquí. */
+[data-tema="noche"] [class*="btn-outline-"] svg { stroke: currentColor; }
+
+/* --- El control de archivo de noche ----------------------------------
+   La zona vive sobre un panel, así que su fondo tiene que ser un
+   escalón por encima y no el gris claro de día. */
+[data-tema="noche"] .cm-archivo__zona {
+  background: var(--n-panel-alto);
+  border-color: var(--n-borde);
+}
+[data-tema="noche"] .cm-archivo__zona:hover,
+[data-tema="noche"] .cm-archivo__zona:focus-visible,
+[data-tema="noche"] .cm-archivo__zona--encima {
+  border-color: var(--n-marca);
+  background: rgba(164, 121, 245, .12);
+}
+[data-tema="noche"] .cm-archivo__zona--lleno { background: var(--n-panel-alto); }
+[data-tema="noche"] .cm-archivo__zona--mal {
+  background: rgba(255, 128, 120, .1);
+  border-color: var(--n-rojo);
+}
+[data-tema="noche"] .cm-archivo__icono      { background: var(--n-marca-tenue); color: var(--n-marca-alto); }
+[data-tema="noche"] .cm-archivo__icono--ok  { background: rgba(74,222,128,.14);  color: var(--n-verde); }
+[data-tema="noche"] .cm-archivo__icono--mal { background: rgba(255,128,120,.14); color: var(--n-rojo); }
+[data-tema="noche"] .cm-archivo__texto strong { color: var(--n-texto); }
+[data-tema="noche"] .cm-archivo__texto small  { color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-archivo__quitar       { color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-archivo__quitar:hover { background: rgba(255,128,120,.14); color: var(--n-rojo); }
+
+/* --- El indicador de requisitos de noche ------------------------------ */
+[data-tema="noche"] .cm-requisitos        { background: var(--n-panel-alto); border-color: var(--n-borde); }
+[data-tema="noche"] .cm-requisitos__cab:hover { background: rgba(255,255,255,.04); }
+[data-tema="noche"] .cm-requisitos__sello { background: rgba(251,191,78,.14); color: var(--n-ambar); }
+[data-tema="noche"] .cm-requisitos__texto strong { color: var(--n-texto); }
+[data-tema="noche"] .cm-requisitos__texto small  { color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-requisitos__flecha { border-color: var(--n-texto-debil); }
+[data-tema="noche"] .cm-requisitos__lista  { background: var(--n-panel); border-top-color: var(--n-borde); }
+[data-tema="noche"] .cm-requisitos__lista strong { color: var(--n-texto); }
+[data-tema="noche"] .cm-requisitos__lista small  { color: var(--n-texto-sec); }
+[data-tema="noche"] .is-ok    .cm-requisitos__marca::before { border-color: var(--n-verde); }
+[data-tema="noche"] .is-falta .cm-requisitos__marca::before { border-color: var(--n-ambar); }
+
+/* --- El requisito de ingreso de noche --------------------------------
+   Los tintes claros de día son papel coloreado; de noche tienen que
+   ser el color de estado al 12% sobre el panel, o se vuelven dos
+   rectángulos pálidos. */
+[data-tema="noche"] .cm-ingreso--ok {
+  background: rgba(74, 222, 128, .12);
+  color: var(--n-texto-sec);
+}
+[data-tema="noche"] .cm-ingreso--falta {
+  background: rgba(251, 191, 78, .12);
+  color: var(--n-texto-sec);
+}
+[data-tema="noche"] .cm-ingreso strong { color: var(--n-texto); }
+[data-tema="noche"] .cm-ingreso--ok    .cm-ingreso__marca::before { border-color: var(--n-verde); }
+[data-tema="noche"] .cm-ingreso--falta .cm-ingreso__marca::before { border-color: var(--n-ambar); }
+[data-tema="noche"] .cm-tdc__suyo.is-ok    { color: var(--n-verde); }
+[data-tema="noche"] .cm-tdc__suyo.is-falta { color: var(--n-ambar); }
+
+/* --- El recorrido de una solicitud, de noche ------------------------- */
+[data-tema="noche"] .cm-recorrido__paso::before { background: var(--n-borde); }
+[data-tema="noche"] .cm-recorrido__paso.is-hecho::before { background: var(--n-verde); }
+[data-tema="noche"] .cm-recorrido__punto { background: var(--n-panel); border-color: var(--n-borde); }
+[data-tema="noche"] .is-hecho .cm-recorrido__punto { background: var(--n-verde); border-color: var(--n-verde); }
+[data-tema="noche"] .is-ahora .cm-recorrido__punto {
+  background: var(--n-marca); border-color: var(--n-marca);
+  animation-name: cm-recorrido-late-noche;
+}
+@keyframes cm-recorrido-late-noche {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(164,121,245,.5); }
+  50%      { box-shadow: 0 0 0 .4rem rgba(164,121,245,0); }
+}
+[data-tema="noche"] .cm-recorrido__texto strong            { color: var(--n-texto-debil); }
+[data-tema="noche"] .is-hecho .cm-recorrido__texto strong  { color: var(--n-texto-sec); }
+[data-tema="noche"] .is-ahora .cm-recorrido__texto strong  { color: var(--n-marca-alto); }
+[data-tema="noche"] .cm-recorrido__texto small             { color: var(--n-texto-debil); }
+[data-tema="noche"] .cm-recorrido__alto {
+  background: rgba(255,128,120,.1); color: var(--n-texto-sec);
+}
+[data-tema="noche"] .cm-recorrido__alto strong   { color: var(--n-rojo); }
+[data-tema="noche"] .cm-recorrido__ver           { color: var(--n-marca-alto); }
+[data-tema="noche"] .cm-recorrido__detalle       { border-top-color: var(--n-borde); }
+[data-tema="noche"] .cm-recorrido__detalle small { color: var(--n-texto-debil); }
+[data-tema="noche"] .cm-recorrido__detalle span  { color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-recorrido__detalle i     { color: var(--n-texto-debil); }
+
+/* --- Atención en ventanilla, de noche -------------------------------- */
+[data-tema="noche"] .cm-turno-tira {
+  background: rgba(74, 222, 128, .1);
+  border-color: var(--n-borde);
+  color: var(--n-texto-sec);
+}
+[data-tema="noche"] .cm-turno-tira strong { color: var(--n-texto); }
+[data-tema="noche"] .cm-buscador__campo svg { color: var(--n-texto-debil); }
+[data-tema="noche"] .cm-coincidencia { border-bottom-color: var(--n-borde-sutil); }
+[data-tema="noche"] .cm-coincidencia:hover { background: var(--n-panel-alto); }
+[data-tema="noche"] .cm-coincidencia__texto strong { color: var(--n-texto); }
+[data-tema="noche"] .cm-coincidencia__texto small  { color: var(--n-texto-debil); }
+[data-tema="noche"] .cm-ficha-cliente__datos { color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-avisos-ventanilla__item.is-alto  { background: rgba(255,128,120,.12); color: var(--n-rojo); }
+[data-tema="noche"] .cm-avisos-ventanilla__item.is-medio { background: rgba(251,191,78,.12); color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-linea-ventanilla { border-bottom-color: var(--n-borde-sutil); }
+
+/* --- El desglose de un adelanto, de noche ---------------------------- */
+[data-tema="noche"] .cm-adelanto-resumen        { background: var(--n-panel-alto); border-color: var(--n-borde); }
+[data-tema="noche"] .cm-adelanto-resumen__cab   { background: var(--n-marca-tenue); }
+[data-tema="noche"] .cm-adelanto-resumen__cab strong { color: var(--n-texto); }
+[data-tema="noche"] .cm-adelanto-resumen__cab small  { color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-adelanto-resumen__cab .text-right strong { color: var(--n-marca-alto); }
+[data-tema="noche"] .cm-adelanto-resumen__lista li { border-top-color: var(--n-borde-sutil); color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-adelanto-resumen__fecha { color: var(--n-texto-debil); }
+[data-tema="noche"] .cm-adelanto-resumen__monto { color: var(--n-texto); }
+[data-tema="noche"] .cm-adelanto-resumen__monto i { color: var(--n-ambar); }
+[data-tema="noche"] .cm-abonado   { color: var(--n-verde); }
+[data-tema="noche"] .cm-abonado i { color: var(--n-texto-debil); }
+
+/* --- El hilo de una gestión, de noche -------------------------------- */
+[data-tema="noche"] .cm-hilo__burbuja {
+  background: var(--n-panel-alto);
+  border-color: var(--n-borde-sutil);
+}
+[data-tema="noche"] .is-mio .cm-hilo__burbuja {
+  background: var(--n-marca-tenue);
+  border-color: transparent;
+}
+[data-tema="noche"] .is-interna .cm-hilo__burbuja {
+  background: rgba(251, 191, 78, .12);
+  border-color: var(--n-ambar);
+}
+[data-tema="noche"] .cm-hilo__cab strong { color: var(--n-texto); }
+[data-tema="noche"] .cm-hilo__cab time   { color: var(--n-texto-debil); }
+[data-tema="noche"] .cm-hilo__quien {
+  background: var(--n-panel);
+  color: var(--n-texto-debil);
+}
+[data-tema="noche"] .cm-hilo__cuerpo { color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-hilo__cierre {
+  background: rgba(74, 222, 128, .1);
+  color: var(--n-texto-sec);
+}
+[data-tema="noche"] .cm-hilo__cierre strong { color: var(--n-verde); }
+
+/* --- La cartera del banquero, de noche ------------------------------- */
+[data-tema="noche"] .cm-cartera-fila { border-bottom-color: var(--n-borde-sutil); }
+[data-tema="noche"] .cm-cartera-fila:hover { background: var(--n-panel-alto); }
+[data-tema="noche"] .cm-cartera-fila__quien strong { color: var(--n-texto); }
+[data-tema="noche"] .cm-cartera-fila__quien small  { color: var(--n-texto-debil); }
+[data-tema="noche"] .cm-cartera-fila__saldo small  { color: var(--n-texto-debil); }
+[data-tema="noche"] .cm-cartera-fila__saldo strong { color: var(--n-texto); }
+[data-tema="noche"] .cm-senal              { background: var(--n-panel-alto); color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-senal.is-urgente   { background: rgba(255,128,120,.14); color: var(--n-rojo); }
+[data-tema="noche"] .cm-senal.is-aviso     { background: rgba(108,176,251,.14); color: var(--n-azul); }
+[data-tema="noche"] .cm-senal.is-mora      { background: rgba(251,191,78,.14);  color: var(--n-texto-sec); }
+[data-tema="noche"] .cm-senal.is-tranquilo { background: rgba(74,222,128,.12);  color: var(--n-verde); }
+[data-tema="noche"] .cm-banquero b     { color: var(--n-texto); }
+[data-tema="noche"] .cm-banquero small { color: var(--n-texto-debil); }
+
+
+/* --- La paginacion de las tablas, de noche --------------------------- */
+[data-tema="noche"] .cm-paginacion--dt .paginate_button {
+  background: var(--n-panel);
+  border-color: var(--n-borde);
+  color: var(--n-marca-alto) !important;
+}
+[data-tema="noche"] .cm-paginacion--dt .paginate_button:hover {
+  background: var(--n-panel-alto);
+  border-color: var(--n-marca-alto);
+}
+[data-tema="noche"] .cm-paginacion--dt .paginate_button.disabled,
+[data-tema="noche"] .cm-paginacion--dt .paginate_button.disabled:hover {
+  background: var(--n-panel);
+  border-color: var(--n-borde);
+  color: var(--n-texto-debil) !important;
+}
+[data-tema="noche"] .cm-paginacion--dt .dataTables_info,
+[data-tema="noche"] .cm-paginacion--dt .dataTables_length label { color: var(--n-texto-debil); }
+[data-tema="noche"] .cm-paginacion--dt .dataTables_info strong { color: var(--n-texto); }
+[data-tema="noche"] .cm-paginacion--dt .dataTables_length select {
+  background: var(--n-panel);
+  border-color: var(--n-borde);
+  color: var(--n-texto);
+}

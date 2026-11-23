@@ -1,0 +1,34 @@
+# Secretos: NUNCA versionar
+.env
+.env.*
+!.env.ejemplo
+
+# Dependencias
+/vendor/
+
+# Datos en ejecución
+/storage/logs/*
+!/storage/logs/.gitkeep
+/storage/cache/*
+!/storage/cache/.gitkeep
+/storage/uploads/*
+!/storage/uploads/.gitkeep
+/storage/pdf/*
+!/storage/pdf/.gitkeep
+/storage/respaldos/*
+!/storage/respaldos/.gitkeep
+/storage/latido/*
+!/storage/latido/.gitkeep
+
+# Volcados de base de datos (pueden contener datos de clientes).
+# OJO: la demo publicable vive en /base-datos/ y SÍ se versiona.
+*.sql.gz
+*.dump
+/backups/
+
+# Entorno local
+.vscode/
+.idea/
+*.log
+Thumbs.db
+desktop.ini

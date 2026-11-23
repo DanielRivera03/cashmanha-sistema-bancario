@@ -1,0 +1,499 @@
+/* =====================================================================
+   AVISOS Y VALIDACIÓN · hoja común
+   ---------------------------------------------------------------------
+   Lo que pintan `avisos.js` y `validacion.js`: los toasts, el diálogo
+   de confirmación, el indicador de carga y los mensajes que van debajo
+   de un campo mal llenado.
+
+   Vive en su propio archivo porque lo usan los tres marcos —el panel,
+   el sitio público y las pantallas de acceso— y antes solo estaba en
+   el CSS del panel. En el registro eso se veía así: «Falta nombres.»
+   salía con la tipografía de la página, enorme y en gris, debajo de un
+   campo que no se marcaba de ninguna manera.
+
+   Los colores se declaran aquí mismo y no dependen de los tokens de
+   ningún marco, para que el archivo valga en los tres.
+   ===================================================================== */
+
+:root {
+  --av-rojo:        #b42318;
+  --av-rojo-tenue:  #fef3f2;
+  --av-rojo-borde:  #fecdca;
+}
+
+/* ---------------------------------------------------------------------
+   CAMPOS MAL LLENADOS
+   ---------------------------------------------------------------------
+   El mensaje va debajo del campo y se queda hasta que se corrige, en
+   lugar del globo del navegador, que tapa lo que hay detrás y
+   desaparece solo.
+
+   Es un bloque con su propio fondo, no texto suelto: en una rejilla de
+   dos columnas —documento y teléfono— el texto suelto se desbordaba
+   sobre la columna de al lado y parecía el pie de otro campo.
+   --------------------------------------------------------------------- */
+
+.cm-invalido,
+.cm-invalido:focus {
+  border-color: var(--av-rojo) !important;
+  background-color: var(--av-rojo-tenue) !important;
+}
+
+.cm-invalido:focus {
+  box-shadow: 0 0 0 3px rgba(180, 35, 24, .12) !important;
+}
+
+/* El icono delantero del grupo acompaña al estado del campo. */
+.input-group:has(.cm-invalido) .input-group-text {
+  border-color: var(--av-rojo) !important;
+  color: var(--av-rojo) !important;
+  background: var(--av-rojo-tenue) !important;
+}
+
+.cm-error {
+  display: flex;
+  align-items: flex-start;
+  gap: .4rem;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  margin: .4rem 0 0;
+  padding: .4rem .55rem;
+  border: 1px solid var(--av-rojo-borde);
+  border-radius: .5rem;
+  background: var(--av-rojo-tenue);
+  color: var(--av-rojo);
+  font-family: inherit;
+  font-size: .78rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0;
+  text-align: left;
+  /* Un nombre de campo largo no debe estirar la columna de la rejilla. */
+  overflow-wrap: anywhere;
+  animation: cmErrorEntra .18s ease both;
+}
+
+.cm-error::before {
+  content: "";
+  flex: 0 0 14px;
+  width: 14px;
+  height: 14px;
+  margin-top: .08rem;
+  background: var(--av-rojo);
+  -webkit-mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7.5v5.5M12 16.5h.01'/%3E%3C/svg%3E") center/14px no-repeat;
+          mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7.5v5.5M12 16.5h.01'/%3E%3C/svg%3E") center/14px no-repeat;
+}
+
+/* Dentro de una rejilla, el mensaje ocupa su columna y no la de al lado. */
+.form-row > [class*="col-"] > .cm-error,
+.form-row > .form-group > .cm-error { max-width: 100%; }
+
+@keyframes cmErrorEntra {
+  from { opacity: 0; transform: translateY(-3px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cm-error { animation: none; }
+}
+
+/* =====================================================================
+   AVISOS PROPIOS, EN LUGAR DE LOS DEL NAVEGADOR
+   ---------------------------------------------------------------------
+   `avisos.js` da los toasts, las confirmaciones y el indicador de
+   carga, pero solo se cargaba en el panel. Fuera de ahí el código caía
+   al `alert()` del navegador: el recuadro que dice «localhost:90 dice»,
+   que en una pantalla de pago parece un error del sistema y no un dato
+   que falta.
+
+   Copiado de `cm.css` con los `@media` enteros. La primera vez se
+   perdieron sus condiciones y la regla de móvil —el aviso pegado abajo
+   y de lado a lado— se aplicaba en todas las pantallas: el toast salía
+   como una barra blanca cruzando el pie de la página.
+   ===================================================================== */
+
+.cm-avisos {
+  position: fixed;
+  top: 1.1rem;
+  right: 1.1rem;
+  z-index: 10800;
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+  width: 380px;
+  max-width: calc(100vw - 2rem);
+  pointer-events: none;
+}
+
+.cm-aviso-toast {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: .7rem;
+  padding: .85rem .95rem .85rem .9rem;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid var(--borde);
+  border-left: 4px solid #1d4ed8;
+  box-shadow: 0 10px 30px -10px rgba(16,24,40,.28), 0 2px 5px rgba(16,24,40,.05);
+  overflow: hidden;
+  pointer-events: auto;
+
+  opacity: 0;
+  transform: translateX(24px) scale(.97);
+  transition: opacity .24s ease, transform .24s cubic-bezier(.2,.9,.3,1);
+}
+
+.cm-aviso-toast--visible { opacity: 1; transform: none;
+}
+
+.cm-aviso-toast--saliendo { opacity: 0; transform: translateX(24px) scale(.97);
+}
+
+.cm-aviso-toast__icono {
+  flex: 0 0 30px;
+  width: 30px; height: 30px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+
+.cm-aviso-toast__cuerpo {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding-right: 1.1rem;
+}
+
+.cm-aviso-toast__titulo {
+  display: block;
+  font-size: .855rem;
+  font-weight: 600;
+  color: var(--tinta);
+  line-height: 1.3;
+}
+
+.cm-aviso-toast__texto {
+  display: block;
+  font-size: .8rem;
+  line-height: 1.45;
+  color: var(--texto);
+  margin-top: .12rem;
+  /* El texto se ajusta siempre: un mensaje cortado en un banco es peor
+     que un aviso alto. */
+  overflow-wrap: anywhere;
+}
+
+.cm-aviso-toast__cerrar {
+  position: absolute;
+  top: .5rem; right: .5rem;
+  background: none;
+  border: 0;
+  padding: .22rem;
+  line-height: 0;
+  border-radius: 6px;
+  color: #b4bdcb;
+  cursor: pointer;
+  transition: color .14s, background .14s;
+}
+
+.cm-aviso-toast__cerrar:hover { color: var(--texto); background: #f6f4fb;
+}
+
+.cm-aviso-toast__barra {
+  position: absolute;
+  left: 0; bottom: 0;
+  height: 3px;
+  width: 100%;
+  transform-origin: left;
+  animation: cmBarra linear forwards;
+  opacity: .5;
+}
+
+.cm-aviso-toast--pausa .cm-aviso-toast__barra { animation-play-state: paused;
+}
+
+.cm-aviso-toast--exito { border-left-color: var(--marca);
+}
+
+.cm-aviso-toast--exito   .cm-aviso-toast__icono { background: var(--marca);
+}
+
+.cm-aviso-toast--exito   .cm-aviso-toast__barra { background: var(--marca);
+}
+
+.cm-aviso-toast--critico { border-left-color: #b42318;
+}
+
+.cm-aviso-toast--critico .cm-aviso-toast__icono { background: #b42318;
+}
+
+.cm-aviso-toast--critico .cm-aviso-toast__barra { background: #b42318;
+}
+
+.cm-aviso-toast--alerta { border-left-color: #b45309;
+}
+
+.cm-aviso-toast--alerta  .cm-aviso-toast__icono { background: #b45309;
+}
+
+.cm-aviso-toast--alerta  .cm-aviso-toast__barra { background: #b45309;
+}
+
+.cm-aviso-toast--info { border-left-color: #1d4ed8;
+}
+
+.cm-aviso-toast--info    .cm-aviso-toast__icono { background: #1d4ed8;
+}
+
+.cm-aviso-toast--info    .cm-aviso-toast__barra { background: #1d4ed8;
+}
+
+.cm-aviso-toast--info .cm-aviso-toast__icono svg { animation: none;
+}
+
+.cm-aviso-toast__icono svg path[d^="M21 12a9"] { animation: cmGirar 1s linear infinite; transform-origin: 12px 12px;
+}
+
+@media (max-width: 575px) {
+  .cm-avisos { top: auto; bottom: .8rem; left: .8rem; right: .8rem; width: auto;
+  }
+  .cm-aviso-toast { transform: translateY(20px) scale(.97);
+  }
+  .cm-aviso-toast--visible { transform: none;
+  }
+  .cm-aviso-toast--saliendo { transform: translateY(20px) scale(.97);
+  }
+}
+
+.cm-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(13, 24, 33, .52);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+
+.cm-modal--visible { opacity: 1;
+}
+
+.cm-modal__caja {
+  width: 100%;
+  max-width: 25rem;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.75rem 1.6rem 1.35rem;
+  text-align: center;
+  box-shadow: 0 26px 60px -18px rgba(16,24,40,.45);
+  transform: translateY(14px) scale(.97);
+  transition: transform .22s cubic-bezier(.2,.9,.3,1);
+}
+
+.cm-modal--visible .cm-modal__caja { transform: none;
+}
+
+.cm-modal__icono {
+  width: 58px; height: 58px;
+  border-radius: 50%;
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cm-modal__icono--aviso { background: #fff7ed; color: #b45309;
+}
+
+.cm-modal__icono--peligro { background: #fef2f2; color: #b42318;
+}
+
+.cm-modal__titulo {
+  font-size: 1.08rem;
+  font-weight: 600;
+  color: var(--tinta);
+  margin-bottom: .5rem;
+}
+
+.cm-modal__texto {
+  font-size: .875rem;
+  line-height: 1.55;
+  color: var(--texto);
+  margin-bottom: 1.4rem;
+}
+
+.cm-modal__pie {
+  display: flex;
+  gap: .6rem;
+}
+
+.cm-modal__pie .btn {
+  flex: 1 1 0;
+  height: 44px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: .88rem;
+}
+
+.cm-carga {
+  position: fixed;
+  inset: 0;
+  z-index: 11000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(13, 24, 33, .55);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity .22s ease;
+}
+
+.cm-carga--visible { opacity: 1;
+}
+
+.cm-carga__caja {
+  width: 100%;
+  max-width: 23rem;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 2rem 1.75rem 1.5rem;
+  text-align: center;
+  box-shadow: 0 30px 70px -20px rgba(16, 24, 40, .5);
+  transform: translateY(14px) scale(.97);
+  transition: transform .24s cubic-bezier(.2, .9, .3, 1);
+}
+
+.cm-carga--visible .cm-carga__caja { transform: none;
+}
+
+.cm-carga__anillo {
+  position: relative;
+  width: 76px; height: 76px;
+  margin: 0 auto 1.15rem;
+}
+
+.cm-carga__anillo::before,
+.cm-carga__anillo::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  border: 3px solid transparent;
+}
+
+.cm-carga__anillo::before {
+  inset: 0;
+  border-top-color: var(--marca);
+  border-right-color: var(--marca);
+  animation: cm-girar 1.1s linear infinite;
+}
+
+.cm-carga__anillo::after {
+  inset: 10px;
+  border-bottom-color: var(--oro);
+  border-left-color: var(--oro);
+  animation: cm-girar 1.6s linear infinite reverse;
+}
+
+.cm-carga__icono {
+  position: absolute;
+  inset: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--marca);
+  animation: cm-latir 1.8s ease-in-out infinite;
+}
+
+.cm-carga__icono svg { width: 26px; height: 26px;
+}
+
+.cm-carga__titulo {
+  font-weight: 700;
+  font-size: 1.02rem;
+  color: var(--tinta);
+  margin-bottom: .3rem;
+}
+
+.cm-carga__texto {
+  font-size: .86rem;
+  color: var(--texto);
+  line-height: 1.45;
+  margin-bottom: 1.1rem;
+}
+
+.cm-carga__barra {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--marca-tenue);
+  overflow: hidden;
+}
+
+.cm-carga__barra::after {
+  content: '';
+  display: block;
+  width: 38%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--marca), var(--oro));
+  animation: cm-recorrer 1.25s cubic-bezier(.45, 0, .55, 1) infinite;
+}
+
+.cm-carga__pie {
+  margin-top: .9rem;
+  font-size: .72rem;
+  color: var(--suave);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cm-carga__anillo::before,
+  .cm-carga__anillo::after,
+  .cm-carga__icono { animation: none;
+  }
+  .cm-carga__barra::after { animation: cm-latir 1.4s ease-in-out infinite; width: 100%;
+  }
+  .cm-carga, .cm-carga__caja { transition: none;
+  }
+}
+
+@keyframes cmBarra { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+@keyframes cmGirar { to { transform: rotate(360deg); } }
+
+@keyframes cm-girar { to { transform: rotate(360deg); } }
+
+@keyframes cm-latir { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
+
+@keyframes cm-recorrer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(363%); }
+}
+
+
+/* =====================================================================
+   EL OJO DEL NAVEGADOR, FUERA
+   ---------------------------------------------------------------------
+   Edge mete su propio botón de «ver contraseña» dentro del campo, y
+   queda al lado del nuestro: dos ojos distintos, uno con el estilo del
+   sitio y otro con el del sistema operativo, haciendo lo mismo. Y el
+   del navegador no avisa al resto de la pantalla de que la contraseña
+   quedó a la vista.
+
+   Se quita el suyo y se deja el propio, que es el que se puede
+   describir a un lector de pantalla y el que vuelve a tapar la clave
+   al enviar el formulario.
+   ===================================================================== */
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+  width: 0;
+  height: 0;
+}

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300" role="img">
+  <defs>
+    <linearGradient id="fbd91aa" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset=".62" stop-color="#f7f8fb"/>
+      <stop offset="1" stop-color="#eceef4"/>
+    </linearGradient>
+    <radialGradient id="sbd91aa" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#1d2433" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#1d2433" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="abd91aa" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0f7a49" stop-opacity=".95"/>
+      <stop offset="1" stop-color="#0f7a49" stop-opacity=".72"/>
+    </linearGradient>
+    <linearGradient id="mbd91aa" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".55"/>
+      <stop offset=".5" stop-color="#ffffff" stop-opacity=".08"/>
+      <stop offset="1" stop-color="#000000" stop-opacity=".10"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="300" fill="url(#fbd91aa)"/>
+  <ellipse cx="200" cy="248" rx="112" ry="17" fill="url(#sbd91aa)"/>
+
+  <g fill="url(#abd91aa)" stroke="none">
+    
+  <path d="M122 168 Q122 150 142 150 L258 150 Q278 150 278 168 L272 226
+           Q270 238 254 238 L146 238 Q130 238 128 226 Z" fill="#e8ebf1"/>
+  <path d="M138 166 Q200 152 262 166 Q268 202 248 220 Q200 232 152 220
+           Q132 202 138 166 Z" fill="#a83b36"/>
+  <path d="M156 178 Q200 168 244 180 Q246 200 226 210 Q192 216 170 206 Z"
+        fill="#c75c54"/>
+  <path d="M176 190 Q200 184 224 192" fill="none" stroke="#e6a099"
+        stroke-width="3.6" stroke-linecap="round"/>
+  <path d="M190 174 Q212 170 232 176" fill="none" stroke="#e6a099"
+        stroke-width="3" stroke-linecap="round" opacity=".7"/>
+  <rect x="122" y="150" width="156" height="13" rx="6" fill="url(#abd91aa)"/>
+  <rect x="122" y="150" width="156" height="5" rx="2.5" fill="#fff" opacity=".5"/>
+  </g>
+
+  <text x="200" y="285" text-anchor="middle" font-family="Poppins, Segoe UI, sans-serif"
+        font-size="11.5" font-weight="600" fill="#98a2b3">Super Izalco</text>
+</svg>

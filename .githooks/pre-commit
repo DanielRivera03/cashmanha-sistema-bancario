@@ -1,0 +1,74 @@
+#!/bin/sh
+#
+# Antes de cada commit: que lo que entra no esté roto.
+#
+# Tres comprobaciones, de la más barata a la más cara, y a la primera
+# que falle se para. Un gancho que tarda se acaba saltando con
+# `--no-verify`, y un gancho que se salta no existe.
+#
+#   1. Sintaxis de los archivos PHP que se van a confirmar. Solo esos:
+#      revisar los 268 en cada commit son varios segundos para nada.
+#   2. Nombres de clase que no resuelven. Es lo que `php -l` no ve y lo
+#      que revienta en la cara de un cliente.
+#   3. Las pruebas del dominio: la aritmética del dinero.
+#
+# El cuadre de los datos NO está aquí a propósito: depende de la base
+# de datos, que en la máquina de otra persona tiene otro contenido, y
+# un gancho que falla por datos ajenos al commit es un gancho que
+# estorba. Ese se corre a mano: php bin/verificar-cuadre.php
+#
+# Para saltárselo en una emergencia: git commit --no-verify
+# (y arreglarlo después, que para eso se sabe que se saltó).
+
+set -e
+
+PHP="php"
+command -v php >/dev/null 2>&1 || PHP="/c/xampp/php/php.exe"
+
+RAIZ=$(git rev-parse --show-toplevel)
+cd "$RAIZ"
+
+echo ""
+echo "  Comprobando antes de confirmar…"
+
+# --- 1. Sintaxis, solo de lo que se confirma -------------------------
+CAMBIADOS=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.php$' || true)
+
+if [ -n "$CAMBIADOS" ]; then
+    CUANTOS=$(echo "$CAMBIADOS" | wc -l | tr -d ' ')
+    echo "  · sintaxis de $CUANTOS archivo(s) PHP"
+
+    for f in $CAMBIADOS; do
+        [ -f "$f" ] || continue
+
+        if ! "$PHP" -l "$f" > /dev/null 2>&1; then
+            echo ""
+            echo "  ERROR de sintaxis en $f"
+            "$PHP" -l "$f"
+            echo ""
+            exit 1
+        fi
+    done
+fi
+
+# --- 2. Clases que no resuelven --------------------------------------
+echo "  · nombres de clase"
+
+if ! "$PHP" bin/verificar-clases.php > /tmp/cm-clases.txt 2>&1; then
+    echo ""
+    cat /tmp/cm-clases.txt
+    exit 1
+fi
+
+# --- 3. Las pruebas del dominio --------------------------------------
+echo "  · pruebas del dominio"
+
+if ! "$PHP" bin/probar.php > /tmp/cm-pruebas.txt 2>&1; then
+    echo ""
+    cat /tmp/cm-pruebas.txt
+    exit 1
+fi
+
+PASADAS=$(grep -o '[0-9]* comprobaciones' /tmp/cm-pruebas.txt | head -1 || echo "")
+echo "  todo en orden ${PASADAS:+($PASADAS)}"
+echo ""

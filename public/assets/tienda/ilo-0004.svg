@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300" role="img">
+  <defs>
+    <linearGradient id="f7f8d66" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset=".62" stop-color="#f7f8fb"/>
+      <stop offset="1" stop-color="#eceef4"/>
+    </linearGradient>
+    <radialGradient id="s7f8d66" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#1d2433" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#1d2433" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="a7f8d66" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7a5af8" stop-opacity=".95"/>
+      <stop offset="1" stop-color="#7a5af8" stop-opacity=".72"/>
+    </linearGradient>
+    <linearGradient id="m7f8d66" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".55"/>
+      <stop offset=".5" stop-color="#ffffff" stop-opacity=".08"/>
+      <stop offset="1" stop-color="#000000" stop-opacity=".10"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="300" fill="url(#f7f8d66)"/>
+  <ellipse cx="200" cy="248" rx="112" ry="17" fill="url(#s7f8d66)"/>
+
+  <g fill="url(#a7f8d66)" stroke="none">
+    
+  <circle cx="200" cy="168" r="70"/>
+  <path d="M200 116 L238 144 L224 190 L176 190 L162 144 Z" fill="#fff" opacity=".85"/>
+  <path d="M200 98 L200 116 M146 140 L162 144 M254 140 L238 144 M172 228 L176 190 M228 228 L224 190"
+        stroke="#fff" stroke-opacity=".6" stroke-width="4.5" stroke-linecap="round"/>
+  </g>
+
+  <text x="200" y="285" text-anchor="middle" font-family="Poppins, Segoe UI, sans-serif"
+        font-size="11.5" font-weight="600" fill="#98a2b3">Deportes Ilopango</text>
+</svg>

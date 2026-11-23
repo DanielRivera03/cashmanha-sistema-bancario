@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300" role="img">
+  <defs>
+    <linearGradient id="fde5659" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset=".62" stop-color="#f7f8fb"/>
+      <stop offset="1" stop-color="#eceef4"/>
+    </linearGradient>
+    <radialGradient id="sde5659" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#1d2433" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#1d2433" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ade5659" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6418c3" stop-opacity=".95"/>
+      <stop offset="1" stop-color="#6418c3" stop-opacity=".72"/>
+    </linearGradient>
+    <linearGradient id="mde5659" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".55"/>
+      <stop offset=".5" stop-color="#ffffff" stop-opacity=".08"/>
+      <stop offset="1" stop-color="#000000" stop-opacity=".10"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="300" fill="url(#fde5659)"/>
+  <ellipse cx="200" cy="248" rx="112" ry="17" fill="url(#sde5659)"/>
+
+  <g fill="url(#ade5659)" stroke="none">
+    
+  <path d="M104 228 L104 152 Q106 138 120 138 Q137 138 143 155 L153 182
+           Q162 201 186 208 L270 231 Q298 239 298 252 L104 252 Z"/>
+  <path d="M112 154 Q130 150 140 166 L150 188" fill="none" stroke="#fff"
+        stroke-opacity=".5" stroke-width="3.2" stroke-linecap="round"/>
+  <path d="M198 214 Q240 226 284 238" fill="none" stroke="#fff"
+        stroke-opacity=".4" stroke-width="3.4" stroke-linecap="round"/>
+  <rect x="100" y="238" width="202" height="14" rx="7" fill="#4a5160"/>
+  <rect x="100" y="238" width="202" height="5" rx="2.5" fill="#fff" opacity=".32"/>
+  </g>
+
+  <text x="200" y="285" text-anchor="middle" font-family="Poppins, Segoe UI, sans-serif"
+        font-size="11.5" font-weight="600" fill="#98a2b3">Almacenes Mirasol</text>
+</svg>

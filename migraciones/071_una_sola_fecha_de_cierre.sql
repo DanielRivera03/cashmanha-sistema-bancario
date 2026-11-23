@@ -1,0 +1,21 @@
+-- -----------------------------------------------------------------
+-- Una sola fecha de cierre de cuenta, no dos.
+--
+-- `cuentas` tenía `cierre_en` desde el esquema base, declarada y
+-- nunca usada: ni una línea de código la escribe ni la lee. Al montar
+-- el cierre por inactividad agregué `cerrada_en` sin verla, de modo
+-- que quedaron dos columnas para la misma cosa.
+--
+-- Dos columnas para el mismo dato es exactamente lo que hace que un
+-- informe diga una cosa y otro diga otra: cada consulta nueva elige
+-- la que encuentra primero, y nadie se entera hasta que los números
+-- no cuadran.
+--
+-- Se quita la muerta y se queda la viva. `cerrada_en` es la que el
+-- cierre por inactividad escribe y, además, la que ya usaban las
+-- sesiones de caja: el sistema nombra así esta idea en todas partes.
+--
+-- Sin datos que migrar: las dos están vacías en todas las filas.
+-- -----------------------------------------------------------------
+
+ALTER TABLE cuentas DROP COLUMN cierre_en;
