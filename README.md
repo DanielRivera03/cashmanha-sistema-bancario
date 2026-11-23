@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <img alt="PHP" src="https://img.shields.io/badge/PHP-8.2-777BB4?style=for-the-badge&logo=php&logoColor=white">
+  <img alt="PHP" src="https://img.shields.io/badge/PHP-8.6-777BB4?style=for-the-badge&logo=php&logoColor=white">
   <img alt="MariaDB" src="https://img.shields.io/badge/MariaDB%20%2F%20MySQL-003545?style=for-the-badge&logo=mariadb&logoColor=white">
   <img alt="Bootstrap" src="https://img.shields.io/badge/Bootstrap-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white">
   <img alt="JavaScript" src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black">
@@ -17,6 +17,7 @@
 <p align="center">
   <img alt="Estado" src="https://img.shields.io/badge/estado-demo%20en%20vivo-success?style=flat-square">
   <img alt="Argon2id" src="https://img.shields.io/badge/passwords-Argon2id%20%2B%20pepper-critical?style=flat-square">
+  <img alt="Compatibilidad PHP" src="https://img.shields.io/badge/compatible-PHP%208.1%E2%80%938.6-success?style=flat-square">
   <img alt="Tablas" src="https://img.shields.io/badge/tablas-111-blue?style=flat-square">
   <img alt="Líneas" src="https://img.shields.io/badge/PHP-~106K%20líneas-informational?style=flat-square">
   <img alt="Licencia" src="https://img.shields.io/badge/licencia-educativa-lightgrey?style=flat-square">
@@ -51,6 +52,7 @@
 - [Seguridad](#-seguridad)
 - [El proyecto en números](#-el-proyecto-en-números)
 - [Requisitos](#️-requisitos)
+- [Compatibilidad de PHP](#-compatibilidad-de-php)
 - [Instalación paso a paso](#-instalación-paso-a-paso)
 - [Usuarios de prueba](#-usuarios-de-prueba)
 - [Cómo probar la demo](#-cómo-probar-la-demo)
@@ -187,6 +189,226 @@ El **"mando total"** no lo da poseer todos los permisos, sino un **nivel ≥ 100
 > **Cumplimiento/PLD, Cobranza, Tienda y Auditoría no son roles separados**: son **permisos** repartidos sobre los roles existentes.
 
 </details>
+
+### 🧭 Qué puede y qué no puede cada rol
+
+Cada rol ve y hace **solo lo que sus permisos habilitan**. Estos esquemas resumen, por rol, lo que está permitido (✅) y lo que queda fuera de su alcance (⛔).
+
+#### 🛡️ Administrador · nivel 100
+
+```mermaid
+flowchart LR
+    R(["🛡️ Administrador"])
+    subgraph SI["✅ Puede"]
+      direction TB
+      p1["Configurar sistema, productos y parámetros"]
+      p2["Crear, bloquear y auditar usuarios"]
+      p3["Editar la matriz de roles y permisos"]
+      p4["Todo lo de los demás roles (mando total)"]
+    end
+    subgraph NO["⛔ No puede"]
+      direction TB
+      n1["Saltarse la bitácora de auditoría"]
+      n2["Alterar un asiento del libro mayor (cadena de hash)"]
+      n3["Crear un rol de nivel igual o mayor al suyo"]
+    end
+    R --> SI
+    R --> NO
+    style SI stroke:#2ea043,stroke-width:2px
+    style NO stroke:#cf222e,stroke-width:2px
+```
+
+#### ⚖️ Junta Directiva · nivel 95
+
+```mermaid
+flowchart LR
+    R(["⚖️ Junta Directiva"])
+    subgraph SI["✅ Puede"]
+      direction TB
+      p1["Ver el tablero de gobierno"]
+      p2["Ver reportes e indicadores"]
+      p3["Ver auditoría y comprobantes"]
+      p4["Ver cumplimiento (PLD)"]
+    end
+    subgraph NO["⛔ No puede"]
+      direction TB
+      n1["Mover dinero"]
+      n2["Aprobar o desembolsar créditos"]
+      n3["Operar ventanilla o configurar"]
+    end
+    R --> SI
+    R --> NO
+    style SI stroke:#2ea043,stroke-width:2px
+    style NO stroke:#cf222e,stroke-width:2px
+```
+
+#### 🏛️ Presidencia · nivel 90
+
+```mermaid
+flowchart LR
+    R(["🏛️ Presidencia"])
+    subgraph SI["✅ Puede"]
+      direction TB
+      p1["Aprobar y desembolsar créditos"]
+      p2["Aprobar transferencias de alto valor (hasta $200,000/op)"]
+      p3["Aprobar reestructuraciones"]
+      p4["Conciliar pagos y ver gobierno"]
+    end
+    subgraph NO["⛔ No puede"]
+      direction TB
+      n1["Configurar el sistema"]
+      n2["Crear o bloquear usuarios"]
+      n3["Editar la matriz de roles"]
+    end
+    R --> SI
+    R --> NO
+    style SI stroke:#2ea043,stroke-width:2px
+    style NO stroke:#cf222e,stroke-width:2px
+```
+
+#### 🏢 Gerencia · nivel 80
+
+```mermaid
+flowchart LR
+    R(["🏢 Gerencia"])
+    subgraph SI["✅ Puede"]
+      direction TB
+      p1["Revisar, aprobar y desembolsar créditos"]
+      p2["Ajustar la tasa dentro de la banda"]
+      p3["Emitir tarjetas"]
+      p4["Gestionar cartera morosa y cobranza"]
+    end
+    subgraph NO["⛔ No puede"]
+      direction TB
+      n1["Configurar el sistema"]
+      n2["Crear o bloquear usuarios"]
+      n3["Editar roles y parámetros"]
+    end
+    R --> SI
+    R --> NO
+    style SI stroke:#2ea043,stroke-width:2px
+    style NO stroke:#cf222e,stroke-width:2px
+```
+
+#### 📜 Departamento Jurídico · nivel 60
+
+```mermaid
+flowchart LR
+    R(["📜 Jurídico"])
+    subgraph SI["✅ Puede"]
+      direction TB
+      p1["Gestionar cobranza y vía judicial"]
+      p2["Proponer arreglos de pago"]
+      p3["Generar contratos y expedientes"]
+      p4["Analista de cumplimiento (PLD)"]
+    end
+    subgraph NO["⛔ No puede"]
+      direction TB
+      n1["Aprobar o desembolsar créditos"]
+      n2["Mover dinero de clientes"]
+      n3["Configurar el sistema"]
+    end
+    R --> SI
+    R --> NO
+    style SI stroke:#2ea043,stroke-width:2px
+    style NO stroke:#cf222e,stroke-width:2px
+```
+
+#### 🧑‍💼 Atención a Clientes · nivel 50
+
+```mermaid
+flowchart LR
+    R(["🧑‍💼 Atención a Clientes"])
+    subgraph SI["✅ Puede"]
+      direction TB
+      p1["Capturar y revisar solicitudes de crédito"]
+      p2["Depósitos y retiros en ventanilla"]
+      p3["Transferencias a terceros, remesas y constancias"]
+      p4["Editar expediente y atender reclamos"]
+    end
+    subgraph NO["⛔ No puede"]
+      direction TB
+      n1["Aprobar ni desembolsar créditos"]
+      n2["Escalar a vía judicial"]
+      n3["Configurar el sistema"]
+    end
+    R --> SI
+    R --> NO
+    style SI stroke:#2ea043,stroke-width:2px
+    style NO stroke:#cf222e,stroke-width:2px
+```
+
+#### 🤝 Banquero · nivel 50
+
+```mermaid
+flowchart LR
+    R(["🤝 Banquero"])
+    subgraph SI["✅ Puede"]
+      direction TB
+      p1["Gestionar su cartera y banca preferente"]
+      p2["Ver productos de sus clientes"]
+      p3["Emitir constancias"]
+      p4["Gestionar plazos de terceros y tickets"]
+    end
+    subgraph NO["⛔ No puede"]
+      direction TB
+      n1["Registrar efectivo o abrir caja"]
+      n2["Aprobar o desembolsar créditos"]
+      n3["Configurar el sistema"]
+    end
+    R --> SI
+    R --> NO
+    style SI stroke:#2ea043,stroke-width:2px
+    style NO stroke:#cf222e,stroke-width:2px
+```
+
+#### 🏧 Cajero · nivel 40
+
+```mermaid
+flowchart LR
+    R(["🏧 Cajero"])
+    subgraph SI["✅ Puede"]
+      direction TB
+      p1["Abrir, operar y cerrar su caja"]
+      p2["Depósitos y retiros"]
+      p3["Pagar cheques y remesas"]
+      p4["Emitir notas de caja y estados de cuenta"]
+    end
+    subgraph NO["⛔ No puede"]
+      direction TB
+      n1["Autorizar sus propias notas de caja"]
+      n2["Arquear su propio turno"]
+      n3["Aprobar créditos"]
+    end
+    R --> SI
+    R --> NO
+    style SI stroke:#2ea043,stroke-width:2px
+    style NO stroke:#cf222e,stroke-width:2px
+```
+
+#### 👤 Cliente · nivel 10
+
+```mermaid
+flowchart LR
+    R(["👤 Cliente"])
+    subgraph SI["✅ Puede"]
+      direction TB
+      p1["Ver y abrir sus cuentas"]
+      p2["Transferir (tope $2,000/op)"]
+      p3["Pagar, diferir y administrar su tarjeta"]
+      p4["Solicitar crédito, plazo fijo y comprar en la tienda"]
+    end
+    subgraph NO["⛔ No puede"]
+      direction TB
+      n1["Operar cuentas o tarjetas ajenas"]
+      n2["Aprobar o autorizar nada"]
+      n3["Manejar efectivo / ventanilla"]
+    end
+    R --> SI
+    R --> NO
+    style SI stroke:#2ea043,stroke-width:2px
+    style NO stroke:#cf222e,stroke-width:2px
+```
 
 ### Flujos de aprobación (separación de funciones)
 
@@ -419,7 +641,7 @@ El consumo aparece en el **estado de cuenta** de la tarjeta; las cuotas del plan
 
 | Capa | Tecnología |
 |---|---|
-| **Backend** | PHP 8.2 — **sin framework**, autoloader propio (sin Composer) |
+| **Backend** | PHP 8 moderno (**8.1+**, probado hasta **8.6**) — **sin framework**, autoloader propio (sin Composer) |
 | **Base de datos** | MariaDB 10.4+ / MySQL 8+ (PDO, sentencias preparadas **reales**) |
 | **Frontend** | HTML5, CSS3, **JavaScript vanilla + jQuery**, Bootstrap 4, Chart.js |
 | **Pagos** | Stripe.js (modo prueba) o pasarela simulada propia |
@@ -488,10 +710,31 @@ La seguridad no es un añadido: está incrustada en cada capa.
 
 ## ⚙️ Requisitos
 
-- **PHP 8.2+** con extensiones: `pdo_mysql`, `mbstring`, `openssl`, `curl`, `gd` y soporte **Argon2id** (`sodium` o PHP compilado con `--with-password-argon2`).
+- **PHP 8.1 o superior** — recomendado la **última versión estable (PHP 8.6)** — con extensiones: `pdo_mysql`, `mbstring`, `openssl`, `curl`, `gd`, `iconv` y soporte **Argon2id** (`sodium` o PHP compilado con `--with-password-argon2`). Ver la [tabla de compatibilidad](#-compatibilidad-de-php).
 - **MariaDB 10.4+** o **MySQL 8+**.
 - **Apache** con `mod_rewrite` (o Nginx equivalente).
 - Recomendado: **XAMPP** (trae todo lo anterior).
+
+---
+
+## 🐘 Compatibilidad de PHP
+
+El proyecto usa sintaxis **moderna de PHP 8.1+** (propiedades `readonly`, `new` en inicializadores) y está escrito **limpio**: sin propiedades dinámicas, sin funciones eliminadas y sin nullabilidad implícita. Por eso **corre sin un solo aviso de obsolescencia desde PHP 8.1 hasta la última versión estable, PHP 8.6**. Como refuerzo, `bootstrap.php` instala un manejador que convierte cualquier aviso en excepción **salvo las deprecaciones**, que solo se registran — así, una versión futura de PHP **nunca tumbaría una operación**.
+
+> ✅ **Recomendado: la última versión estable — PHP 8.6.**
+
+| Versión de PHP | Estado | Detalle |
+|---|:--:|---|
+| **8.6** &nbsp;·&nbsp; *última estable* | ✅ **Recomendada** | Corre sin cambios ni incompatibilidades conocidas. |
+| **8.5** | ✅ Corre limpio | Soporte activo, sin avisos. |
+| **8.4** | ✅ Corre limpio | Sin nullabilidad implícita ni funciones eliminadas. |
+| **8.3** | ✅ Corre limpio | Soporte activo, sin avisos. |
+| **8.2** | ⚠️ Corre, pero… | Soporte de seguridad **hasta el 31-dic-2026**; conviene subir de versión. |
+| **8.1** | ⚠️ Corre, pero… | **Fin de vida** (sin parches de seguridad). Es el piso de sintaxis. |
+| **8.0** | ❌ No corre | Error fatal de *parseo*: `readonly` y `new` en inicializadores son de 8.1. |
+| **7.4 y anteriores** | ❌ No corre | No soportan la sintaxis de PHP 8. |
+
+<sub>Extensiones requeridas en cualquier versión: <code>pdo_mysql</code>, <code>mbstring</code>, <code>openssl</code>, <code>curl</code>, <code>gd</code>, <code>iconv</code> y <b>Argon2id</b>. XAMPP las incluye todas.</sub>
 
 ---
 
