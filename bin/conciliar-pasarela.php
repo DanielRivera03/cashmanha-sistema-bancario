@@ -27,7 +27,7 @@ use CashMan\Aplicacion\Servicio\ServicioPasarela;
 use CashMan\Aplicacion\Servicio\ServicioTienda;
 use CashMan\Infraestructura\Persistencia\BaseDatos;
 
-if (PHP_SAPI !== 'cli') {
+if (PHP_SAPI !== 'cli' && !defined('CM_WEBCRON')) {
     http_response_code(403);
     exit("Solo por linea de comandos.\n");
 }

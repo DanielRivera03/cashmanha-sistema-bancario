@@ -99,6 +99,34 @@ final class ControladorProcesos extends ControladorBase
     }
 
     /**
+     * Disparador del cron web, para hosting SIN procesos (exec deshabilitado).
+     *
+     * NO lleva sesión ni CSRF a propósito: lo llama un cron externo
+     * (cron-job.org, UptimeRobot), no un navegador. Se autentica con la
+     * clave secreta `CRON_CLAVE` del `.env`, igual que el webhook con su
+     * firma. Corre UNA tarea vencida por golpe; el disparador lo visita
+     * cada pocos minutos y así el sistema se pone al día solo.
+     */
+    public function correrWeb(array $parametros = []): void
+    {
+        $esperada = (string) \CashMan\Infraestructura\Config::obtener('CRON_CLAVE', '');
+        $dada     = (string) ($_GET['t'] ?? $_SERVER['HTTP_X_CRON_CLAVE'] ?? '');
+
+        /* Sin clave configurada, clave demasiado corta, o que no coincide:
+           la ruta no existe para el mundo. 404 (no 403) para no confirmar
+           que está ahí. La comparación es en tiempo constante. */
+        if ($esperada === '' || strlen($dada) < 16 || !hash_equals($esperada, $dada)) {
+            http_response_code(404);
+            header('Content-Type: text/plain; charset=utf-8');
+            echo "No encontrado\n";
+            return;
+        }
+
+        @set_time_limit(120);
+        (new \CashMan\Aplicacion\Servicio\ServicioTareasSistema())->correrUnaEnProceso();
+    }
+
+    /**
      * Guarda un parámetro.
      *
      * Solo se admiten las claves que esta pantalla muestra: la clave

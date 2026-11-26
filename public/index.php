@@ -605,6 +605,12 @@ $r->post('/procesos/mora',      [ControladorProcesos::class, 'devengarMora'],   
 $r->post('/procesos/cortes',    [ControladorProcesos::class, 'cortarTarjetas'],   ['auth', 'csrf']);
 $r->post('/procesos/parametro', [ControladorProcesos::class, 'guardarParametro'], ['auth', 'csrf']);
 
+// Disparador del cron web para hosting SIN procesos (exec deshabilitado):
+// un cron externo (cron-job.org, UptimeRobot) lo visita cada pocos minutos
+// y corre UNA tarea vencida en el mismo proceso. Sin 'auth' a propósito: se
+// autentica con la clave CRON_CLAVE del .env, como el webhook con su firma.
+$r->get('/tareas/correr', [ControladorProcesos::class, 'correrWeb']);
+
 $r->get('/cuotas',           [ControladorCuotas::class, 'listar'],   ['auth']);
 $r->get('/reestructuraciones',          [ControladorReestructuraciones::class, 'listar'],    ['auth']);
 $r->post('/reestructuraciones/simular', [ControladorReestructuraciones::class, 'simular'],   ['auth', 'csrf']);

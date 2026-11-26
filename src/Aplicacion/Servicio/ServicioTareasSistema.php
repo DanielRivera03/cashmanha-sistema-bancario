@@ -141,6 +141,11 @@ final class ServicioTareasSistema
      */
     private const MINUTOS_BLOQUEO_MUERTO = 30;
 
+    /* --- Estado del corredor EN-PROCESO (web-cron, hosting sin exec) --- */
+    private ?array $enCurso    = null;   // ['clave','inicio','base'] de la tarea en curso
+    private bool   $finalizado = false;  // cierra el periodo una sola vez
+    private bool   $respondido = false;  // responde al cron una sola vez
+
     /**
      * Engancha la revisión al final de la petición.
      *
@@ -385,6 +390,212 @@ final class ServicioTareasSistema
         }
 
         return $this->correr((string) $t['clave']) ? (string) $t['clave'] : null;
+    }
+
+    /**
+     * Corre UNA tarea vencida EN EL MISMO PROCESO, sin `exec`.
+     *
+     * Para el hosting sin procesos (exec deshabilitado), donde el latido
+     * no puede arrancar y el respaldo por petición tampoco corre nada —su
+     * `ejecutar()` también es un `exec`—. Un disparador externo
+     * (cron-job.org, UptimeRobot) golpea la ruta protegida cada pocos
+     * minutos y ESTO corre el guion REAL incluyéndolo aquí: el mismo
+     * código que la consola, sin reimplementar nada.
+     *
+     * Los guiones terminan con `exit`, así que el cierre del periodo
+     * —próxima corrida, soltar el bloqueo— se hace en un finalizador
+     * registrado con `register_shutdown_function`, que PHP garantiza
+     * correr aun con `exit`. Una tarea por golpe, igual que el latido; y
+     * como cada guion está escrito para tolerar repetirse, un golpe de
+     * más no cobra dos veces.
+     *
+     * Responde JSON por sí mismo: el controlador solo valida la clave.
+     */
+    public function correrUnaEnProceso(): void
+    {
+        $t = BaseDatos::unaFila(
+            'SELECT clave FROM tareas_sistema
+              WHERE activa = 1
+                AND (proxima_corrida IS NULL OR proxima_corrida <= NOW())
+                AND (corriendo_desde IS NULL
+                     OR corriendo_desde < DATE_SUB(NOW(), INTERVAL ? MINUTE))
+              ORDER BY proxima_corrida IS NOT NULL, proxima_corrida
+              LIMIT 1',
+            [self::MINUTOS_BLOQUEO_MUERTO]
+        );
+
+        if ($t === null) {
+            $this->responder(['ok' => true, 'corrio' => null, 'mensaje' => 'sin tareas pendientes']);
+            return;
+        }
+
+        $clave = (string) $t['clave'];
+
+        if (!isset(self::GUIONES[$clave])) {
+            $this->responder(['ok' => false, 'corrio' => null, 'error' => 'tarea desconocida']);
+            return;
+        }
+
+        /* El bloqueo, con el mismo UPDATE atómico que la vía de consola:
+           de dos golpes a la vez, solo uno ve `afectadas = 1`. */
+        $tomado = BaseDatos::ejecutar(
+            'UPDATE tareas_sistema
+                SET corriendo_desde = NOW()
+              WHERE clave = ? AND activa = 1
+                AND (corriendo_desde IS NULL
+                     OR corriendo_desde < DATE_SUB(NOW(), INTERVAL ? MINUTE))',
+            [$clave, self::MINUTOS_BLOQUEO_MUERTO]
+        );
+
+        if ($tomado === 0) {
+            $this->responder(['ok' => true, 'corrio' => null, 'mensaje' => 'otra ejecución la tiene']);
+            return;
+        }
+
+        [$guion, $args] = self::GUIONES[$clave];
+        $ruta = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'bin'
+              . DIRECTORY_SEPARATOR . $guion;
+
+        if (!is_file($ruta)) {
+            $this->finalizarEnProceso($clave, 'fallo', 'no existe ' . $guion, 0.0);
+            return;
+        }
+
+        $this->enCurso = ['clave' => $clave, 'inicio' => microtime(true), 'base' => ob_get_level()];
+        register_shutdown_function(function (): void { $this->finalizarPorCierre(); });
+
+        /* Los guiones son de consola: alguno escribe a STDERR y uno
+           (`conciliar-pasarela`) se niega a correr fuera de CLI. Se define
+           el entorno mínimo y una marca para que ese guion sepa que es el
+           cron web y no una visita cualquiera. */
+        if (!defined('CM_WEBCRON')) { define('CM_WEBCRON', true); }
+        if (!defined('STDERR')) { @define('STDERR', fopen('php://stderr', 'wb')); }
+        if (!defined('STDOUT')) { @define('STDOUT', fopen('php://stdout', 'wb')); }
+        if (!defined('STDIN'))  { @define('STDIN',  fopen('php://stdin', 'rb')); }
+
+        error_clear_last();
+        ob_start();
+
+        /* El guion se corre en un ámbito aislado: solo ve `$argv`/`$argc`,
+           no las variables de este método. Si termina con `exit` (lo
+           normal), no vuelve de aquí y cierra el finalizador; si lanza
+           una excepción, la capturamos abajo. */
+        $incluir = static function (string $guionRuta, array $argv): void {
+            $argc = count($argv);
+            $_SERVER['argv'] = $argv;
+            $_SERVER['argc'] = $argc;
+            include $guionRuta;
+        };
+
+        try {
+            $incluir($ruta, array_merge(['bin/' . $guion], $args));
+            // Llegó aquí: el guion hizo `return` en vez de `exit`.
+            $this->finalizarEnProceso($clave, 'ok', $this->drenar(), $this->transcurrido());
+        } catch (\Throwable $e) {
+            $this->finalizarEnProceso($clave, 'fallo', $e->getMessage(), $this->transcurrido());
+        }
+    }
+
+    /**
+     * Cierra el periodo cuando el guion terminó con `exit` (o un fatal).
+     * Lo llama `register_shutdown_function`. Si ya se cerró en línea
+     * —excepción o `return`—, no hace nada.
+     */
+    private function finalizarPorCierre(): void
+    {
+        if ($this->enCurso === null) {
+            return;
+        }
+
+        $err   = error_get_last();
+        $fatal = $err !== null && in_array(
+            $err['type'],
+            [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR, E_RECOVERABLE_ERROR],
+            true
+        );
+
+        $this->finalizarEnProceso(
+            (string) $this->enCurso['clave'],
+            $fatal ? 'fallo' : 'ok',
+            $this->drenar(),
+            $this->transcurrido()
+        );
+    }
+
+    /** Escribe el resultado de la tarea y suelta el bloqueo. Una sola vez. */
+    private function finalizarEnProceso(string $clave, string $estado, string $salida, float $segundos): void
+    {
+        if ($this->finalizado) {
+            return;
+        }
+        $this->finalizado = true;
+        $this->enCurso    = null;
+
+        try {
+            BaseDatos::ejecutar(
+                'UPDATE tareas_sistema
+                    SET corriendo_desde = NULL,
+                        ultima_corrida  = NOW(),
+                        proxima_corrida = ' . $this->expresionProxima() . ',
+                        ultimo_estado   = ?,
+                        ultimo_resultado = ?,
+                        corridas = corridas + 1,
+                        fallos   = fallos + ?
+                  WHERE clave = ?',
+                [
+                    $estado,
+                    mb_substr(trim($salida), -480) . ' (' . round($segundos, 1) . 's)',
+                    $estado === 'fallo' ? 1 : 0,
+                    $clave,
+                ]
+            );
+
+            if ($estado === 'fallo') {
+                Auditoria::registrar(
+                    'tarea.fallida', Auditoria::FALLO, 0, 'tarea', $clave,
+                    ['error' => mb_substr($salida, 0, 190)]
+                );
+            }
+        } catch (\Throwable $e) {
+            error_log('[Tareas web-cron] al cerrar ' . $clave . ': ' . $e->getMessage());
+        }
+
+        $this->responder(['ok' => $estado !== 'fallo', 'corrio' => $clave, 'estado' => $estado]);
+    }
+
+    /** Segundos desde que arrancó la tarea en curso. */
+    private function transcurrido(): float
+    {
+        return $this->enCurso !== null
+            ? microtime(true) - (float) $this->enCurso['inicio']
+            : 0.0;
+    }
+
+    /** Recoge y descarta lo que el guion imprimió (su informe de consola). */
+    private function drenar(): string
+    {
+        $base = $this->enCurso !== null ? (int) $this->enCurso['base'] : 0;
+        $out  = '';
+        while (ob_get_level() > $base) {
+            $out = (string) ob_get_clean() . $out;
+        }
+        return trim($out);
+    }
+
+    /** Responde al disparador en JSON, una sola vez. */
+    private function responder(array $datos): void
+    {
+        if ($this->respondido) {
+            return;
+        }
+        $this->respondido = true;
+
+        if (!headers_sent()) {
+            header('Content-Type: application/json; charset=utf-8');
+            header('Cache-Control: no-store');
+        }
+
+        echo json_encode($datos, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 
     /**
